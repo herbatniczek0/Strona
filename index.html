@@ -18,10 +18,9 @@
 
 <script>
   const CLIENT_ID = '1363941305490739440';
-  const REDIRECT_URI = 'https://twoja-domena.netlify.app';
+  const REDIRECT_URI = 'https://fluffy-seahorse-80d72f.netlify.app/';
   const SCOPE = 'identify';
-  
-  // Sprawdź czy jest token w URL (#fragment)
+
   const hash = window.location.hash.substring(1);
   const params = new URLSearchParams(hash);
   const accessToken = params.get('access_token');
@@ -47,7 +46,7 @@
     });
   } else {
     document.getElementById('login').addEventListener('click', () => {
-      const oauthURL = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${SCOPE}`;
+      const oauthURL = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${SCOPE}`;
       window.location.href = oauthURL;
     });
   }
