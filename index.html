@@ -1,1 +1,57 @@
-.
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Discord Login</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    #login { padding: 12px 24px; font-size: 18px; cursor: pointer; }
+    #userBox { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; width: fit-content; margin: 0 auto; }
+    #avatar { width: 40px; height: 40px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+
+<div id="content">
+  <button id="login">Zaloguj się przez Discord</button>
+</div>
+
+<script>
+  const CLIENT_ID = '1363941305490739440';
+  const REDIRECT_URI = 'https://twoja-domena.netlify.app';
+  const SCOPE = 'identify';
+  
+  // Sprawdź czy jest token w URL (#fragment)
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  const accessToken = params.get('access_token');
+
+  if (accessToken) {
+    fetch("https://discord.com/api/users/@me", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    .then(res => res.json())
+    .then(user => {
+      const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+      document.getElementById('content').innerHTML = `
+        <div id="userBox">
+          <img id="avatar" src="${avatarUrl}" alt="Avatar">
+          <strong>${user.username}</strong>
+        </div>
+      `;
+    })
+    .catch(() => {
+      document.getElementById('content').innerHTML = '<p>Błąd podczas pobierania danych.</p>';
+    });
+  } else {
+    document.getElementById('login').addEventListener('click', () => {
+      const oauthURL = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${SCOPE}`;
+      window.location.href = oauthURL;
+    });
+  }
+</script>
+
+</body>
+</html>
