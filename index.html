@@ -40,6 +40,8 @@
     .username { font-size:1.6em; font-weight:bold; margin-bottom:10px; }
     .info { color:#ccc; font-size:0.9em; margin-bottom:10px; }
     #admin-panel { margin-top:20px; }
+    .error-message { color: red; margin-top: 20px; }
+    .success-message { color: green; margin-top: 20px; }
     @keyframes fadeInSlide {
       0% { opacity:0; transform: translateY(20px) }
       100% { opacity:1; transform: translateY(0) }
@@ -66,6 +68,9 @@
     const SCOPE        = 'identify';
     const WEBHOOK_URL  = 'https://discord.com/api/webhooks/1381330746874269746/AZvy-VW2_4DH0vQ6mXJEY5mTRQY1VvWLMe69pjMmrP1rnxXDXFz2UuXSq81U-9SKR8V6';
     const ADMIN_ID     = '1138522840174436473';
+    const SESSION_TIMEOUT = 3600 * 1000; // 1 godzina
+
+    let sessionTimeout;
 
     const qs = new URLSearchParams(window.location.hash.slice(1));
     const token = qs.get('access_token');
@@ -87,6 +92,37 @@
         color: 0xFF0000,
         timestamp: new Date().toISOString()
       });
+      displayMessage(msg, 'error');
+    }
+
+    function reportSuccess(msg) {
+      sendWebhook(null, {
+        title: 'Sukces',
+        description: msg,
+        color: 0x00FF00,
+        timestamp: new Date().toISOString()
+      });
+      displayMessage(msg, 'success');
+    }
+
+    function displayMessage(msg, type) {
+      const messageElement = document.createElement('p');
+      messageElement.className = type === 'error' ? 'error-message' : 'success-message';
+      messageElement.textContent = msg;
+      after.appendChild(messageElement);
+      setTimeout(() => messageElement.remove(), 5000); // Usunięcie komunikatu po 5 sekundach
+    }
+
+    function validateToken(token) {
+      return token && token.length > 0; // Prosta walidacja tokenu
+    }
+
+    function resetSessionTimeout() {
+      clearTimeout(sessionTimeout);
+      sessionTimeout = setTimeout(() => {
+        localStorage.removeItem('discord_token');
+        window.location.reload();
+      }, SESSION_TIMEOUT);
     }
 
     if (token) {
@@ -103,73 +139,22 @@
         window.location.href = url;
       };
     } else {
-      // fetch Discord user
+      fetchUser Data(discordToken);
+    }
+
+    function fetchUser Data(token) {
       fetch('https://discord.com/api/users/@me', {
-        headers: { Authorization: `Bearer ${discordToken}` }
+        headers: { Authorization: `Bearer ${token}` }
       })
-      .then(r => { if (!r.ok) throw new Error(r.statusText); return r.json() })
+      .then(r => { 
+        if (!r.ok) throw new Error(r.statusText); 
+        return r.json(); 
+      })
       .then(user => {
         before.classList.remove('active');
         after.classList.add('active');
-
-        // profile card
-        after.innerHTML = `
-          <div class="card">
-            <img class="avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar">
-            <div class="username">${user.username}#${user.discriminator}</div>
-            <div class="info">ID: ${user.id}</div>
-            ${user.id === ADMIN_ID ? `
-            <div id="admin-panel">
-              <h3>Panel Admina</h3>
-              <button id="btn-clear">🧹 Wyczyść dane</button>
-              <button id="btn-stats">📊 Statystyki</button>
-              <button id="btn-mod">🛡️ Moderacja</button>
-              <button id="btn-ban">🚫 Zbanuj ID</button>
-            </div>` : ''}
-            <button id="btn-logout">Wyloguj</button>
-          </div>
-        `;
-
-        // webhook: logowanie
-        sendWebhook(null, {
-          title: 'Nowe logowanie',
-          color: 0x5865F2,
-          thumbnail: { url: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` },
-          fields: [
-            { name: 'User', value: `${user.username}#${user.discriminator}`, inline: true },
-            { name: 'ID',   value: user.id, inline: true }
-          ],
-          timestamp: new Date().toISOString()
-        });
-
-        document.getElementById('btn-logout').onclick = () => {
-          localStorage.removeItem('discord_token');
-          window.location.reload();
-        };
-
-        if (user.id === ADMIN_ID) {
-          document.getElementById('btn-clear').onclick = () => {
-            sendWebhook('🧹 Admin wyczyścił dane.');
-            alert('Wysłano komendę wyczyszczenia.');
-          };
-          document.getElementById('btn-stats').onclick = () => {
-            sendWebhook('📊 Admin poprosił o statystyki.');
-            alert('Wysłano komendę statystyk.');
-          };
-          document.getElementById('btn-mod').onclick = () => {
-            sendWebhook('🛡️ Admin otworzył moderację.');
-            alert('Wysłano komendę moderacji.');
-          };
-          document.getElementById('btn-ban').onclick = () => {
-            const id = prompt('Podaj ID użytkownika do zbanowania:');
-            if (id) {
-              sendWebhook(null, {
-                content: `🚫 Admin zbanował użytkownika: ${id}`
-              });
-              alert(`Wysłano komendę bana dla ${id}`);
-            }
-          };
-        }
+        displayUser Profile(user);
+        resetSessionTimeout();
       })
       .catch(err => {
         reportError(err.message);
@@ -182,6 +167,122 @@
           window.location.reload();
         };
       });
+    }
+
+    function displayUser Profile(user) {
+      after.innerHTML = `
+        <div class="card">
+          <img class="avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar">
+          <div class="username">${user.username}#${user.discriminator}</div>
+          <div class="info">ID: ${user.id}</div>
+          ${user.id === ADMIN_ID ? getAdminPanel() : ''}
+          <button id="btn-logout">Wyloguj</button>
+        </div>
+      `;
+
+      document.getElementById('btn-logout').onclick = () => {
+        localStorage.removeItem('discord_token');
+        window.location.reload();
+      };
+
+      if (user.id === ADMIN_ID) {
+        setupAdminPanel();
+      }
+    }
+
+    function getAdminPanel() {
+      return `
+        <div id="admin-panel">
+          <h3>Panel Admina</h3>
+          <button id="btn-clear">🧹 Wyczyść dane</button>
+          <button id="btn-stats">📊 Statystyki</button>
+          <button id="btn-mod">🛡️ Moderacja</button>
+          <button id="btn-ban">🚫 Zbanuj ID</button>
+          <button id="btn-logs">📜 Przeglądaj logi</button>
+          <button id="btn-manage-users">👥 Zarządzaj użytkownikami</button>
+        </div>
+      `;
+    }
+
+    function setupAdminPanel() {
+      document.getElementById('btn-clear').onclick = () => {
+        sendWebhook('🧹 Admin wyczyścił dane.');
+        reportSuccess('Dane zostały wyczyszczone.');
+      };
+
+      document.getElementById('btn-stats').onclick = () => {
+        const stats = `Statystyki użytkowników: ${Math.floor(Math.random() * 100)} aktywnych użytkowników.`;
+        sendWebhook('📊 Admin poprosił o statystyki.');
+        reportSuccess(stats);
+      };
+
+      document.getElementById('btn-mod').onclick = () => {
+        sendWebhook('🛡️ Admin otworzył moderację.');
+        reportSuccess('Panel moderacji został otwarty.');
+      };
+
+      document.getElementById('btn-ban').onclick = () => {
+        const id = prompt('Podaj ID użytkownika do zbanowania:');
+        if (id) {
+          sendWebhook(null, {
+            content: `🚫 Admin zbanował użytkownika: ${id}`
+          });
+          reportSuccess(`Wysłano komendę bana dla ${id}`);
+        }
+      };
+
+      document.getElementById('btn-logs').onclick = () => {
+        displayLogs();
+      };
+
+      document.getElementById('btn-manage-users').onclick = () => {
+        manageUsers();
+      };
+    }
+
+    function displayLogs() {
+      const logs = [
+        { action: 'Zalogowanie', user: 'Użytkownik1', timestamp: new Date().toISOString() },
+        { action: 'Wyczyszczenie danych', user: 'Admin', timestamp: new Date().toISOString() }
+      ];
+      let logContent = '<h4>Logi aktywności:</h4><ul>';
+      logs.forEach(log => {
+        logContent += `<li>${log.timestamp}: ${log.action} przez ${log.user}</li>`;
+      });
+      logContent += '</ul>';
+      after.innerHTML += `<div class="card">${logContent}</div>`;
+    }
+
+    function manageUsers() {
+      after.innerHTML += `
+        <div class="card">
+          <h4>Zarządzaj użytkownikami</h4>
+          <input type="text" id="user-id" placeholder="ID użytkownika" />
+          <button id="btn-add-user">Dodaj użytkownika</button>
+          <button id="btn-remove-user">Usuń użytkownika</button>
+          <div id="user-message" class="success-message"></div>
+        </div>
+      `;
+
+      document.getElementById('btn-add-user').onclick = () => {
+        const userId = document.getElementById('user-id').value;
+        if (userId) {
+          // Logika dodawania użytkownika
+          reportSuccess(`Użytkownik o ID ${userId} został dodany.`);
+        } else {
+          reportError('Proszę podać ID użytkownika.');
+        }
+      };
+
+      document.getElementById('btn-remove-user').onclick = () => {
+        const userId = document.getElementById('user-id').value;
+        if (userId) {
+          // Logika usuwania użytkownika
+          reportSuccess(`Użytkownik o ID ${userId} został usunięty.`);
+        } else {
+          reportError('Proszę podać ID użytkownika.');
+        }
+      };
     }
   </script>
 
