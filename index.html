@@ -2,319 +2,275 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Herbatniczek</title>
   <style>
     body {
-      margin: 0; padding: 0;
-      background: #0f0f0f; color: white;
+      margin: 0;
+      padding: 0;
+      background: #0f0f0f;
+      color: white;
       font-family: 'Segoe UI', sans-serif;
       min-height: 100vh;
-      display: flex; justify-content: center; align-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       flex-direction: column;
     }
+
     .before-login, .after-login {
       display: none;
-      flex-direction: column; align-items: center; text-align: center;
-      max-width: 400px; padding: 30px;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 400px;
+      padding: 30px;
       animation: fadeInSlide 0.6s ease forwards;
     }
-    .active { display: flex; }
+
+    .active {
+      display: flex;
+    }
+
     h1 { font-size: 2.2em; margin-bottom: 10px; }
     p { color: #ccc; margin-bottom: 30px; }
-    button {
-      padding: 12px 24px; font-size: 18px;
-      background: #5865F2; color: #fff;
-      border: none; border-radius: 8px;
-      cursor: pointer; transition: background 0.3s ease;
-      margin: 8px 4px;
+
+    #login, #logout, .admin-btn {
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #5865F2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin: 10px 5px;
     }
-    button:hover { background: #4752c4; }
+
+    #login:hover, #logout:hover, .admin-btn:hover {
+      background-color: #4752c4;
+    }
+
     .card {
-      background: #1e1e1e; border-radius: 16px;
-      padding: 30px; box-shadow: 0 0 30px rgba(0,0,0,0.4);
-      display: flex; flex-direction: column; align-items: center;
+      background-color: #1e1e1e;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 100%;
     }
-    .avatar { width:100px; height:100px; border-radius:16px; margin-bottom:20px; }
-    .username { font-size:1.6em; font-weight:bold; margin-bottom:10px; }
-    .info { color:#ccc; font-size:0.9em; margin-bottom:10px; }
-    #admin-panel { margin-top:20px; }
-    .error-message { color: red; margin-top: 20px; }
-    .success-message { color: green; margin-top: 20px; }
+
+    .avatar { width: 100px; height: 100px; border-radius: 16px; margin-bottom: 20px; }
+    .username { font-size: 1.6em; font-weight: bold; margin-bottom: 10px; }
+    .info { color: #ccc; font-size: 0.9em; }
+
+    #admin-panel {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    @keyframes fadeInSlide {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 500px) {
+      .card, .before-login, .after-login { padding: 20px; max-width: 90%; }
+      .avatar { width: 80px; height: 80px; }
+    }
+
+    /* Modal styles */
     .modal {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center;
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0, 0, 0, 0.7); 
+      justify-content: center; 
+      align-items: center;
     }
     .modal-content {
-      background: #1e1e1e; border-radius: 16px; padding: 20px; width: 300px;
+      background: #1e1e1e; 
+      border-radius: 16px; 
+      padding: 20px; 
+      width: 300px; 
       box-shadow: 0 0 30px rgba(0,0,0,0.4);
-    }
-    @keyframes fadeInSlide {
-      0% { opacity:0; transform: translateY(20px) }
-      100% { opacity:1; transform: translateY(0) }
-    }
-    @media(max-width:500px){
-      .card, .before-login, .after-login { padding:20px; max-width:90%; }
-      .avatar { width:80px; height:80px; }
     }
   </style>
 </head>
 <body>
 
-  <div id="before-login" class="before-login active">
-    <h1>Herbatniczek</h1>
-    <p>Zaloguj się przez Discord, aby rozpocząć przygodę.</p>
-    <button id="btn-login">Zaloguj się przez Discord</button>
+<div class="before-login active" id="before-login">
+  <h1>Witaj w Herbatniczku!</h1>
+  <p>Zaloguj się przez Discord, aby rozpocząć przygodę.</p>
+  <button id="login">Zaloguj się przez Discord</button>
+</div>
+
+<div class="after-login" id="after-login"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h4 id="modal-title">Tytuł</h4>
+    <p id="modal-message">Treść</p>
+    <button id="btn-close-modal">Zamknij</button>
   </div>
+</div>
 
-  <div id="after-login" class="after-login"></div>
+<script>
+  const CLIENT_ID    = '1363941305490739440';
+  const REDIRECT_URI = window.location.origin + window.location.pathname;
+  const SCOPE        = 'identify';
+  const WEBHOOK_URL  = 'https://discord.com/api/webhooks/1381330746874269746/AZvy-VW2_4DH0vQ6mXJEY5mTRQY1VvWLMe69pjMmrP1rnxXDXFz2UuXSq81U-9SKR8V6';
+  const ADMIN_ID     = '1138522840174436473';
 
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <h4 id="modal-title">Tytuł</h4>
-      <p id="modal-message">Treść</p>
-      <button id="btn-close-modal">Zamknij</button>
-    </div>
-  </div>
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  const accessToken = params.get('access_token');
 
-  <script>
-    const CLIENT_ID    = '1363941305490739440';
-    const REDIRECT_URI = window.location.origin + window.location.pathname;
-    const SCOPE        = 'identify';
-    const WEBHOOK_URL  = 'https://discord.com/api/webhooks/1381330746874269746/AZvy-VW2_4DH0vQ6mXJEY5mTRQY1VvWLMe69pjMmrP1rnxXDXFz2UuXSq81U-9SKR8V6';
-    const ADMIN_ID     = '1138522840174436473';
-    const SESSION_TIMEOUT = 3600 * 1000; // 1 godzina
+  const beforeLogin = document.getElementById('before-login');
+  const afterLogin  = document.getElementById('after-login');
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modal-title');
+  const modalMessage = document.getElementById('modal-message');
+  const btnCloseModal = document.getElementById('btn-close-modal');
 
-    let sessionTimeout;
+  function sendWebhook(content, embed) {
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(embed ? { embeds: [embed] } : { content })
+    });
+  }
 
-    const qs = new URLSearchParams(window.location.hash.slice(1));
-    const token = qs.get('access_token');
-    const before = document.getElementById('before-login');
-    const after  = document.getElementById('after-login');
-    const modal = document.getElementById('modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message');
-    const btnCloseModal = document.getElementById('btn-close-modal');
+  function reportError(msg) {
+    sendWebhook(null, {
+      title: "Błąd logowania",
+      description: msg,
+      color: 0xFF0000,
+      timestamp: new Date().toISOString()
+    });
+    showModal("Błąd", msg);
+  }
 
-    function sendWebhook(content, embed) {
-      fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(embed ? { embeds: [embed] } : { content })
-      });
-    }
+  function reportSuccess(msg) {
+    sendWebhook(null, {
+      title: "Sukces",
+      description: msg,
+      color: 0x00FF00,
+      timestamp: new Date().toISOString()
+    });
+    showModal("Sukces", msg);
+  }
 
-    function reportError(msg) {
+  function showModal(title, message) {
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    modal.style.display = 'flex';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  if (accessToken) {
+    beforeLogin.classList.remove('active');
+
+    fetch("https://discord.com/api/users/@me", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Błąd pobierania danych z Discord");
+      return res.json();
+    })
+    .then(async user => {
+      const avatarURL = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+      const usernameTag = `${user.username}#${user.discriminator}`;
+      const isAdmin = user.id === ADMIN_ID;
+
+      // Spróbuj pobrać aktywność z Lanyard
+      let activityText = '';
+      try {
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${user.id}`);
+        const data = await res.json();
+        if (data.success && data.data.activities.length > 0) {
+          activityText = `<div class="info">Aktywność: ${data.data.activities[0].name}</div>`;
+        }
+      } catch (err) {
+        activityText = '';
+      }
+
+      afterLogin.classList.add('active');
+      afterLogin.innerHTML = `
+        <div class="card">
+          <img class="avatar" src="${avatarURL}" alt="Avatar">
+          <div class="username">${usernameTag}</div>
+          ${activityText}
+          ${isAdmin ? `
+          <div id="admin-panel">
+            <h3>Panel administratora</h3>
+            <button class="admin-btn" onclick="clearData()">🧹 Wyczyść dane</button>
+            <button class="admin-btn" onclick="showStats()">📊 Statystyki</button>
+            <button class="admin-btn" onclick="moderate()">🛡️ Moderacja</button>
+          </div>` : ''}
+          <button id="logout">Wyloguj</button>
+        </div>
+      `;
+
+      // Logowanie do webhooka
       sendWebhook(null, {
-        title: 'Błąd logowania',
-        description: msg,
-        color: 0xFF0000,
+        title: `Nowe logowanie przez Discord`,
+        color: 0x5865F2,
+        thumbnail: { url: avatarURL },
+        fields: [
+          { name: 'Użytkownik', value: usernameTag, inline: true },
+          { name: 'ID', value: user.id, inline: true }
+        ],
         timestamp: new Date().toISOString()
       });
-      displayMessage(msg, 'error');
-    }
 
-    function reportSuccess(msg) {
-      sendWebhook(null, {
-        title: 'Sukces',
-        description: msg,
-        color: 0x00FF00,
-        timestamp: new Date().toISOString()
+      document.getElementById('logout').addEventListener('click', () => {
+        window.location.href = REDIRECT_URI;
       });
-      displayMessage(msg, 'success');
+    })
+    .catch(err => {
+      afterLogin.classList.add('active');
+      afterLogin.innerHTML = `<p>Nie udało się zalogować.</p>`;
+      reportError("Błąd logowania: " + err.message);
+    });
+
+  } else {
+    document.getElementById('login').addEventListener('click', () => {
+      const url = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${SCOPE}`;
+      window.location.href = url;
+    });
+  }
+
+  btnCloseModal.addEventListener('click', closeModal);
+  window.onclick = (event) => {
+    if (event.target === modal) {
+      closeModal();
     }
+  };
 
-    function displayMessage(msg, type) {
-      const messageElement = document.createElement('p');
-      messageElement.className = type === 'error' ? 'error-message' : 'success-message';
-      messageElement.textContent = msg;
-      after.appendChild(messageElement);
-      setTimeout(() => messageElement.remove(), 5000); // Usunięcie komunikatu po 5 sekundach
-    }
+  function clearData() {
+    // Logika czyszczenia danych
+    reportSuccess("Dane zostały wyczyszczone.");
+  }
 
-    function validateToken(token) {
-      return token && token.length > 0; // Prosta walidacja tokenu
-    }
+  function showStats() {
+    // Logika wyświetlania statystyk
+    reportSuccess("Statystyki zostały wyświetlone.");
+  }
 
-    function resetSessionTimeout() {
-      clearTimeout(sessionTimeout);
-      sessionTimeout = setTimeout(() => {
-        localStorage.removeItem('discord_token');
-        window.location.reload();
-      }, SESSION_TIMEOUT);
-    }
-
-    if (token) {
-      localStorage.setItem('discord_token', token);
-      window.location.hash = '';
-    }
-    const discordToken = localStorage.getItem('discord_token');
-
-    if (!discordToken) {
-      document.getElementById('btn-login').onclick = () => {
-        const url = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}`
-          + `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`
-          + `&response_type=token&scope=${SCOPE}`;
-        window.location.href = url;
-      };
-    } else {
-      fetchUser Data(discordToken);
-    }
-
-    function fetchUser Data(token) {
-      fetch('https://discord.com/api/users/@me', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(r => { 
-        if (!r.ok) throw new Error(r.statusText); 
-        return r.json(); 
-      })
-      .then(user => {
-        before.classList.remove('active');
-        after.classList.add('active');
-        displayUser Profile(user);
-        resetSessionTimeout();
-      })
-      .catch(err => {
-        reportError(err.message);
-        before.classList.remove('active');
-        after.classList.add('active');
-        after.innerHTML = `<p>Nie udało się zalogować: ${err.message}</p>
-          <button id="btn-logout">Spróbuj ponownie</button>`;
-        document.getElementById('btn-logout').onclick = () => {
-          localStorage.removeItem('discord_token');
-          window.location.reload();
-        };
-      });
-    }
-
-    function displayUser Profile(user) {
-      after.innerHTML = `
-        <div class="card">
-          <img class="avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar">
-          <div class="username">${user.username}#${user.discriminator}</div>
-          <div class="info">ID: ${user.id}</div>
-          ${user.id === ADMIN_ID ? getAdminPanel() : ''}
-          <button id="btn-logout">Wyloguj</button>
-        </div>
-      `;
-
-      document.getElementById('btn-logout').onclick = () => {
-        localStorage.removeItem('discord_token');
-        window.location.reload();
-      };
-
-      if (user.id === ADMIN_ID) {
-        setupAdminPanel();
-      }
-    }
-
-    function getAdminPanel() {
-      return `
-        <div id="admin-panel">
-          <h3>Panel Admina</h3>
-          <button id="btn-clear">🧹 Wyczyść dane</button>
-          <button id="btn-stats">📊 Statystyki</button>
-          <button id="btn-mod">🛡️ Moderacja</button>
-          <button id="btn-ban">🚫 Zbanuj ID</button>
-          <button id="btn-logs">📜 Przeglądaj logi</button>
-          <button id="btn-manage-users">👥 Zarządzaj użytkownikami</button>
-        </div>
-      `;
-    }
-
-    function setupAdminPanel() {
-      document.getElementById('btn-clear').onclick = () => {
-        sendWebhook('🧹 Admin wyczyścił dane.');
-        reportSuccess('Dane zostały wyczyszczone.');
-      };
-
-      document.getElementById('btn-stats').onclick = () => {
-        const stats = `Statystyki użytkowników: ${Math.floor(Math.random() * 100)} aktywnych użytkowników.`;
-        sendWebhook('📊 Admin poprosił o statystyki.');
-        reportSuccess(stats);
-      };
-
-      document.getElementById('btn-mod').onclick = () => {
-        sendWebhook('🛡️ Admin otworzył moderację.');
-        reportSuccess('Panel moderacji został otwarty.');
-      };
-
-      document.getElementById('btn-ban').onclick = () => {
-        const id = prompt('Podaj ID użytkownika do zbanowania:');
-        if (id) {
-          sendWebhook(null, {
-            content: `🚫 Admin zbanował użytkownika: ${id}`
-          });
-          reportSuccess(`Wysłano komendę bana dla ${id}`);
-        }
-      };
-
-      document.getElementById('btn-logs').onclick = () => {
-        displayLogs();
-      };
-
-      document.getElementById('btn-manage-users').onclick = () => {
-        manageUsers();
-      };
-    }
-
-    function displayLogs() {
-      const logs = [
-        { action: 'Zalogowanie', user: 'Użytkownik1', timestamp: new Date().toISOString() },
-        { action: 'Wyczyszczenie danych', user: 'Admin', timestamp: new Date().toISOString() }
-      ];
-      let logContent = '<h4>Logi aktywności:</h4><ul>';
-      logs.forEach(log => {
-        logContent += `<li>${log.timestamp}: ${log.action} przez ${log.user}</li>`;
-      });
-      logContent += '</ul>';
-      after.innerHTML += `<div class="card">${logContent}</div>`;
-    }
-
-    function manageUsers() {
-      after.innerHTML += `
-        <div class="card">
-          <h4>Zarządzaj użytkownikami</h4>
-          <input type="text" id="user-id" placeholder="ID użytkownika" />
-          <button id="btn-add-user">Dodaj użytkownika</button>
-          <button id="btn-remove-user">Usuń użytkownika</button>
-          <div id="user-message" class="success-message"></div>
-        </div>
-      `;
-
-      document.getElementById('btn-add-user').onclick = () => {
-        const userId = document.getElementById('user-id').value;
-        if (userId) {
-          // Logika dodawania użytkownika
-          reportSuccess(`Użytkownik o ID ${userId} został dodany.`);
-        } else {
-          reportError('Proszę podać ID użytkownika.');
-        }
-      };
-
-      document.getElementById('btn-remove-user').onclick = () => {
-        const userId = document.getElementById('user-id').value;
-        if (userId) {
-          // Logika usuwania użytkownika
-          reportSuccess(`Użytkownik o ID ${userId} został usunięty.`);
-        } else {
-          reportError('Proszę podać ID użytkownika.');
-        }
-      };
-    }
-
-    btnCloseModal.onclick = () => {
-      modal.style.display = 'none';
-    };
-
-    window.onclick = (event) => {
-      if (event.target === modal) {
-        modal.style.display = 'none';
-      }
-    };
-  </script>
+  function moderate() {
+    // Logika moderacji
+    reportSuccess("Panel moderacji został otwarty.");
+  }
+</script>
 
 </body>
 </html>
