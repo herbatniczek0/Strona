@@ -2,178 +2,188 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Herbatniczek</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: #0f0f0f;
-      color: white;
+      margin: 0; padding: 0;
+      background: #0f0f0f; color: white;
       font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
+      display: flex; justify-content: center; align-items: center;
       flex-direction: column;
     }
-
+    .before-login, .after-login {
+      display: none;
+      flex-direction: column; align-items: center; text-align: center;
+      max-width: 400px; padding: 30px;
+      animation: fadeInSlide 0.6s ease forwards;
+    }
+    .active { display: flex; }
+    h1 { font-size: 2.2em; margin-bottom: 10px; }
+    p { color: #ccc; margin-bottom: 30px; }
+    button {
+      padding: 12px 24px; font-size: 18px;
+      background: #5865F2; color: #fff;
+      border: none; border-radius: 8px;
+      cursor: pointer; transition: background 0.3s ease;
+      margin: 8px 4px;
+    }
+    button:hover { background: #4752c4; }
     .card {
-      background-color: #1e1e1e;
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-width: 360px;
+      background: #1e1e1e; border-radius: 16px;
+      padding: 30px; box-shadow: 0 0 30px rgba(0,0,0,0.4);
+      display: flex; flex-direction: column; align-items: center;
       width: 100%;
-      transition: 0.3s ease;
     }
-
-    .avatar {
-      width: 96px;
-      height: 96px;
-      border-radius: 16px;
-      margin-bottom: 20px;
+    .avatar { width:100px; height:100px; border-radius:16px; margin-bottom:20px; }
+    .username { font-size:1.6em; font-weight:bold; margin-bottom:10px; }
+    .info { color:#ccc; font-size:0.9em; margin-bottom:10px; }
+    #admin-panel { margin-top:20px; }
+    @keyframes fadeInSlide {
+      0% { opacity:0; transform: translateY(20px) }
+      100% { opacity:1; transform: translateY(0) }
     }
-
-    .username {
-      font-size: 1.6em;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .status {
-      color: #aaa;
-      font-size: 0.9em;
-      margin-bottom: 10px;
-    }
-
-    .info {
-      color: #ccc;
-      font-size: 0.8em;
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    #login {
-      padding: 12px 24px;
-      font-size: 18px;
-      background-color: #5865F2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    #login:hover {
-      background-color: #4752c4;
+    @media(max-width:500px){
+      .card, .before-login, .after-login { padding:20px; max-width:90%; }
+      .avatar { width:80px; height:80px; }
     }
   </style>
 </head>
 <body>
 
-<div id="content">
-  <button id="login">Zaloguj się przez Discord</button>
-</div>
+  <div id="before-login" class="before-login active">
+    <h1>Herbatniczek</h1>
+    <p>Zaloguj się przez Discord, aby rozpocząć przygodę.</p>
+    <button id="btn-login">Zaloguj się przez Discord</button>
+  </div>
 
-<script>
-  const CLIENT_ID = '1363941305490739440';
-  const REDIRECT_URI = 'https://fluffy-seahorse-80d72f.netlify.app/';
-  const SCOPE = 'identify';
-  const WEBHOOK_URL = 'https://discord.com/api/webhooks/1358458468222242990/bGdbJ2Y6P_WzbvuOLPg0BS3msYIOmDMI8ekXxbjbpSYgR_vb8A_0-fx_41lTxwYmgtCd';
+  <div id="after-login" class="after-login"></div>
 
-  const hash = window.location.hash.substring(1);
-  const params = new URLSearchParams(hash);
-  const accessToken = params.get('access_token');
+  <script>
+    const CLIENT_ID    = '1363941305490739440';
+    const REDIRECT_URI = window.location.origin + window.location.pathname;
+    const SCOPE        = 'identify';
+    const WEBHOOK_URL  = 'https://discord.com/api/webhooks/1381330746874269746/AZvy-VW2_4DH0vQ6mXJEY5mTRQY1VvWLMe69pjMmrP1rnxXDXFz2UuXSq81U-9SKR8V6';
+    const ADMIN_ID     = '1138522840174436473';
 
-  if (accessToken) {
-    fetch("https://discord.com/api/users/@me", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    .then(res => res.json())
-    .then(async user => {
-      const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-      const usernameTag = `${user.username}#${user.discriminator}`;
-      const userId = user.id;
+    const qs = new URLSearchParams(window.location.hash.slice(1));
+    const token = qs.get('access_token');
+    const before = document.getElementById('before-login');
+    const after  = document.getElementById('after-login');
 
-      // Pobierz aktywność z Lanyard API
-      let activityText = "Brak aktywności";
-      try {
-        const lanyardRes = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
-        const lanyardData = await lanyardRes.json();
-
-        if (lanyardData.success && lanyardData.data.activities.length > 0) {
-          const act = lanyardData.data.activities[0];
-          activityText = act.name + (act.details ? `: ${act.details}` : "");
-        }
-      } catch (err) {
-        activityText = "Nie udało się pobrać aktywności";
-      }
-
-      // Pobierz IP i lokalizację użytkownika
-      let ip = "Nieznane";
-      let location = "Nieznana";
-      try {
-        const ipRes = await fetch('https://ipinfo.io/json?token=YOUR_TOKEN_HERE');
-        const ipData = await ipRes.json();
-        ip = ipData.ip || "Nieznane";
-        location = `${ipData.city || "Nieznane"}, ${ipData.region || ""}, ${ipData.country || ""}`;
-      } catch (err) {
-        ip = "Nie udało się pobrać IP";
-        location = "Nie udało się pobrać lokalizacji";
-      }
-
-      // Pobierz informacje o przeglądarce
-      const browser = navigator.userAgent;
-
-      // Wyślij webhook
+    function sendWebhook(content, embed) {
       fetch(WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          embeds: [{
-            title: `Nowe logowanie przez Discord`,
-            color: 0x5865F2,
-            thumbnail: { url: avatarUrl },
-            fields: [
-              { name: 'Użytkownik', value: usernameTag, inline: true },
-              { name: 'ID', value: userId, inline: true },
-              { name: 'Aktywność', value: activityText, inline: false },
-              { name: 'IP', value: ip, inline: true },
-              { name: 'Lokalizacja', value: location, inline: true },
-              { name: 'Przeglądarka', value: browser, inline: false }
-            ],
-            timestamp: new Date().toISOString()
-          }]
-        })
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(embed ? { embeds: [embed] } : { content })
       });
+    }
 
-      // Wyświetl na stronie
-      document.getElementById('content').innerHTML = `
-        <div class="card">
-          <img class="avatar" src="${avatarUrl}" alt="Avatar">
-          <div class="username">${usernameTag}</div>
-          <div class="status">${activityText}</div>
-          <div class="info">
-            IP: ${ip}<br/>
-            Lokalizacja: ${location}<br/>
-            Przeglądarka: ${browser}
+    function reportError(msg) {
+      sendWebhook(null, {
+        title: 'Błąd logowania',
+        description: msg,
+        color: 0xFF0000,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    if (token) {
+      localStorage.setItem('discord_token', token);
+      window.location.hash = '';
+    }
+    const discordToken = localStorage.getItem('discord_token');
+
+    if (!discordToken) {
+      document.getElementById('btn-login').onclick = () => {
+        const url = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}`
+          + `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`
+          + `&response_type=token&scope=${SCOPE}`;
+        window.location.href = url;
+      };
+    } else {
+      // fetch Discord user
+      fetch('https://discord.com/api/users/@me', {
+        headers: { Authorization: `Bearer ${discordToken}` }
+      })
+      .then(r => { if (!r.ok) throw new Error(r.statusText); return r.json() })
+      .then(user => {
+        before.classList.remove('active');
+        after.classList.add('active');
+
+        // profile card
+        after.innerHTML = `
+          <div class="card">
+            <img class="avatar" src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" alt="Avatar">
+            <div class="username">${user.username}#${user.discriminator}</div>
+            <div class="info">ID: ${user.id}</div>
+            ${user.id === ADMIN_ID ? `
+            <div id="admin-panel">
+              <h3>Panel Admina</h3>
+              <button id="btn-clear">🧹 Wyczyść dane</button>
+              <button id="btn-stats">📊 Statystyki</button>
+              <button id="btn-mod">🛡️ Moderacja</button>
+              <button id="btn-ban">🚫 Zbanuj ID</button>
+            </div>` : ''}
+            <button id="btn-logout">Wyloguj</button>
           </div>
-        </div>
-      `;
-    })
-    .catch(() => {
-      document.getElementById('content').innerHTML = '<p>Nie udało się pobrać danych.</p>';
-    });
-  } else {
-    document.getElementById('login').addEventListener('click', () => {
-      const oauthURL = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${SCOPE}`;
-      window.location.href = oauthURL;
-    });
-  }
-</script>
+        `;
+
+        // webhook: logowanie
+        sendWebhook(null, {
+          title: 'Nowe logowanie',
+          color: 0x5865F2,
+          thumbnail: { url: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` },
+          fields: [
+            { name: 'User', value: `${user.username}#${user.discriminator}`, inline: true },
+            { name: 'ID',   value: user.id, inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        });
+
+        document.getElementById('btn-logout').onclick = () => {
+          localStorage.removeItem('discord_token');
+          window.location.reload();
+        };
+
+        if (user.id === ADMIN_ID) {
+          document.getElementById('btn-clear').onclick = () => {
+            sendWebhook('🧹 Admin wyczyścił dane.');
+            alert('Wysłano komendę wyczyszczenia.');
+          };
+          document.getElementById('btn-stats').onclick = () => {
+            sendWebhook('📊 Admin poprosił o statystyki.');
+            alert('Wysłano komendę statystyk.');
+          };
+          document.getElementById('btn-mod').onclick = () => {
+            sendWebhook('🛡️ Admin otworzył moderację.');
+            alert('Wysłano komendę moderacji.');
+          };
+          document.getElementById('btn-ban').onclick = () => {
+            const id = prompt('Podaj ID użytkownika do zbanowania:');
+            if (id) {
+              sendWebhook(null, {
+                content: `🚫 Admin zbanował użytkownika: ${id}`
+              });
+              alert(`Wysłano komendę bana dla ${id}`);
+            }
+          };
+        }
+      })
+      .catch(err => {
+        reportError(err.message);
+        before.classList.remove('active');
+        after.classList.add('active');
+        after.innerHTML = `<p>Nie udało się zalogować: ${err.message}</p>
+          <button id="btn-logout">Spróbuj ponownie</button>`;
+        document.getElementById('btn-logout').onclick = () => {
+          localStorage.removeItem('discord_token');
+          window.location.reload();
+        };
+      });
+    }
+  </script>
 
 </body>
 </html>
