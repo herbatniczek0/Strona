@@ -159,10 +159,44 @@
         const msg=document.getElementById('msg-report'); msg.textContent=`Wniosek wysłany! Numer wniosku: ${id}`; msg.className='message success'; msg.style.display='block'; f.reset();
       });
 
-      document.getElementById('trackForm').addEventListener('submit', async e => {
-        e.preventDefault(); const id=e.target.trackId.value; const data=await getSubmission(id);
-        const out=document.getElementById('statusResult'); out.innerHTML = data && data.id ? `<p><strong>Status:</strong> ${data.status}</p><p><strong>Opis:</strong> ${data.idea}</p>` : 'Nie znaleziono wniosku.';
-      });
+document.getElementById('trackForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = e.target.trackId.value.trim();
+  const out = document.getElementById('statusResult');
+  out.innerHTML = 'Ładowanie...';
+
+  if (!id) {
+    out.innerHTML = '<p style="color:red;">Podaj numer wniosku.</p>';
+    return;
+  }
+
+  try {
+    const data = await getSubmission(id);
+    if (!data || !data.id) {
+      out.innerHTML = '<p style="color:red;">Nie znaleziono wniosku.</p>';
+      return;
+    }
+
+    // Format daty czytelnie
+    const dateObj = new Date(data.date);
+    const formattedDate = isNaN(dateObj) ? data.date : dateObj.toLocaleDateString('pl-PL');
+
+    // Wyświetlenie pełnego wniosku
+    out.innerHTML = `
+      <h3>Wniosek nr: ${data.id}</h3>
+      <p><strong>Imię i nazwisko:</strong> ${data.name}</p>
+      <p><strong>Discord:</strong> ${data.discord}</p>
+      <p><strong>Data zgłoszenia:</strong> ${formattedDate}</p>
+      <p><strong>Status:</strong> ${data.status}</p>
+      <p><strong>Opis pomysłu:</strong><br>${data.idea.replace(/\n/g, '<br>')}</p>
+    `;
+
+  } catch (error) {
+    console.error('Błąd pobierania wniosku:', error);
+    out.innerHTML = '<p style="color:red;">Wystąpił błąd podczas pobierania wniosku.</p>';
+  }
+});
+
 
       async function renderConsult() {
         const list=document.getElementById('consultList'); list.innerHTML='';
