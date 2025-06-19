@@ -6,8 +6,20 @@
   <title>Panel Admina - Portal Obywatelski</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; text-align: center; padding: 2rem; }
-    #adminPanel { display: none; margin-top: 2rem; }
+    #adminPanel, #requestsPanel { display: none; margin-top: 2rem; }
     button { padding: 1rem 2rem; font-size: 1.2rem; cursor: pointer; }
+    #requestsList li {
+      margin-bottom: 0.5rem;
+      list-style: none;
+      padding: 0.4rem;
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    select {
+      font-size: 1rem;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
@@ -24,8 +36,13 @@
   <button id="logoutBtn">Wyloguj się</button>
 </div>
 
+<div id="requestsPanel">
+  <h3>Wnioski</h3>
+  <ul id="requestsList"></ul>
+</div>
+
 <script>
-  const CLIENT_ID = '1363941305490739440'; // podmień na swój client_id
+  const CLIENT_ID = '1363941305490739440'; // podmień na swój Discord client_id
   const REDIRECT_URI = window.location.origin + '/admin.html';
   const SCOPE = 'identify';
   const RESPONSE_TYPE = 'code';
@@ -33,9 +50,13 @@
 
   const loginDiv = document.getElementById('login');
   const adminPanelDiv = document.getElementById('adminPanel');
+  const requestsPanelDiv = document.getElementById('requestsPanel');
   const discordLoginBtn = document.getElementById('discordLoginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const userInfo = document.getElementById('userInfo');
+  const requestsList = document.getElementById('requestsList');
+
+  const ADMIN_IDS = ['123456789012345678', '987654321098765432']; // Podmień na Discord ID adminów
 
   function parseQueryString() {
     const params = {};
@@ -47,30 +68,37 @@
   }
 
   function showAdminPanel(user) {
+    if (!ADMIN_IDS.includes(user.id)) {
+      alert('Brak uprawnień do panelu admina!');
+      showLogin();
+      return;
+    }
     loginDiv.style.display = 'none';
     adminPanelDiv.style.display = 'block';
+    requestsPanelDiv.style.display = 'block';
     userInfo.textContent = `Zalogowano jako: ${user.username}#${user.discriminator}`;
+    loadRequests(user);
   }
 
   function showLogin() {
     loginDiv.style.display = 'block';
     adminPanelDiv.style.display = 'none';
+    requestsPanelDiv.style.display = 'none';
     userInfo.textContent = '';
   }
 
   async function exchangeCodeForToken(code) {
     console.log('[Admin] Wymiana kodu OAuth na token:', code);
-
     try {
       const res = await fetch('/.netlify/functions/exchangeDiscordCode', {
         method: 'POST',
         body: JSON.stringify({ code }),
         headers: { 'Content-Type': 'application/json' }
       });
-
       const data = await res.json();
 
       if (data.success) {
+        // Zapisujemy token i usera
         localStorage.setItem('adminAuth', 'true');
         localStorage.setItem('adminUser', JSON.stringify(data.user));
         return data.user;
@@ -78,11 +106,70 @@
         alert('Błąd autoryzacji: ' + (data.error || 'Nieznany błąd'));
         return null;
       }
-
     } catch (e) {
       alert('Błąd podczas łączenia z serwerem.');
       console.error(e);
       return null;
+    }
+  }
+
+  async function loadRequests(user) {
+    try {
+      const res = await fetch('/.netlify/functions/adminRequests', {
+        headers: { Authorization: `Bearer ${user.id}` },
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert('Błąd ładowania wniosków: ' + (err.error || res.status));
+        return;
+      }
+
+      const { requests } = await res.json();
+      requestsList.innerHTML = '';
+
+      requests.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = `#${r.id} - ${r.user}: ${r.message} (Status: ${r.status})`;
+
+        const select = document.createElement('select');
+        ['new', 'in_progress', 'done'].forEach(status => {
+          const option = document.createElement('option');
+          option.value = status;
+          option.text = status;
+          if (status === r.status) option.selected = true;
+          select.appendChild(option);
+        });
+        select.onchange = async () => {
+          const newStatus = select.value;
+          try {
+            const res = await fetch('/.netlify/functions/adminRequests', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.id}`,
+              },
+              body: JSON.stringify({ id: r.id, status: newStatus }),
+            });
+            if (!res.ok) {
+              const err = await res.json();
+              alert('Błąd zmiany statusu: ' + (err.error || res.status));
+              select.value = r.status;
+              return;
+            }
+            r.status = newStatus;
+            alert(`Status wniosku #${r.id} zmieniony na ${newStatus}`);
+          } catch (e) {
+            alert('Błąd podczas zmiany statusu.');
+            select.value = r.status;
+          }
+        };
+        li.appendChild(select);
+        requestsList.appendChild(li);
+      });
+    } catch (e) {
+      alert('Błąd podczas pobierania wniosków.');
+      console.error(e);
     }
   }
 
