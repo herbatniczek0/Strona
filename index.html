@@ -55,10 +55,13 @@
 </head>
 <body data-theme="">
   <div class="wrapper">
-    <header>
-      <h1>Portal Obywatelski 24/7</h1>
-      <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
-    </header>
+<header>
+  <h1>Portal Obywatelski 24/7</h1>
+  <div>
+    <button id="adminPanelBtn" style="margin-right:10px; background:#fff; color:#007bff; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer;">Panel Admina</button>
+    <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
+  </div>
+</header>
     <nav>
       <ul>
         <li><button id="tab-report" class="active">Zgłoś wniosek</button></li>
@@ -116,6 +119,8 @@
       applyTheme(saved !== null ? saved : prefers);
       themeToggle.addEventListener('click', () => applyTheme(app.getAttribute('data-theme') === 'dark' ? '' : 'dark'));
 
+
+      
       ['report','track','consult'].forEach(tab => {
         document.getElementById('tab-' + tab).addEventListener('click', () => {
           ['report','track','consult'].forEach(t => {
@@ -230,6 +235,34 @@ document.getElementById('trackForm').addEventListener('submit', async e => {
       })
     );
   }
+  const adminPanelBtn = document.getElementById('adminPanelBtn');
+
+adminPanelBtn.addEventListener('click', async () => {
+  const username = prompt("Podaj login:");
+  if (!username) return alert("Musisz podać login.");
+  const password = prompt("Podaj hasło:");
+  if (!password) return alert("Musisz podać hasło.");
+
+  try {
+    const res = await api('checkAdminAccess', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      sessionStorage.setItem('adminLoggedIn', 'true');
+      // Przekieruj do panelu admina (utwórz admin.html lub podstronę)
+      window.location.href = '/admin.html';
+    } else {
+      alert('Brak dostępu lub błędne dane.');
+    }
+  } catch (err) {
+    alert('Błąd podczas logowania.');
+    console.error(err);
+  }
+});
+
 
   // Wywołanie renderConsult() po załadowaniu DOM
   renderConsult();
