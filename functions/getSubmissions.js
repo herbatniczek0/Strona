@@ -4,11 +4,12 @@ const sql = neon(process.env.NETLIFY_DATABASE_URL);
 exports.handler = async () => {
   try {
     const rows = await sql`
-      SELECT id, name, idea, date
+      SELECT id, date, name, discord, idea, status
       FROM submissions
       ORDER BY date DESC
       LIMIT 100
     `;
+
     return {
       statusCode: 200,
       body: JSON.stringify(rows),
