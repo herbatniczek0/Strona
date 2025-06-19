@@ -4,6 +4,14 @@ const sqlGet = neon(process.env.NETLIFY_DATABASE_URL);
 exports.handler = async (event) => {
   console.log("🔍 queryStringParameters:", event.queryStringParameters);
 
+  if (!event.queryStringParameters || !event.queryStringParameters.id) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Brak parametru id' }),
+      headers: { 'Content-Type': 'application/json' },
+    };
+  }
+
   const { id } = event.queryStringParameters;
   console.log("🔢 Otrzymane ID (raw):", JSON.stringify(id));
 
@@ -17,7 +25,8 @@ exports.handler = async (event) => {
     console.log("❌ Błąd: cleanId nie jest liczbą");
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Nieprawidłowe ID' })
+      body: JSON.stringify({ error: 'Nieprawidłowe ID' }),
+      headers: { 'Content-Type': 'application/json' },
     };
   }
 
@@ -31,21 +40,24 @@ exports.handler = async (event) => {
       console.log("⚠️ Wniosek nie znaleziony w bazie.");
       return {
         statusCode: 404,
-        body: JSON.stringify({ error: 'Nie znaleziono wniosku' })
+        body: JSON.stringify({ error: 'Nie znaleziono wniosku' }),
+        headers: { 'Content-Type': 'application/json' },
       };
     }
 
     console.log("✅ Wniosek znaleziony:", rows[0]);
     return {
       statusCode: 200,
-      body: JSON.stringify(rows[0])
+      body: JSON.stringify(rows[0]),
+      headers: { 'Content-Type': 'application/json' },
     };
 
   } catch (err) {
     console.error("🔥 Błąd zapytania:", err, "getSubmission.js");
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message })
+      body: JSON.stringify({ error: err.message }),
+      headers: { 'Content-Type': 'application/json' },
     };
   }
 };
