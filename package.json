@@ -1,10 +1,7 @@
 {
   "name": "portal-obywatelski",
   "version": "1.0.0",
-  "description": "Portal Obywatelski 24/7 - Netlify Functions",
-  "scripts": {
-    "start": "netlify dev"
-  },
+  "description": "Netlify functions for Portal Obywatelski",
   "dependencies": {
     "@neondatabase/serverless": "^0.6.0"
   }
