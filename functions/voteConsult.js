@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       console.warn("⚠️ Głos z tego IP już oddany, odrzucam");
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: "Z tego adresu IP już oddano głos na tę konsultację." })
+  body: JSON.stringify({ error: "Głosowanie na tę konsultację możliwe jest tylko raz." })
       };
     }
 
