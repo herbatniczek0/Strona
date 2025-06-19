@@ -3,8 +3,10 @@ const sqlVote = neonVote(process.env.NETLIFY_DATABASE_URL);
 
 exports.handler = async (event) => {
   try {
-    const { id } = JSON.parse(event.body);
-    await sqlVote`UPDATE consultations SET votes = votes + 1 WHERE id = ${id}`;
+const { id } = JSON.parse(event.body);
+if (!id) throw new Error("Brak ID");
+
+await sqlVote`UPDATE consultations SET votes = votes + 1 WHERE id = ${id}`;
 
     return {
       statusCode: 200,
