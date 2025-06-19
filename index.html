@@ -3,86 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Obywatelski 24/7 - Wniosek</title>
+  <title>Portal Obywatelski 24/7</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .container { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-    h1 { text-align: center; margin-bottom: 1rem; }
-    label { display: block; margin-top: 1rem; }
-    input, textarea { width: 100%; padding: 0.5rem; margin-top: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
-    button { margin-top: 1.5rem; width: 100%; padding: 0.75rem; border: none; background: #007bff; color: #fff; font-size: 1rem; border-radius: 4px; cursor: pointer; }
-    button:disabled { background: #999; cursor: not-allowed; }
-    .error { color: #c00; font-size: 0.875rem; display: none; }
+    :root {
+      --bg: #f0f2f5;
+      --fg: #333;
+      --header-bg: #007bff;
+      --nav-bg: #0056b3;
+      --container-bg: #ffffff;
+      --footer-bg: #007bff;
+      --primary: #007bff;
+      --accent: #28a745;
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --fg: #e0e0e0;
+      --header-bg: #1c7ed6;
+      --nav-bg: #0b5ed7;
+      --container-bg: #1e1e1e;
+      --footer-bg: #1c7ed6;
+      --primary: #339af0;
+      --accent: #51cf66;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: Arial, sans-serif; background: var(--bg); color: var(--fg); transition: background 0.3s, color 0.3s; }
+    .wrapper { display: flex; flex-direction: column; min-height: 100%; }
+    header { background: var(--header-bg); color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .theme-toggle { background: none; border: 1px solid #fff; color: #fff; padding: 0.5rem; border-radius: 4px; cursor: pointer; }
+    nav { background: var(--nav-bg); }
+    nav ul { list-style: none; display: flex; }
+    nav li { flex: 1; text-align: center; }
+    nav button { width: 100%; padding: 1rem; background: none; border: none; color: #fff; font-size: 1rem; cursor: pointer; }
+    nav button.active, nav button:hover { background: var(--primary); }
+    main { flex: 1; padding: 2rem; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .container { background: var(--container-bg); padding: 2rem; border-radius: 8px; max-width: 600px; margin: auto; color: var(--fg); }
+    h1, h2 { color: var(--primary); margin-bottom: 1rem; }
+    form { display: grid; gap: 1rem; }
+    input, textarea { font-size: 1rem; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; background: var(--bg); color: var(--fg); }
+    button.submit { background: var(--accent); color: #fff; border: none; padding: 0.75rem; cursor: pointer; }
+    button.submit:hover { background: #1e7e34; }
+    .message { margin-top: 1rem; padding: 1rem; border-radius: 4px; display: none; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    footer { background: var(--footer-bg); color: #fff; text-align: center; padding: 1rem; }
+    .status-result, .consult-list { margin-top: 1rem; }
+    .consult-item { padding: 1rem; border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; background: var(--container-bg); }
+    .consult-item .votes { font-size: 0.9rem; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>Wniosek - Portal Obywatelski 24/7</h1>
-    <form id="wniosekForm">
-      <label for="name">Imię i nazwisko:<span class="error" id="err-name"> * pole wymagane</span></label>
-      <input type="text" id="name" name="name" required>
-
-      <label for="discord">Discord ID i nick:<span class="error" id="err-discord"> * pole wymagane</span></label>
-      <input type="text" id="discord" name="discord" placeholder="123456789012345678#nick" required>
-
-      <label for="date">Aktualna data:<span class="error" id="err-date"> * pole wymagane</span></label>
-      <input type="date" id="date" name="date" required>
-
-      <label for="idea">Pomysł / opis:<span class="error" id="err-idea"> * pole wymagane</span></label>
-      <textarea id="idea" name="idea" rows="4" required></textarea>
-
-      <button type="submit" id="submitBtn">Wyślij wniosek</button>
-    </form>
+<body data-theme="">
+  <div class="wrapper" id="app">
+    <header>
+      <div>
+        <h1>Portal Obywatelski 24/7</h1>
+      </div>
+      <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
+    </header>
+    <nav>
+      <ul>
+        <li><button id="tab-report" class="active">Zgłoś wniosek</button></li>
+        <li><button id="tab-track">Śledź status</button></li>
+        <li><button id="tab-consult">Konsultacje</button></li>
+      </ul>
+    </nav>
+    <main>
+      <div id="panel-report" class="panel active">
+        <div class="container">
+          <h2>Złóż wniosek</h2>
+          <form id="wniosekForm">
+            <input type="text" name="name" placeholder="Imię i nazwisko" required>
+            <input type="text" name="discord" placeholder="Discord ID#nick" required>
+            <input type="date" name="date" required>
+            <textarea name="idea" rows="4" placeholder="Twój pomysł / opis" required></textarea>
+            <button type="submit" class="submit">Wyślij wniosek</button>
+          </form>
+          <div id="msg-report" class="message"></div>
+        </div>
+      </div>
+      <div id="panel-track" class="panel">
+        <div class="container">
+          <h2>Śledzenie statusu</h2>
+          <form id="trackForm">
+            <input type="text" id="trackId" placeholder="Numer wniosku" required>
+            <button type="submit" class="submit">Sprawdź status</button>
+          </form>
+          <div id="statusResult" class="status-result"></div>
+        </div>
+      </div>
+      <div id="panel-consult" class="panel">
+        <div class="container">
+          <h2>Otwarte konsultacje</h2>
+          <div id="consultList" class="consult-list"></div>
+          <div id="msg-consult" class="message"></div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2025 Portal Obywatelski 24/7</p>
+    </footer>
   </div>
-
   <script>
-    const form = document.getElementById('wniosekForm');
-    const webhookUrl = 'https://discord.com/api/webhooks/1385312805695258634/eDg9L76sBXuuwkFA5iu8fI_SpU7KdPJIkYV_Z6leWE9A7mmKb1SlORMJDhpR2rMqErZB'; // <-- podmień na swój webhook
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      // walidacja
-      let valid = true;
-      ['name','discord','date','idea'].forEach(id => {
-        const el = document.getElementById(id);
-        const err = document.getElementById('err-' + id);
-        if (!el.value.trim()) {
-          err.style.display = 'inline'; valid = false;
-        } else {
-          err.style.display = 'none';
-        }
-      });
-      if (!valid) return;
-
-      // budowanie embed
-      const embed = {
-        title: 'Nowy wniosek z Portalu Obywatelskiego',
-        color: 5814783,
-        fields: [
-          { name: 'Imię i nazwisko', value: document.getElementById('name').value },
-          { name: 'Discord ID i nick', value: document.getElementById('discord').value },
-          { name: 'Data zgłoszenia', value: document.getElementById('date').value },
-          { name: 'Pomysł / opis', value: document.getElementById('idea').value }
-        ],
-        timestamp: new Date().toISOString()
-      };
-
-      // wysyłka do Discord
-      try {
-        const response = await fetch(webhookUrl, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ embeds: [embed] })
-        });
-        if (response.ok) {
-          alert('Wniosek wysłany pomyślnie!');
-          form.reset();
-        } else {
-          alert('Błąd przy wysyłaniu wniosku. Spróbuj ponownie.');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Wystąpił problem z połączeniem.');
+    document.addEventListener('DOMContentLoaded', () => {
+      const webhookUrl = 'https://discord.com/api/webhooks/1385312805695258634/eDg9L76sBXuuwkFA5iu8fI_SpU7KdPJIkYV_Z6leWE9A7mmKb1SlORMJDhpR2rMqErZB';
+      const app = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      function applyTheme(theme) {
+        app.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
       }
+      const saved = localStorage.getItem('theme');
+      const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : '';
+      applyTheme(saved !== null ? saved : prefers);
+      themeToggle.addEventListener('click', () => applyTheme(app.getAttribute('data-theme') === 'dark' ? '' : 'dark'));
+
+      ['report','track','consult'].forEach(tab => {
+        document.getElementById('tab-' + tab).addEventListener('click', () => {
+          ['report','track','consult'].forEach(t => {
+            document.getElementById('tab-' + t).classList.toggle('active', t===tab);
+            document.getElementById('panel-' + t).classList.toggle('active', t===tab);
+          });
+        });
+      });
+
+      async function createSubmission(entry) {
+        const res = await fetch('/.netlify/functions/createSubmission', {
+          method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(entry)
+        }); return res.json();
+      }
+      async function getSubmission(id) {
+        const res = await fetch(`/.netlify/functions/getSubmission?id=${encodeURIComponent(id)}`);
+        return res.json();
+      }
+      async function getConsultations() {
+        const res = await fetch('/.netlify/functions/getConsultations');
+        return res.json();
+      }
+      async function voteConsult(id) {
+        const res = await fetch('/.netlify/functions/voteConsult', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id })
+        }); return res.json();
+      }
+
+      const wniosekForm = document.getElementById('wniosekForm');
+      if (wniosekForm) wniosekForm.addEventListener('submit', async e => {
+        e.preventDefault(); const f=e.target; const entry={name:f.name.value,discord:f.discord.value,date:f.date.value,idea:f.idea.value};
+        const { id } = await createSubmission(entry);
+        await fetch(webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({embeds:[{title:'Nowy wniosek',color:5814783,fields:[{name:'ID',value:id},{name:'Imię i nazwisko',value:entry.name},{name:'Discord',value:entry.discord},{name:'Data',value:entry.date},{name:'Pomysł',value:entry.idea}],timestamp:new Date().toISOString()}]}) });
+        const msg=document.getElementById('msg-report'); msg.textContent=`Wniosek wysłany! Numer wniosku: ${id}`; msg.className='message success'; msg.style.display='block'; f.reset();
+      });
+
+      const trackForm = document.getElementById('trackForm');
+      if (trackForm) trackForm.addEventListener('submit', async e => {
+        e.preventDefault(); const id=e.target.trackId.value; const data=await getSubmission(id);
+        const out=document.getElementById('statusResult'); out.innerHTML=data && data.id?`<p><strong>Status:</strong> ${data.status}</p><p><strong>Opis:</strong> ${data.idea}</p>`:'Nie znaleziono wniosku.';
+      });
+
+      async function renderConsult() {
+        const list=document.getElementById('consultList'); list.innerHTML=''; const items=await getConsultations();
+        items.forEach(c=>{const div=document.createElement('div');div.className='consult-item';div.innerHTML=`<h3>${c.title}</h3>${c.desc?`<p>${c.desc}</p>`:''}<p class="votes">Głosy: ${c.votes}</p><button data-id="${c.id}" class="submit">Głosuj</button>`;list.appendChild(div);});
+        document.querySelectorAll('.consult-item button').forEach(btn=>btn.addEventListener('click',async()=>{await voteConsult(btn.dataset.id);document.getElementById('msg-consult').textContent='Dziękujemy za głos!';document.getElementById('msg-consult').className='message success';document.getElementById('msg-consult').style.display='block';renderConsult();}));
+      }
+      renderConsult();
     });
   </script>
 </body>
