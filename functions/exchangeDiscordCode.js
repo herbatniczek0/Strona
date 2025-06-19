@@ -40,7 +40,7 @@ exports.handler = async (event) => {
       };
     }
 
-    // Przygotuj body dla token endpoint
+    // Przygotuj parametry do wymiany kodu na token
     const params = new URLSearchParams();
     params.append('client_id', CLIENT_ID);
     params.append('client_secret', CLIENT_SECRET);
@@ -50,31 +50,28 @@ exports.handler = async (event) => {
     params.append('scope', 'identify');
 
     console.info('[exchangeDiscordCode] Wysyłanie żądania do Discorda o token...');
-    const response = await fetch('https://discord.com/api/oauth2/token', {
+    const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: params.toString(),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('[exchangeDiscordCode] Błąd wymiany tokena, status:', response.status);
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      console.error('[exchangeDiscordCode] Błąd wymiany tokena, status:', tokenResponse.status);
       console.error('[exchangeDiscordCode] Szczegóły błędu:', errorText);
       return {
-        statusCode: response.status,
+        statusCode: tokenResponse.status,
         body: JSON.stringify({ error: 'Błąd wymiany tokena z Discordem.', details: errorText }),
       };
     }
 
-    const tokenData = await response.json();
+    const tokenData = await tokenResponse.json();
     console.info('[exchangeDiscordCode] Token OAuth otrzymany pomyślnie:', tokenData);
 
-    // Pobierz dane użytkownika
-    console.info('[exchangeDiscordCode] Pobieranie danych użytkownika...');
+    // Pobierz dane użytkownika z Discorda
     const userResponse = await fetch('https://discord.com/api/users/@me', {
-      headers: {
-        Authorization: `${tokenData.token_type} ${tokenData.access_token}`,
-      },
+      headers: { Authorization: `${tokenData.token_type} ${tokenData.access_token}` }
     });
 
     if (!userResponse.ok) {
@@ -82,25 +79,26 @@ exports.handler = async (event) => {
       console.error('[exchangeDiscordCode] Błąd pobierania danych użytkownika:', errorText);
       return {
         statusCode: userResponse.status,
-        body: JSON.stringify({ error: 'Błąd pobierania danych użytkownika.', details: errorText }),
+        body: JSON.stringify({ error: 'Błąd pobierania danych użytkownika z Discorda.', details: errorText }),
       };
     }
 
-    const userData = await userResponse.json();
-    console.info('[exchangeDiscordCode] Dane użytkownika pobrane pomyślnie:', userData);
+    const user = await userResponse.json();
+    console.info('[exchangeDiscordCode] Dane użytkownika pobrane:', user);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
+        user,
         access_token: tokenData.access_token,
         refresh_token: tokenData.refresh_token,
         expires_in: tokenData.expires_in,
         scope: tokenData.scope,
         token_type: tokenData.token_type,
-        user: userData, // zwróć też dane użytkownika
       }),
     };
+
   } catch (err) {
     console.error('[exchangeDiscordCode] Wystąpił nieoczekiwany błąd:', err);
     return {
