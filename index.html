@@ -35,7 +35,7 @@
     h1 { font-size: 2.2em; margin-bottom: 10px; }
     p { color: #ccc; margin-bottom: 30px; }
 
-    #login, #logout, .admin-btn {
+    #login, #login-spotify, #logout, .admin-btn {
       padding: 12px 24px;
       font-size: 18px;
       background-color: #5865F2;
@@ -47,7 +47,7 @@
       margin: 10px 5px;
     }
 
-    #login:hover, #logout:hover, .admin-btn:hover {
+    #login:hover, #login-spotify:hover, #logout:hover, .admin-btn:hover {
       background-color: #4752c4;
     }
 
@@ -93,6 +93,7 @@
       justify-content: center; 
       align-items: center;
     }
+
     .modal-content {
       background: #1e1e1e; 
       border-radius: 16px; 
@@ -108,6 +109,7 @@
   <h1>Witaj w Herbatniczku!</h1>
   <p>Zaloguj się przez Discord, aby rozpocząć przygodę.</p>
   <button id="login">Zaloguj się przez Discord</button>
+  <button id="login-spotify">Zaloguj się przez Spotify</button>
 </div>
 
 <div class="after-login" id="after-login"></div>
@@ -120,19 +122,29 @@
   </div>
 </div>
 
+<!-- Spotify Data -->
+<div id="spotify-data" style="margin-top: 20px;"></div>
+
 <script>
-  const CLIENT_ID    = '1363941305490739440';
+  // Konfiguracja Discord
+  const CLIENT_ID = '1363941305490739440';
   const REDIRECT_URI = window.location.origin + window.location.pathname;
-  const SCOPE        = 'identify';
-  const WEBHOOK_URL  = 'https://discord.com/api/webhooks/1381330746874269746/AZvy-VW2_4DH0vQ6mXJEY5mTRQY1VvWLMe69pjMmrP1rnxXDXFz2UuXSq81U-9SKR8V6';
-  const ADMIN_ID     = '1138522840174436473';
+  const SCOPE = 'identify';
+  const WEBHOOK_URL = 'https://discord.com/api/webhooks/1381330746874269746/AZvy-VW2_4DH0vQ6mXJEY5mTRQY1VvWLMe69pjMmrP1rnxXDXFz2UuXSq81U-9SKR8V6';  
+  const ADMIN_ID = '1138522840174436473';
+
+  // Konfiguracja Spotify
+  const SPOTIFY_CLIENT_ID = '3296a9edf0544b03a56d811a13649a5e'; // ⬅️ Wstaw swój Client ID
+  const SPOTIFY_REDIRECT_URI = window.location.origin; // np. http://localhost
+  const SPOTIFY_SCOPE = 'user-read-currently-playing user-top-read';
 
   const hash = window.location.hash.substring(1);
   const params = new URLSearchParams(hash);
   const accessToken = params.get('access_token');
+  const spotifyToken = localStorage.getItem('spotify_token');
 
   const beforeLogin = document.getElementById('before-login');
-  const afterLogin  = document.getElementById('after-login');
+  const afterLogin = document.getElementById('after-login');
   const modal = document.getElementById('modal');
   const modalTitle = document.getElementById('modal-title');
   const modalMessage = document.getElementById('modal-message');
@@ -176,77 +188,129 @@
     modal.style.display = 'none';
   }
 
+  // Logowanie przez Discord
   if (accessToken) {
     beforeLogin.classList.remove('active');
+    fetch("https://discord.com/api/users/@me",  { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(res => {
+        if (!res.ok) throw new Error("Błąd pobierania danych z Discord");
+        return res.json();
+      })
+      .then(async user => {
+        const avatarURL = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`; 
+        const usernameTag = `${user.username}#${user.discriminator}`;
+        const isAdmin = user.id === ADMIN_ID;
 
-    fetch("https://discord.com/api/users/@me", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    .then(res => {
-      if (!res.ok) throw new Error("Błąd pobierania danych z Discord");
-      return res.json();
-    })
-    .then(async user => {
-      const avatarURL = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-      const usernameTag = `${user.username}#${user.discriminator}`;
-      const isAdmin = user.id === ADMIN_ID;
-
-      // Spróbuj pobrać aktywność z Lanyard
-      let activityText = '';
-      try {
-        const res = await fetch(`https://api.lanyard.rest/v1/users/${user.id}`);
-        const data = await res.json();
-        if (data.success && data.data.activities.length > 0) {
-          activityText = `<div class="info">Aktywność: ${data.data.activities[0].name}</div>`;
+        let activityText = '';
+        try {
+          const res = await fetch(`https://api.lanyard.rest/v1/users/${user.id}`); 
+          const data = await res.json();
+          if (data.success && data.data.activities.length > 0) {
+            activityText = `<div class="info">Aktywność: ${data.data.activities[0].name}</div>`;
+          }
+        } catch (err) {
+          activityText = '';
         }
-      } catch (err) {
-        activityText = '';
-      }
 
-      afterLogin.classList.add('active');
-      afterLogin.innerHTML = `
-        <div class="card">
-          <img class="avatar" src="${avatarURL}" alt="Avatar">
-          <div class="username">${usernameTag}</div>
-          ${activityText}
-          ${isAdmin ? `
-          <div id="admin-panel">
-            <h3>Panel administratora</h3>
-            <button class="admin-btn" onclick="clearData()">🧹 Wyczyść dane</button>
-            <button class="admin-btn" onclick="showStats()">📊 Statystyki</button>
-            <button class="admin-btn" onclick="moderate()">🛡️ Moderacja</button>
-          </div>` : ''}
-          <button id="logout">Wyloguj</button>
-        </div>
-      `;
+        afterLogin.classList.add('active');
+        afterLogin.innerHTML = `
+          <div class="card">
+            <img class="avatar" src="${avatarURL}" alt="Avatar">
+            <div class="username">${usernameTag}</div>
+            ${activityText}
+            ${isAdmin ? `
+              <div id="admin-panel">
+                <h3>Panel administratora</h3>
+                <button class="admin-btn" onclick="clearData()">🧹 Wyczyść dane</button>
+                <button class="admin-btn" onclick="showStats()">📊 Statystyki</button>
+                <button class="admin-btn" onclick="moderate()">🛡️ Moderacja</button>
+              </div>` : ''}
+            <button id="logout">Wyloguj</button>
+          </div>
+        `;
 
-      // Logowanie do webhooka
-      sendWebhook(null, {
-        title: `Nowe logowanie przez Discord`,
-        color: 0x5865F2,
-        thumbnail: { url: avatarURL },
-        fields: [
-          { name: 'Użytkownik', value: usernameTag, inline: true },
-          { name: 'ID', value: user.id, inline: true }
-        ],
-        timestamp: new Date().toISOString()
+        sendWebhook(null, {
+          title: `Nowe logowanie przez Discord`,
+          color: 0x5865F2,
+          thumbnail: { url: avatarURL },
+          fields: [
+            { name: 'Użytkownik', value: usernameTag, inline: true },
+            { name: 'ID', value: user.id, inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        });
+
+        document.getElementById('logout').addEventListener('click', () => {
+          window.location.href = REDIRECT_URI;
+        });
+
+        // Pobierz dane z Spotify, jeśli istnieje token
+        if (spotifyToken) {
+          fetchSpotifyData(spotifyToken);
+        }
+      })
+      .catch(err => {
+        afterLogin.classList.add('active');
+        afterLogin.innerHTML = `<p>Nie udało się zalogować.</p>`;
+        reportError("Błąd logowania: " + err.message);
       });
-
-      document.getElementById('logout').addEventListener('click', () => {
-        window.location.href = REDIRECT_URI;
-      });
-    })
-    .catch(err => {
-      afterLogin.classList.add('active');
-      afterLogin.innerHTML = `<p>Nie udało się zalogować.</p>`;
-      reportError("Błąd logowania: " + err.message);
-    });
-
   } else {
     document.getElementById('login').addEventListener('click', () => {
       const url = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=${SCOPE}`;
       window.location.href = url;
     });
+  }
+
+  // Logowanie przez Spotify
+  document.getElementById('login-spotify').addEventListener('click', () => {
+    const authUrl = `https://accounts.spotify.com/authorize?` +
+      `client_id=${SPOTIFY_CLIENT_ID}&` +
+      `response_type=token&` +
+      `redirect_uri=${encodeURIComponent(SPOTIFY_REDIRECT_URI)}&` +
+      `scope=${encodeURIComponent(SPOTIFY_SCOPE)}`;
+    window.location.href = authUrl;
+  });
+
+  // Obsłuż token Spotify z URL
+  if (hash.includes('access_token')) {
+    const params = new URLSearchParams(hash.replace('#', '')); 
+    const token = params.get('access_token');
+    const expiresIn = params.get('expires_in');
+    
+    if (token) {
+      localStorage.setItem('spotify_token', token);
+      localStorage.setItem('spotify_expires_at', Date.now() + (parseInt(expiresIn) * 1000));
+      window.location.href = window.location.origin; // Usuń token z URL
+    }
+  }
+
+  // Pobierz dane z Spotify
+  async function fetchSpotifyData(token) {
+    const expiresAt = localStorage.getItem('spotify_expires_at');
+    if (!token || Date.now() > expiresAt) return;
+
+    try {
+      const currentTrackRes = await fetch('https://api.spotify.com/v1/me/player/currently-playing',  {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const currentTrack = await currentTrackRes.json();
+
+      const topTracksRes = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=5', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const topTracks = await topTracksRes.json();
+
+      document.getElementById('spotify-data').innerHTML = `
+        <div class="card">
+          <h3>Spotify</h3>
+          <p><strong>Aktualnie słuchany:</strong> ${currentTrack.item?.name || 'Brak'}</p>
+          <p><strong>Top utworów:</strong></p>
+          <ul>${topTracks.items.map(track => `<li>${track.name} - ${track.artists[0].name}</li>`).join('')}</ul>
+        </div>
+      `;
+    } catch (err) {
+      console.error('Błąd Spotify:', err);
+    }
   }
 
   btnCloseModal.addEventListener('click', closeModal);
@@ -257,17 +321,17 @@
   };
 
   function clearData() {
-    // Logika czyszczenia danych
-    reportSuccess("Dane zostały wyczyszczone.");
+    localStorage.removeItem('spotify_token');
+    localStorage.removeItem('spotify_expires_at');
+    document.getElementById('spotify-data').innerHTML = '';
+    reportSuccess("Dane Spotify zostały usunięte.");
   }
 
   function showStats() {
-    // Logika wyświetlania statystyk
     reportSuccess("Statystyki zostały wyświetlone.");
   }
 
   function moderate() {
-    // Logika moderacji
     reportSuccess("Panel moderacji został otwarty.");
   }
 </script>
