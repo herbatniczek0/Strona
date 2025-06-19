@@ -206,10 +206,23 @@ document.getElementById('trackForm').addEventListener('submit', async e => {
           div.innerHTML=`<h3>${c.title}</h3>${c.desc?`<p>${c.desc}</p>`:''}<p class="votes">Głosy: ${c.votes}</p><button data-id="${c.id}" class="submit">Głosuj</button>`;
           list.appendChild(div);
         });
-        document.querySelectorAll('.consult-item button').forEach(btn=>btn.addEventListener('click',async()=>{ await voteConsult(btn.dataset.id); document.getElementById('msg-consult').textContent='Dziękujemy za głos!'; document.getElementById('msg-consult').className='message success'; document.getElementById('msg-consult').style.display='block'; renderConsult(); }));
-      }
-      renderConsult();
-    });
+document.querySelectorAll('.consult-item button').forEach(btn => btn.addEventListener('click', async () => {
+  try {
+    const res = await voteConsult(btn.dataset.id);
+    if (!res.success) {
+      throw new Error(res.error || "Nieznany błąd");
+    }
+    document.getElementById('msg-consult').textContent = 'Dziękujemy za głos!';
+    document.getElementById('msg-consult').className = 'message success';
+    document.getElementById('msg-consult').style.display = 'block';
+    renderConsult();
+  } catch (error) {
+    document.getElementById('msg-consult').textContent = error.message;
+    document.getElementById('msg-consult').className = 'message error';
+    document.getElementById('msg-consult').style.display = 'block';
+  }
+}));
+
 
   </script>
 </body>
