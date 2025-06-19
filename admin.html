@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Panel Admina - Portal Obywatelski</title>
   <style>
     :root {
@@ -23,6 +23,7 @@
       background: var(--bg);
       color: var(--fg);
       padding: 2rem;
+      transition: background 0.3s, color 0.3s;
     }
     h1, h2 { color: var(--accent); }
     .hidden { display: none; }
@@ -32,21 +33,41 @@
       background: var(--panel-bg);
       padding: 2rem;
       border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    nav {
+      margin: 1rem 0 2rem 0;
+      text-align: center;
     }
     nav button {
-      margin: 0.5rem;
+      margin: 0 0.5rem 0.5rem 0.5rem;
       padding: 0.5rem 1rem;
       background: var(--accent);
       color: white;
       border: none;
       cursor: pointer;
       border-radius: 4px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    nav button:hover {
+      background: #0056b3;
     }
     input, textarea, select {
       display: block;
-      margin: 0.5rem 0;
+      margin: 0.5rem 0 1rem 0;
       width: 100%;
       padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background 0.3s, color 0.3s;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
     }
     table {
       width: 100%;
@@ -63,18 +84,63 @@
     #themeToggle {
       float: right;
       margin-top: -3rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    #themeToggle:hover {
+      background: #0056b3;
+    }
+    #loginError {
+      color: red;
+      min-height: 1.2em;
+      margin-top: -0.5rem;
+      margin-bottom: 1rem;
+    }
+    button[type="submit"], #zapiszWebhook, #testWebhook {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    button[type="submit"]:hover, #zapiszWebhook:hover, #testWebhook:hover {
+      background: #0056b3;
+    }
+    pre#logList {
+      background: #222;
+      color: #0f0;
+      padding: 1rem;
+      height: 200px;
+      overflow-y: scroll;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    canvas#statChart {
+      max-width: 100%;
+      height: 300px;
     }
   </style>
 </head>
 <body data-theme="">
   <div class="container">
     <h1>Panel Administratora</h1>
-    <button id="themeToggle">🌙/☀️</button>
+    <button id="themeToggle">🌙 / ☀️</button>
+
     <div id="loginPanel">
-      <input id="username" placeholder="Login" />
-      <input id="password" placeholder="Hasło" type="password" />
+      <input id="username" placeholder="Login" autocomplete="username" />
+      <input id="password" type="password" placeholder="Hasło" autocomplete="current-password" />
       <button id="loginBtn">Zaloguj</button>
-      <p id="loginError" style="color:red;"></p>
+      <p id="loginError"></p>
     </div>
 
     <div id="adminContent" class="hidden">
@@ -86,32 +152,32 @@
         <button data-tab="logi">Logi</button>
         <button data-tab="webhook">Webhook</button>
         <button data-tab="statystyki">Statystyki</button>
-        <button id="logoutBtn">Wyloguj</button>
+        <button id="logoutBtn" style="background:#dc3545;">Wyloguj</button>
       </nav>
 
       <div id="tab-wnioski" class="tab">
         <h2>Lista Wniosków</h2>
-        <div id="wnioskiList">(Tutaj ładowane dynamicznie)</div>
+        <div id="wnioskiList">(Tu będzie lista wniosków)</div>
       </div>
 
       <div id="tab-konsultacje" class="tab hidden">
         <h2>Zarządzanie Konsultacjami</h2>
         <form id="newConsult">
-          <input name="title" placeholder="Tytuł" required>
+          <input name="title" placeholder="Tytuł" required />
           <textarea name="description" placeholder="Opis"></textarea>
           <button type="submit">Dodaj konsultację</button>
         </form>
-        <div id="consultList"></div>
+        <div id="consultList">(Tu będą konsultacje)</div>
       </div>
 
       <div id="tab-admini" class="tab hidden">
         <h2>Zarządzanie Administratorami</h2>
         <form id="addAdmin">
-          <input name="username" placeholder="Nowy admin - nazwa">
-          <input name="password" placeholder="Hasło" type="password">
-          <button type="submit">Dodaj admina</button>
+          <input name="username" placeholder="Nazwa użytkownika" required />
+          <input name="password" placeholder="Hasło" type="password" required />
+          <button type="submit">Dodaj administratora</button>
         </form>
-        <div id="adminList"></div>
+        <div id="adminList">(Tu będzie lista adminów)</div>
       </div>
 
       <div id="tab-eksport" class="tab hidden">
@@ -122,14 +188,15 @@
 
       <div id="tab-logi" class="tab hidden">
         <h2>Logi systemowe</h2>
-        <pre id="logList">(Tutaj logi)</pre>
+        <pre id="logList">(Tutaj będą logi)</pre>
       </div>
 
       <div id="tab-webhook" class="tab hidden">
         <h2>Webhook Discord</h2>
-        <input id="webhookInput" placeholder="Wklej URL webhooka">
+        <input id="webhookInput" placeholder="Wklej URL webhooka" />
         <button id="zapiszWebhook">Zapisz</button>
         <button id="testWebhook">Testuj</button>
+        <p id="webhookMsg"></p>
       </div>
 
       <div id="tab-statystyki" class="tab hidden">
@@ -145,7 +212,10 @@
     const adminContent = document.getElementById('adminContent');
     const loginError = document.getElementById('loginError');
     const themeToggle = document.getElementById('themeToggle');
+    const webhookInput = document.getElementById('webhookInput');
+    const webhookMsg = document.getElementById('webhookMsg');
 
+    // -- Theme toggle --
     function setTheme(t) {
       document.body.setAttribute('data-theme', t);
       localStorage.setItem('theme', t);
@@ -153,29 +223,47 @@
     themeToggle.onclick = () => setTheme(document.body.getAttribute('data-theme') === 'dark' ? '' : 'dark');
     setTheme(localStorage.getItem('theme') || '');
 
-    document.getElementById('loginBtn').onclick = async () => {
-      const u = document.getElementById('username').value;
-      const p = document.getElementById('password').value;
-      loginError.textContent = '...';
-      const res = await fetch('/.netlify/functions/checkAdminAccess', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: u, password: p })
-      });
-      const data = await res.json();
-      if (data.success) {
-        loginPanel.classList.add('hidden');
-        adminContent.classList.remove('hidden');
-      } else {
-        loginError.textContent = data.error || 'Błąd logowania';
+    // -- Login/logout --
+    async function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      loginError.textContent = 'Logowanie...';
+
+      if (!username || !password) {
+        loginError.textContent = 'Wprowadź login i hasło.';
+        return;
       }
-    };
+
+      try {
+        const res = await fetch('/.netlify/functions/checkAdminAccess', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          loginPanel.classList.add('hidden');
+          adminContent.classList.remove('hidden');
+          loginError.textContent = '';
+          loadAllData();
+        } else {
+          loginError.textContent = data.error || 'Błędne dane lub brak dostępu.';
+        }
+      } catch (e) {
+        loginError.textContent = 'Błąd połączenia z serwerem.';
+        console.error(e);
+      }
+    }
+    document.getElementById('loginBtn').onclick = login;
 
     document.getElementById('logoutBtn').onclick = () => {
       loginPanel.classList.remove('hidden');
       adminContent.classList.add('hidden');
+      clearData();
     };
 
+    // -- Tabs switch --
     document.querySelectorAll('nav button[data-tab]').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('.tab').forEach(tab => tab.classList.add('hidden'));
@@ -183,8 +271,383 @@
       };
     });
 
+    // -- Eksport (prosty alert placeholder) --
     function eksportuj(format) {
-      alert('Eksport danych do: ' + format + ' (w przyszłości)');
+      alert('Eksport do ' + format + ' w przyszłości...');
+    }
+
+    // --- Data loading functions ---
+    async function loadAllData() {
+      await Promise.all([
+        loadWnioski(),
+        loadKonsultacje(),
+        loadAdmini(),
+        loadWebhook()
+      ]);
+      loadLogi();
+      loadStatystyki();
+    }
+    function clearData() {
+      document.getElementById('wnioskiList').textContent = '';
+      document.getElementById('consultList').textContent = '';
+      document.getElementById('adminList').textContent = '';
+      webhookInput.value = '';
+      webhookMsg.textContent = '';
+      document.getElementById('logList').textContent = '';
+      // Statystyki - nie czyścimy wykresu, bo jest canvas
+    }
+
+    // --- Load Wnioski ---
+    async function loadWnioski() {
+      const container = document.getElementById('wnioskiList');
+      container.textContent = 'Ładowanie...';
+      try {
+        const res = await fetch('/.netlify/functions/getSubmissions');
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Niepoprawne dane');
+        if (data.length === 0) {
+          container.textContent = 'Brak wniosków.';
+          return;
+        }
+        // Tworzymy tabelę
+        let html = '<table><thead><tr><th>ID</th><th>Imię i nazwisko</th><th>Discord</th><th>Data</th><th>Status</th><th>Pomysł</th></tr></thead><tbody>';
+        for (const wniosek of data) {
+          html += `<tr>
+            <td>${wniosek.id}</td>
+            <td>${escapeHtml(wniosek.name)}</td>
+            <td>${escapeHtml(wniosek.discord)}</td>
+            <td>${new Date(wniosek.date).toLocaleDateString('pl-PL')}</td>
+            <td>${escapeHtml(wniosek.status || '')}</td>
+            <td>${escapeHtml(wniosek.idea)}</td>
+          </tr>`;
+        }
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.textContent = 'Błąd ładowania wniosków.';
+        console.error(e);
+      }
+    }
+
+    // --- Load Konsultacje ---
+    async function loadKonsultacje() {
+      const container = document.getElementById('consultList');
+      container.textContent = 'Ładowanie...';
+      try {
+        const res = await fetch('/.netlify/functions/getConsultations');
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Niepoprawne dane');
+        if (data.length === 0) {
+          container.textContent = 'Brak konsultacji.';
+          return;
+        }
+        let html = '<table><thead><tr><th>ID</th><th>Tytuł</th><th>Opis</th><th>Głosy</th><th>Akcje</th></tr></thead><tbody>';
+        for (const k of data) {
+          html += `<tr>
+            <td>${k.id}</td>
+            <td>${escapeHtml(k.title)}</td>
+            <td>${escapeHtml(k.description || '')}</td>
+            <td>${k.votes}</td>
+            <td>
+              <button onclick="usunKonsultacje(${k.id})">Usuń</button>
+              <button onclick="resetujGlosy(${k.id})">Resetuj głosy</button>
+            </td>
+          </tr>`;
+        }
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.textContent = 'Błąd ładowania konsultacji.';
+        console.error(e);
+      }
+    }
+
+    // --- Add new consultation ---
+    document.getElementById('newConsult').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const title = form.title.value.trim();
+      const description = form.description.value.trim();
+
+      if (!title) {
+        alert('Podaj tytuł konsultacji.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/.netlify/functions/addConsultation', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({title, description})
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Konsultacja dodana.');
+          form.reset();
+          loadKonsultacje();
+          loguj('Dodano konsultację: ' + title);
+        } else {
+          alert('Błąd dodawania konsultacji.');
+        }
+      } catch (err) {
+        alert('Błąd połączenia.');
+        console.error(err);
+      }
+    };
+
+    // --- Usuwanie konsultacji ---
+    async function usunKonsultacje(id) {
+      if (!confirm('Na pewno chcesz usunąć konsultację #' + id + '?')) return;
+      try {
+        const res = await fetch('/.netlify/functions/deleteConsultation', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({id})
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Usunięto konsultację.');
+          loadKonsultacje();
+          loguj('Usunięto konsultację ID: ' + id);
+        } else {
+          alert('Błąd usuwania.');
+        }
+      } catch (e) {
+        alert('Błąd połączenia.');
+        console.error(e);
+      }
+    }
+
+    // --- Reset głosów ---
+    async function resetujGlosy(id) {
+      if (!confirm('Na pewno chcesz zresetować głosy dla konsultacji #' + id + '?')) return;
+      try {
+        const res = await fetch('/.netlify/functions/resetVotes', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({id})
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Zresetowano głosy.');
+          loadKonsultacje();
+          loguj('Zresetowano głosy ID: ' + id);
+        } else {
+          alert('Błąd resetowania.');
+        }
+      } catch (e) {
+        alert('Błąd połączenia.');
+        console.error(e);
+      }
+    }
+
+    // --- Load Admini ---
+    async function loadAdmini() {
+      const container = document.getElementById('adminList');
+      container.textContent = 'Ładowanie...';
+      try {
+        const res = await fetch('/.netlify/functions/getAdmins');
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Niepoprawne dane');
+        if (data.length === 0) {
+          container.textContent = 'Brak administratorów.';
+          return;
+        }
+        let html = '<table><thead><tr><th>ID</th><th>Nazwa użytkownika</th><th>Akcje</th></tr></thead><tbody>';
+        for (const admin of data) {
+          html += `<tr>
+            <td>${admin.id}</td>
+            <td>${escapeHtml(admin.username)}</td>
+            <td><button onclick="usunAdmina(${admin.id})">Usuń</button></td>
+          </tr>`;
+        }
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.textContent = 'Błąd ładowania administratorów.';
+        console.error(e);
+      }
+    }
+
+    // --- Dodaj admina ---
+    document.getElementById('addAdmin').onsubmit = async e => {
+      e.preventDefault();
+      const form = e.target;
+      const username = form.username.value.trim();
+      const password = form.password.value;
+
+      if (!username || !password) {
+        alert('Podaj nazwę użytkownika i hasło.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/.netlify/functions/addAdmin', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({username, password})
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Dodano administratora.');
+          form.reset();
+          loadAdmini();
+          loguj('Dodano admina: ' + username);
+        } else {
+          alert('Błąd dodawania administratora.');
+        }
+      } catch (e) {
+        alert('Błąd połączenia.');
+        console.error(e);
+      }
+    };
+
+    // --- Usuń admina ---
+    async function usunAdmina(id) {
+      if (!confirm('Na pewno chcesz usunąć administratora #' + id + '?')) return;
+      try {
+        const res = await fetch('/.netlify/functions/deleteAdmin', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({id})
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Usunięto administratora.');
+          loadAdmini();
+          loguj('Usunięto admina ID: ' + id);
+        } else {
+          alert('Błąd usuwania administratora.');
+        }
+      } catch (e) {
+        alert('Błąd połączenia.');
+        console.error(e);
+      }
+    }
+
+    // --- Webhook ---
+    document.getElementById('zapiszWebhook').onclick = async () => {
+      const url = webhookInput.value.trim();
+      if (!url) {
+        webhookMsg.textContent = 'Wprowadź URL webhooka!';
+        webhookMsg.style.color = 'red';
+        return;
+      }
+      try {
+        const res = await fetch('/.netlify/functions/saveWebhook', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({url})
+        });
+        const data = await res.json();
+        if (data.success) {
+          webhookMsg.textContent = 'Webhook zapisany!';
+          webhookMsg.style.color = 'green';
+          loguj('Zapisano webhook: ' + url);
+        } else {
+          webhookMsg.textContent = 'Błąd zapisu webhooka.';
+          webhookMsg.style.color = 'red';
+        }
+      } catch (e) {
+        webhookMsg.textContent = 'Błąd połączenia.';
+        webhookMsg.style.color = 'red';
+        console.error(e);
+      }
+    };
+
+    document.getElementById('testWebhook').onclick = async () => {
+      const url = webhookInput.value.trim();
+      if (!url) {
+        webhookMsg.textContent = 'Wprowadź URL webhooka!';
+        webhookMsg.style.color = 'red';
+        return;
+      }
+      try {
+        const res = await fetch('/.netlify/functions/testWebhook', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({url})
+        });
+        const data = await res.json();
+        if (data.success) {
+          webhookMsg.textContent = 'Test webhooka powiódł się!';
+          webhookMsg.style.color = 'green';
+          loguj('Test webhooka OK');
+        } else {
+          webhookMsg.textContent = 'Test webhooka nieudany.';
+          webhookMsg.style.color = 'red';
+        }
+      } catch (e) {
+        webhookMsg.textContent = 'Błąd połączenia.';
+        webhookMsg.style.color = 'red';
+        console.error(e);
+      }
+    };
+
+    async function loadWebhook() {
+      try {
+        const res = await fetch('/.netlify/functions/getWebhook');
+        const data = await res.json();
+        if (data.url) {
+          webhookInput.value = data.url;
+        }
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    // --- Logi ---
+    const logList = document.getElementById('logList');
+    const logs = [];
+    function loguj(text) {
+      const time = new Date().toLocaleTimeString();
+      const entry = `[${time}] ${text}`;
+      logs.push(entry);
+      if (logs.length > 100) logs.shift();
+      logList.textContent = logs.join('\n');
+      logList.scrollTop = logList.scrollHeight;
+    }
+    function loadLogi() {
+      loguj('Panel admina załadowany');
+    }
+
+    // --- Statystyki ---
+    const ctx = document.getElementById('statChart').getContext('2d');
+    let statChart = null;
+    async function loadStatystyki() {
+      // Przykładowe statystyki - zastąp własnymi
+      const labels = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec'];
+      const data = [12, 19, 3, 5, 2, 3];
+
+      if (statChart) statChart.destroy();
+      statChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Liczba zgłoszeń',
+            data,
+            backgroundColor: 'rgba(51, 154, 240, 0.7)',
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // --- Escape HTML for security ---
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
   </script>
 </body>
