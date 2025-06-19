@@ -2,7 +2,8 @@
   "name": "portal-obywatelski",
   "version": "1.0.0",
   "description": "Netlify functions for Portal Obywatelski",
-  "dependencies": {
-    "@neondatabase/serverless": "^0.6.0"
-  }
+"dependencies": {
+  "@neondatabase/serverless": "^0.6.0",
+  "bcrypt": "^5.1.0"
+}
 }
