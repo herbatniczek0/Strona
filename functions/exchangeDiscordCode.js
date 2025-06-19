@@ -1,26 +1,45 @@
-// functions/exchangeDiscordCode.js
-
 const fetch = require('node-fetch');
 
-exports.handler = async function(event) {
-  console.log('[exchangeDiscordCode] Odebrano żądanie');
+exports.handler = async (event) => {
+  console.info('[exchangeDiscordCode] Odebrano żądanie');
 
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    console.warn('[exchangeDiscordCode] Błędna metoda HTTP:', event.httpMethod);
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: 'Metoda HTTP niedozwolona. Użyj POST.' }),
+    };
   }
 
   try {
-    const { code } = JSON.parse(event.body);
+    const { code } = JSON.parse(event.body || '{}');
+    console.info('[exchangeDiscordCode] Odczytano ciało żądania:', { code });
+
     if (!code) {
-      return { statusCode: 400, body: JSON.stringify({ success: false, error: 'Brak kodu' }) };
+      console.error('[exchangeDiscordCode] Brak kodu autoryzacyjnego w żądaniu');
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Brak kodu autoryzacyjnego (code).' }),
+      };
     }
 
-    // Dane aplikacji - podmień na swoje z Discord Developer Portal
     const CLIENT_ID = process.env.DISCORD_CLIENT_ID;
     const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-    const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI; // musi zgadzać się z tym w panelu Discord i w frontendzie
+    const REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
 
-    // Wymiana code na token
+    console.info('[exchangeDiscordCode] Sprawdzanie zmiennych środowiskowych...');
+    console.info(`[exchangeDiscordCode] CLIENT_ID: ${CLIENT_ID ? 'OK' : 'BRAK'}`);
+    console.info(`[exchangeDiscordCode] CLIENT_SECRET: ${CLIENT_SECRET ? 'OK' : 'BRAK'}`);
+    console.info(`[exchangeDiscordCode] REDIRECT_URI: ${REDIRECT_URI ? 'OK' : 'BRAK'}`);
+
+    if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) {
+      console.error('[exchangeDiscordCode] Brak wymaganych zmiennych środowiskowych!');
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Brak wymaganych zmiennych środowiskowych na serwerze.' }),
+      };
+    }
+
     const params = new URLSearchParams();
     params.append('client_id', CLIENT_ID);
     params.append('client_secret', CLIENT_SECRET);
@@ -29,48 +48,42 @@ exports.handler = async function(event) {
     params.append('redirect_uri', REDIRECT_URI);
     params.append('scope', 'identify');
 
-    const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
+    console.info('[exchangeDiscordCode] Wysyłanie żądania do Discorda o token...');
+    const response = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString()
+      body: params.toString(),
     });
 
-    if (!tokenRes.ok) {
-      const err = await tokenRes.text();
-      console.error('[exchangeDiscordCode] Błąd wymiany tokena:', err);
-      return { statusCode: 400, body: JSON.stringify({ success: false, error: 'Błąd wymiany tokena' }) };
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[exchangeDiscordCode] Błąd wymiany tokena, status:', response.status);
+      console.error('[exchangeDiscordCode] Szczegóły błędu:', errorText);
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ error: 'Błąd wymiany tokena z Discordem.', details: errorText }),
+      };
     }
 
-    const tokenData = await tokenRes.json();
-    console.log('[exchangeDiscordCode] Token data:', tokenData);
-
-    // Pobierz dane użytkownika
-    const userRes = await fetch('https://discord.com/api/users/@me', {
-      headers: { Authorization: `${tokenData.token_type} ${tokenData.access_token}` }
-    });
-
-    if (!userRes.ok) {
-      const err = await userRes.text();
-      console.error('[exchangeDiscordCode] Błąd pobierania użytkownika:', err);
-      return { statusCode: 400, body: JSON.stringify({ success: false, error: 'Błąd pobierania użytkownika' }) };
-    }
-
-    const userData = await userRes.json();
-    console.log('[exchangeDiscordCode] Dane użytkownika:', userData);
-
-    // Tu możesz zrobić sprawdzenie, czy użytkownik jest adminem np. po ID lub tagu
-    const allowedAdmins = ['TwójDiscordID1', 'TwójDiscordID2']; // podmień
-    if (!allowedAdmins.includes(userData.id)) {
-      return { statusCode: 403, body: JSON.stringify({ success: false, error: 'Brak dostępu' }) };
-    }
+    const data = await response.json();
+    console.info('[exchangeDiscordCode] Token OAuth otrzymany pomyślnie:', data);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, user: userData })
+      body: JSON.stringify({
+        success: true,
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_in: data.expires_in,
+        scope: data.scope,
+        token_type: data.token_type,
+      }),
     };
-
-  } catch (e) {
-    console.error('[exchangeDiscordCode] Exception:', e);
-    return { statusCode: 500, body: JSON.stringify({ success: false, error: 'Błąd serwera' }) };
+  } catch (err) {
+    console.error('[exchangeDiscordCode] Wystąpił nieoczekiwany błąd:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Błąd wewnętrzny serwera podczas wymiany tokena.' }),
+    };
   }
 };
