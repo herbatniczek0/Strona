@@ -40,6 +40,7 @@ exports.handler = async (event) => {
       };
     }
 
+    // Przygotuj body dla token endpoint
     const params = new URLSearchParams();
     params.append('client_id', CLIENT_ID);
     params.append('client_secret', CLIENT_SECRET);
@@ -65,18 +66,39 @@ exports.handler = async (event) => {
       };
     }
 
-    const data = await response.json();
-    console.info('[exchangeDiscordCode] Token OAuth otrzymany pomyślnie:', data);
+    const tokenData = await response.json();
+    console.info('[exchangeDiscordCode] Token OAuth otrzymany pomyślnie:', tokenData);
+
+    // Pobierz dane użytkownika
+    console.info('[exchangeDiscordCode] Pobieranie danych użytkownika...');
+    const userResponse = await fetch('https://discord.com/api/users/@me', {
+      headers: {
+        Authorization: `${tokenData.token_type} ${tokenData.access_token}`,
+      },
+    });
+
+    if (!userResponse.ok) {
+      const errorText = await userResponse.text();
+      console.error('[exchangeDiscordCode] Błąd pobierania danych użytkownika:', errorText);
+      return {
+        statusCode: userResponse.status,
+        body: JSON.stringify({ error: 'Błąd pobierania danych użytkownika.', details: errorText }),
+      };
+    }
+
+    const userData = await userResponse.json();
+    console.info('[exchangeDiscordCode] Dane użytkownika pobrane pomyślnie:', userData);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_in: data.expires_in,
-        scope: data.scope,
-        token_type: data.token_type,
+        access_token: tokenData.access_token,
+        refresh_token: tokenData.refresh_token,
+        expires_in: tokenData.expires_in,
+        scope: tokenData.scope,
+        token_type: tokenData.token_type,
+        user: userData, // zwróć też dane użytkownika
       }),
     };
   } catch (err) {
