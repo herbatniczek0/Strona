@@ -1,0 +1,11 @@
+{
+  "name": "portal-obywatelski-24-7",
+  "version": "1.0.0",
+  "description": "Functions for Portal Obywatelski",
+  "scripts": {
+    "build": "echo \"No build step\""
+  },
+  "dependencies": {
+    "@netlify/neon": "^1.0.0"
+  }
+}
