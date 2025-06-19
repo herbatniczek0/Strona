@@ -23,10 +23,8 @@ exports.handler = async (event) => {
 
   try {
     console.log("📡 Wykonuję zapytanie SQL...");
-    const result = await sqlGet`SELECT * FROM submissions WHERE id = ${cleanId}`;
-    console.log("📥 Wynik zapytania:", result);
-
-    const rows = result?.rows || [];
+    const rows = await sqlGet`SELECT * FROM submissions WHERE id = ${cleanId}`;
+    console.log("📥 Wynik zapytania:", rows);
     console.log("📊 Ilość wierszy:", rows.length);
 
     if (rows.length === 0) {
@@ -38,7 +36,6 @@ exports.handler = async (event) => {
     }
 
     console.log("✅ Wniosek znaleziony:", rows[0]);
-
     return {
       statusCode: 200,
       body: JSON.stringify(rows[0])
