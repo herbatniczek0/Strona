@@ -20,7 +20,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ id })
     };
   } catch (err) {
-  console.error("Błąd zapisu:", err); // <-- dodaj to
+  console.error("Błąd zapisu:", err, "createSubmission.js"); // <-- dodaj to
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
