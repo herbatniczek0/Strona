@@ -9,6 +9,7 @@ exports.handler = async () => {
       body: JSON.stringify(result)
     };
   } catch (err) {
+  console.error("Błąd zapisu:", err, "getConsultations.js"); // <-- dodaj to
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
