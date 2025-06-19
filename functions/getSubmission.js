@@ -1,3 +1,9 @@
+const { neon } = require('@neondatabase/serverless');
+const sqlGet = neon(process.env.NETLIFY_DATABASE_URL);
+
+console.log("Czy sqlGet istnieje?", typeof sqlGet);
+
+
 exports.handler = async (event) => {
   const { id } = event.queryStringParameters;
 
@@ -11,6 +17,7 @@ exports.handler = async (event) => {
 
   try {
     console.log("Szukam wniosku ID:", numericId);
+
     const result = await sqlGet`SELECT * FROM submissions WHERE id = ${numericId}`;
     const rows = result.rows;
 
