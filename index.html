@@ -50,15 +50,13 @@
     footer { background: var(--footer-bg); color: #fff; text-align: center; padding: 1rem; }
     .status-result, .consult-list { margin-top: 1rem; }
     .consult-item { padding: 1rem; border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; background: var(--container-bg); }
-    .consult-item .votes { font-size: 0.9rem; }
+    .consult-item .votes { font-size: 0.9rem; margin-bottom: 0.5rem; }
   </style>
 </head>
 <body data-theme="">
-  <div class="wrapper" id="app">
+  <div class="wrapper">
     <header>
-      <div>
-        <h1>Portal Obywatelski 24/7</h1>
-      </div>
+      <h1>Portal Obywatelski 24/7</h1>
       <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
     </header>
     <nav>
@@ -127,43 +125,54 @@
         });
       });
 
+      const basePath = window.location.hostname.endsWith('netlify.app')
+        ? '/.netlify/functions/'
+        : '/functions/';
+      async function api(path, opts) {
+        return fetch(basePath + path, opts);
+      }
+
       async function createSubmission(entry) {
-        const res = await fetch('/.netlify/functions/createSubmission', {
+        const res = await api('createSubmission', {
           method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(entry)
         }); return res.json();
       }
       async function getSubmission(id) {
-        const res = await fetch(`/.netlify/functions/getSubmission?id=${encodeURIComponent(id)}`);
+        const res = await api(`getSubmission?id=${encodeURIComponent(id)}`);
         return res.json();
       }
       async function getConsultations() {
-        const res = await fetch('/.netlify/functions/getConsultations');
+        const res = await api('getConsultations');
         return res.json();
       }
       async function voteConsult(id) {
-        const res = await fetch('/.netlify/functions/voteConsult', {
+        const res = await api('voteConsult', {
           method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id })
         }); return res.json();
       }
 
-      const wniosekForm = document.getElementById('wniosekForm');
-      if (wniosekForm) wniosekForm.addEventListener('submit', async e => {
-        e.preventDefault(); const f=e.target; const entry={name:f.name.value,discord:f.discord.value,date:f.date.value,idea:f.idea.value};
+      document.getElementById('wniosekForm').addEventListener('submit', async e => {
+        e.preventDefault(); const f=e.target;
+        const entry={ name:f.name.value, discord:f.discord.value, date:f.date.value, idea:f.idea.value };
         const { id } = await createSubmission(entry);
-        await fetch(webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({embeds:[{title:'Nowy wniosek',color:5814783,fields:[{name:'ID',value:id},{name:'Imię i nazwisko',value:entry.name},{name:'Discord',value:entry.discord},{name:'Data',value:entry.date},{name:'Pomysł',value:entry.idea}],timestamp:new Date().toISOString()}]}) });
+        await fetch(webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ embeds:[{ title:'Nowy wniosek', color:5814783, fields:[{name:'ID',value:id},{name:'Imię i nazwisko',value:entry.name},{name:'Discord',value:entry.discord},{name:'Data',value:entry.date},{name:'Pomysł',value:entry.idea}], timestamp:new Date().toISOString() }] }) });
         const msg=document.getElementById('msg-report'); msg.textContent=`Wniosek wysłany! Numer wniosku: ${id}`; msg.className='message success'; msg.style.display='block'; f.reset();
       });
 
-      const trackForm = document.getElementById('trackForm');
-      if (trackForm) trackForm.addEventListener('submit', async e => {
+      document.getElementById('trackForm').addEventListener('submit', async e => {
         e.preventDefault(); const id=e.target.trackId.value; const data=await getSubmission(id);
-        const out=document.getElementById('statusResult'); out.innerHTML=data && data.id?`<p><strong>Status:</strong> ${data.status}</p><p><strong>Opis:</strong> ${data.idea}</p>`:'Nie znaleziono wniosku.';
+        const out=document.getElementById('statusResult'); out.innerHTML = data && data.id ? `<p><strong>Status:</strong> ${data.status}</p><p><strong>Opis:</strong> ${data.idea}</p>` : 'Nie znaleziono wniosku.';
       });
 
       async function renderConsult() {
-        const list=document.getElementById('consultList'); list.innerHTML=''; const items=await getConsultations();
-        items.forEach(c=>{const div=document.createElement('div');div.className='consult-item';div.innerHTML=`<h3>${c.title}</h3>${c.desc?`<p>${c.desc}</p>`:''}<p class="votes">Głosy: ${c.votes}</p><button data-id="${c.id}" class="submit">Głosuj</button>`;list.appendChild(div);});
-        document.querySelectorAll('.consult-item button').forEach(btn=>btn.addEventListener('click',async()=>{await voteConsult(btn.dataset.id);document.getElementById('msg-consult').textContent='Dziękujemy za głos!';document.getElementById('msg-consult').className='message success';document.getElementById('msg-consult').style.display='block';renderConsult();}));
+        const list=document.getElementById('consultList'); list.innerHTML='';
+        const items=await getConsultations();
+        items.forEach(c=>{
+          const div=document.createElement('div'); div.className='consult-item';
+          div.innerHTML=`<h3>${c.title}</h3>${c.desc?`<p>${c.desc}</p>`:''}<p class="votes">Głosy: ${c.votes}</p><button data-id="${c.id}" class="submit">Głosuj</button>`;
+          list.appendChild(div);
+        });
+        document.querySelectorAll('.consult-item button').forEach(btn=>btn.addEventListener('click',async()=>{ await voteConsult(btn.dataset.id); document.getElementById('msg-consult').textContent='Dziękujemy za głos!'; document.getElementById('msg-consult').className='message success'; document.getElementById('msg-consult').style.display='block'; renderConsult(); }));
       }
       renderConsult();
     });
