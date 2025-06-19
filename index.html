@@ -176,26 +176,6 @@
       }
       renderConsult();
     });
-if (!id) throw new Error("Brak ID dla webhooka");
-
-await fetch(webhookUrl, {
-  method:'POST',
-  headers:{'Content-Type':'application/json'},
-  body: JSON.stringify({
-    embeds:[{
-      title:'Nowy wniosek',
-      color:5814783,
-      fields:[
-        {name:'ID',value:String(id)},
-        {name:'Imię i nazwisko',value:entry.name || "Brak"},
-        {name:'Discord',value:entry.discord || "Brak"},
-        {name:'Data',value:entry.date || "Brak"},
-        {name:'Pomysł',value:entry.idea || "Brak"}
-      ],
-      timestamp:new Date().toISOString()
-    }]
-  })
-});
 
   </script>
 </body>
