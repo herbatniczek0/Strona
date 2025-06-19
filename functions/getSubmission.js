@@ -2,10 +2,19 @@ const { neon } = require('@neondatabase/serverless');
 const sqlGet = neon(process.env.NETLIFY_DATABASE_URL);
 
 exports.handler = async (event) => {
-  const { id } = event.queryStringParameters;
+  console.log("🔍 queryStringParameters:", event.queryStringParameters);
 
-  const numericId = parseInt(id, 10);
-  if (isNaN(numericId)) {
+  const { id } = event.queryStringParameters;
+  console.log("🔢 Otrzymane ID (raw):", JSON.stringify(id));
+
+  const trimmedId = (id || '').trim();
+  console.log("🧼 Oczyszczone ID:", JSON.stringify(trimmedId));
+
+  const cleanId = parseInt(trimmedId, 10);
+  console.log("📦 Parsed ID jako liczba:", cleanId, "| Typ:", typeof cleanId);
+
+  if (isNaN(cleanId)) {
+    console.log("❌ Błąd: cleanId nie jest liczbą");
     return {
       statusCode: 400,
       body: JSON.stringify({ error: 'Nieprawidłowe ID' })
@@ -13,17 +22,22 @@ exports.handler = async (event) => {
   }
 
   try {
-    console.log("Szukam wniosku ID:", numericId);
+    console.log("📡 Wykonuję zapytanie SQL...");
+    const result = await sqlGet`SELECT * FROM submissions WHERE id = ${cleanId}`;
+    console.log("📥 Wynik zapytania:", result);
 
-    const result = await sqlGet`SELECT * FROM submissions WHERE id = ${numericId}`;
     const rows = result?.rows || [];
+    console.log("📊 Ilość wierszy:", rows.length);
 
     if (rows.length === 0) {
+      console.log("⚠️ Wniosek nie znaleziony w bazie.");
       return {
         statusCode: 404,
         body: JSON.stringify({ error: 'Nie znaleziono wniosku' })
       };
     }
+
+    console.log("✅ Wniosek znaleziony:", rows[0]);
 
     return {
       statusCode: 200,
@@ -31,7 +45,7 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    console.error("Błąd zapisu:", err, "getSubmission.js");
+    console.error("🔥 Błąd zapytania:", err, "getSubmission.js");
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
