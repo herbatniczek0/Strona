@@ -1,126 +1,191 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Admina - Portal Obywatelski</title>
   <style>
+    :root {
+      --bg: #f0f2f5;
+      --fg: #333;
+      --panel-bg: #fff;
+      --accent: #007bff;
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --fg: #eee;
+      --panel-bg: #1e1e1e;
+      --accent: #339af0;
+    }
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      color: #333;
-      text-align: center;
+      background: var(--bg);
+      color: var(--fg);
       padding: 2rem;
     }
-    #adminPanel {
-      display: none;
-      margin-top: 2rem;
+    h1, h2 { color: var(--accent); }
+    .hidden { display: none; }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: var(--panel-bg);
+      padding: 2rem;
+      border-radius: 8px;
     }
-    #errorMessage {
-      color: red;
-      margin-top: 1rem;
-    }
-    input {
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      font-size: 1rem;
-      width: 250px;
-    }
-    button {
-      padding: 0.7rem 2rem;
-      font-size: 1.1rem;
+    nav button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--accent);
+      color: white;
+      border: none;
       cursor: pointer;
+      border-radius: 4px;
+    }
+    input, textarea, select {
+      display: block;
+      margin: 0.5rem 0;
+      width: 100%;
+      padding: 0.5rem;
+    }
+    table {
+      width: 100%;
       margin-top: 1rem;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 0.5rem;
+      text-align: left;
+    }
+    #themeToggle {
+      float: right;
+      margin-top: -3rem;
     }
   </style>
 </head>
-<body>
+<body data-theme="">
+  <div class="container">
+    <h1>Panel Administratora</h1>
+    <button id="themeToggle">🌙/☀️</button>
+    <div id="loginPanel">
+      <input id="username" placeholder="Login" />
+      <input id="password" placeholder="Hasło" type="password" />
+      <button id="loginBtn">Zaloguj</button>
+      <p id="loginError" style="color:red;"></p>
+    </div>
 
-<h1>Panel Administratora</h1>
+    <div id="adminContent" class="hidden">
+      <nav>
+        <button data-tab="wnioski">Wnioski</button>
+        <button data-tab="konsultacje">Konsultacje</button>
+        <button data-tab="admini">Administratorzy</button>
+        <button data-tab="eksport">Eksport</button>
+        <button data-tab="logi">Logi</button>
+        <button data-tab="webhook">Webhook</button>
+        <button data-tab="statystyki">Statystyki</button>
+        <button id="logoutBtn">Wyloguj</button>
+      </nav>
 
-<div id="loginForm">
-  <input type="text" id="username" placeholder="Nazwa użytkownika" autocomplete="username" /><br />
-  <input type="password" id="password" placeholder="Hasło" autocomplete="current-password" /><br />
-  <button id="loginBtn">Zaloguj się</button>
-  <div id="errorMessage"></div>
-</div>
+      <div id="tab-wnioski" class="tab">
+        <h2>Lista Wniosków</h2>
+        <div id="wnioskiList">(Tutaj ładowane dynamicznie)</div>
+      </div>
 
-<div id="adminPanel">
-  <h2>Witamy w panelu admina!</h2>
-  <p>Tutaj możesz zarządzać wnioskami i konsultacjami.</p>
-  <button id="logoutBtn">Wyloguj się</button>
-</div>
+      <div id="tab-konsultacje" class="tab hidden">
+        <h2>Zarządzanie Konsultacjami</h2>
+        <form id="newConsult">
+          <input name="title" placeholder="Tytuł" required>
+          <textarea name="description" placeholder="Opis"></textarea>
+          <button type="submit">Dodaj konsultację</button>
+        </form>
+        <div id="consultList"></div>
+      </div>
 
-<script>
-  const loginForm = document.getElementById('loginForm');
-  const adminPanel = document.getElementById('adminPanel');
-  const errorMessage = document.getElementById('errorMessage');
-  const loginBtn = document.getElementById('loginBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
+      <div id="tab-admini" class="tab hidden">
+        <h2>Zarządzanie Administratorami</h2>
+        <form id="addAdmin">
+          <input name="username" placeholder="Nowy admin - nazwa">
+          <input name="password" placeholder="Hasło" type="password">
+          <button type="submit">Dodaj admina</button>
+        </form>
+        <div id="adminList"></div>
+      </div>
 
-  function showAdminPanel() {
-    loginForm.style.display = 'none';
-    adminPanel.style.display = 'block';
-    errorMessage.textContent = '';
-  }
+      <div id="tab-eksport" class="tab hidden">
+        <h2>Eksport danych</h2>
+        <button onclick="eksportuj('csv')">Eksportuj CSV</button>
+        <button onclick="eksportuj('json')">Eksportuj JSON</button>
+      </div>
 
-  function showLoginForm() {
-    loginForm.style.display = 'block';
-    adminPanel.style.display = 'none';
-    errorMessage.textContent = '';
-  }
+      <div id="tab-logi" class="tab hidden">
+        <h2>Logi systemowe</h2>
+        <pre id="logList">(Tutaj logi)</pre>
+      </div>
 
-  async function login() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
+      <div id="tab-webhook" class="tab hidden">
+        <h2>Webhook Discord</h2>
+        <input id="webhookInput" placeholder="Wklej URL webhooka">
+        <button id="zapiszWebhook">Zapisz</button>
+        <button id="testWebhook">Testuj</button>
+      </div>
 
-    if (!username || !password) {
-      errorMessage.textContent = 'Wprowadź nazwę użytkownika i hasło.';
-      return;
+      <div id="tab-statystyki" class="tab hidden">
+        <h2>Statystyki</h2>
+        <canvas id="statChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const loginPanel = document.getElementById('loginPanel');
+    const adminContent = document.getElementById('adminContent');
+    const loginError = document.getElementById('loginError');
+    const themeToggle = document.getElementById('themeToggle');
+
+    function setTheme(t) {
+      document.body.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
     }
+    themeToggle.onclick = () => setTheme(document.body.getAttribute('data-theme') === 'dark' ? '' : 'dark');
+    setTheme(localStorage.getItem('theme') || '');
 
-    errorMessage.textContent = 'Logowanie...';
-
-    try {
-      const response = await fetch('/.netlify/functions/checkAdminAccess', {
+    document.getElementById('loginBtn').onclick = async () => {
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
+      loginError.textContent = '...';
+      const res = await fetch('/.netlify/functions/checkAdminAccess', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: u, password: p })
       });
-
-      const data = await response.json();
-
+      const data = await res.json();
       if (data.success) {
-        localStorage.setItem('adminAuth', 'true');
-        showAdminPanel();
+        loginPanel.classList.add('hidden');
+        adminContent.classList.remove('hidden');
       } else {
-        errorMessage.textContent = data.error || 'Brak uprawnień do panelu admina!';
-        localStorage.removeItem('adminAuth');
+        loginError.textContent = data.error || 'Błąd logowania';
       }
-    } catch (e) {
-      errorMessage.textContent = 'Błąd połączenia z serwerem.';
-      console.error(e);
+    };
+
+    document.getElementById('logoutBtn').onclick = () => {
+      loginPanel.classList.remove('hidden');
+      adminContent.classList.add('hidden');
+    };
+
+    document.querySelectorAll('nav button[data-tab]').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.add('hidden'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+      };
+    });
+
+    function eksportuj(format) {
+      alert('Eksport danych do: ' + format + ' (w przyszłości)');
     }
-  }
-
-  function logout() {
-    localStorage.removeItem('adminAuth');
-    showLoginForm();
-  }
-
-  function checkAuth() {
-    if (localStorage.getItem('adminAuth') === 'true') {
-      showAdminPanel();
-    } else {
-      showLoginForm();
-    }
-  }
-
-  loginBtn.addEventListener('click', login);
-  logoutBtn.addEventListener('click', logout);
-
-  window.onload = checkAuth;
-</script>
-
+  </script>
 </body>
 </html>
