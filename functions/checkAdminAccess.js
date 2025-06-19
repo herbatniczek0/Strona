@@ -1,54 +1,68 @@
 const { neon } = require('@neondatabase/serverless');
+const crypto = require('crypto');
+
 const sql = neon(process.env.NETLIFY_DATABASE_URL);
 
 exports.handler = async (event) => {
   console.info('[checkAdminAccess] Odebrano żądanie');
 
   if (event.httpMethod !== 'POST') {
-    console.warn('[checkAdminAccess] Niedozwolona metoda HTTP:', event.httpMethod);
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Metoda HTTP niedozwolona. Użyj POST.' }),
-    };
+    return { statusCode: 405, body: JSON.stringify({ error: 'Metoda nieobsługiwana' }) };
   }
 
+  let body;
   try {
-    const { discord_id } = JSON.parse(event.body || '{}');
-    console.info('[checkAdminAccess] Odczytano ciało żądania:', { discord_id });
+    body = JSON.parse(event.body);
+    console.info('[checkAdminAccess] Odczytano dane z body:', body);
+  } catch (err) {
+    console.error('[checkAdminAccess] Błąd parsowania body:', err);
+    return { statusCode: 400, body: JSON.stringify({ error: 'Nieprawidłowe dane wejściowe' }) };
+  }
 
-    if (!discord_id) {
-      console.error('[checkAdminAccess] Brak discord_id w żądaniu');
+  const { username, password } = body;
+  if (!username || !password) {
+    console.warn('[checkAdminAccess] Brak username lub password w żądaniu');
+    return { statusCode: 400, body: JSON.stringify({ error: 'Brak username lub password' }) };
+  }
+
+  console.info(`[checkAdminAccess] Próba logowania użytkownika: ${username}`);
+
+  try {
+    // Pobierz użytkownika z bazy
+    const users = await sql`SELECT id, username, password_hash FROM admins WHERE username = ${username}`;
+
+    console.info('[checkAdminAccess] Wynik zapytania do bazy:', users);
+
+    if (users.length === 0) {
+      console.warn(`[checkAdminAccess] Nie znaleziono użytkownika: ${username}`);
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Brak discord_id w żądaniu.' }),
+        statusCode: 401,
+        body: JSON.stringify({ success: false, error: 'Brak dostępu lub błędne dane.' }),
       };
     }
 
-    // Sprawdź czy discord_id jest w tabeli administratorzy
-    const admins = await sql`
-      SELECT * FROM administratorzy WHERE discord_id = ${discord_id}
-    `;
+    const user = users[0];
+    console.info(`[checkAdminAccess] Znaleziono użytkownika: ${user.username}`);
 
-    console.info('[checkAdminAccess] Wynik zapytania do bazy:', admins);
+    // Hashowanie podanego hasła SHA-256
+    const hash = crypto.createHash('sha256').update(password).digest('hex');
+    console.info(`[checkAdminAccess] Hash podanego hasła: ${hash}`);
 
-    if (admins.length > 0) {
-      console.info('[checkAdminAccess] Użytkownik ma uprawnienia administratora:', discord_id);
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ authorized: true }),
-      };
+    if (hash === user.password_hash) {
+      console.info('[checkAdminAccess] Hasło poprawne');
+      return { statusCode: 200, body: JSON.stringify({ success: true }) };
     } else {
-      console.info('[checkAdminAccess] Użytkownik NIE ma uprawnień administratora:', discord_id);
+      console.warn(`[checkAdminAccess] Nieprawidłowe hasło dla użytkownika: ${username}`);
       return {
-        statusCode: 403,
-        body: JSON.stringify({ authorized: false, error: 'Brak uprawnień do panelu admina.' }),
+        statusCode: 401,
+        body: JSON.stringify({ success: false, error: 'Brak dostępu lub błędne dane.' }),
       };
     }
   } catch (err) {
-    console.error('[checkAdminAccess] Wystąpił błąd:', err);
+    console.error('[checkAdminAccess] Błąd podczas zapytania do bazy:', err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Błąd wewnętrzny serwera.' }),
+      body: JSON.stringify({ success: false, error: 'Wystąpił błąd serwera' }),
     };
   }
 };
