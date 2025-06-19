@@ -10,6 +10,8 @@
       --fg: #333;
       --panel-bg: #fff;
       --accent: #007bff;
+      --error: #d9534f;
+      --success: #5cb85c;
     }
     [data-theme="dark"] {
       --bg: #121212;
@@ -23,631 +25,622 @@
       background: var(--bg);
       color: var(--fg);
       padding: 2rem;
-      transition: background 0.3s, color 0.3s;
     }
-    h1, h2 { color: var(--accent); }
+    h1, h2 {
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
     .hidden { display: none; }
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: auto;
       background: var(--panel-bg);
       padding: 2rem;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    nav {
-      margin: 1rem 0 2rem 0;
-      text-align: center;
     }
     nav button {
-      margin: 0 0.5rem 0.5rem 0.5rem;
+      margin: 0.3rem 0.5rem 1rem 0;
       padding: 0.5rem 1rem;
       background: var(--accent);
       color: white;
       border: none;
       cursor: pointer;
       border-radius: 4px;
-      font-weight: 600;
-      transition: background 0.3s;
     }
-    nav button:hover {
-      background: #0056b3;
+    nav button.active {
+      background: darkblue;
     }
     input, textarea, select {
       display: block;
-      margin: 0.5rem 0 1rem 0;
+      margin: 0.3rem 0 0.8rem 0;
       width: 100%;
       padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 4px;
       font-size: 1rem;
-      background: var(--bg);
       color: var(--fg);
-      transition: background 0.3s, color 0.3s;
+      background: var(--panel-bg);
     }
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-    table {
-      width: 100%;
-      margin-top: 1rem;
-      border-collapse: collapse;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 0.5rem;
-      text-align: left;
-    }
-    #themeToggle {
-      float: right;
-      margin-top: -3rem;
+    button.submit, button.action {
       background: var(--accent);
       color: white;
       border: none;
       padding: 0.5rem 1rem;
       cursor: pointer;
       border-radius: 4px;
-      font-weight: 600;
-      transition: background 0.3s;
+      margin-top: 0.5rem;
     }
-    #themeToggle:hover {
-      background: #0056b3;
+    button.submit:hover, button.action:hover {
+      background: darkblue;
     }
-    #loginError {
-      color: red;
-      min-height: 1.2em;
-      margin-top: -0.5rem;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.4rem 0.7rem;
+      text-align: left;
+    }
+    th {
+      background: var(--accent);
+      color: white;
+    }
+    #themeToggle {
+      float: right;
+      margin-top: -3.5rem;
       margin-bottom: 1rem;
-    }
-    button[type="submit"], #zapiszWebhook, #testWebhook {
+      padding: 0.3rem 0.7rem;
+      font-size: 1.2rem;
       background: var(--accent);
       color: white;
       border: none;
-      padding: 0.7rem 1.5rem;
-      cursor: pointer;
       border-radius: 4px;
-      font-weight: 600;
-      transition: background 0.3s;
+      cursor: pointer;
     }
-    button[type="submit"]:hover, #zapiszWebhook:hover, #testWebhook:hover {
-      background: #0056b3;
+    #message {
+      margin: 1rem 0;
+      padding: 0.7rem;
+      border-radius: 4px;
+      display: none;
+    }
+    #message.success {
+      background: var(--success);
+      color: white;
+    }
+    #message.error {
+      background: var(--error);
+      color: white;
     }
     pre#logList {
-      background: #222;
-      color: #0f0;
-      padding: 1rem;
-      height: 200px;
+      max-height: 300px;
       overflow-y: scroll;
-      border-radius: 4px;
-      font-family: monospace;
+      background: #222;
+      color: #ddd;
+      padding: 1rem;
+      border-radius: 6px;
       white-space: pre-wrap;
+      font-family: monospace;
+      margin-top: 1rem;
     }
-    canvas#statChart {
-      max-width: 100%;
-      height: 300px;
+    form > div {
+      max-width: 500px;
     }
   </style>
 </head>
 <body data-theme="">
   <div class="container">
     <h1>Panel Administratora</h1>
-    <button id="themeToggle">🌙 / ☀️</button>
-
+    <button id="themeToggle" title="Przełącz motyw">🌙/☀️</button>
     <div id="loginPanel">
       <input id="username" placeholder="Login" autocomplete="username" />
       <input id="password" type="password" placeholder="Hasło" autocomplete="current-password" />
-      <button id="loginBtn">Zaloguj</button>
-      <p id="loginError"></p>
+      <button id="loginBtn" class="submit">Zaloguj</button>
+      <p id="loginError" style="color: var(--error); margin-top: 0.5rem;"></p>
     </div>
 
     <div id="adminContent" class="hidden">
       <nav>
-        <button data-tab="wnioski">Wnioski</button>
+        <button data-tab="wnioski" class="active">Wnioski</button>
         <button data-tab="konsultacje">Konsultacje</button>
         <button data-tab="admini">Administratorzy</button>
         <button data-tab="eksport">Eksport</button>
         <button data-tab="logi">Logi</button>
         <button data-tab="webhook">Webhook</button>
-        <button data-tab="statystyki">Statystyki</button>
-        <button id="logoutBtn" style="background:#dc3545;">Wyloguj</button>
+        <button id="logoutBtn" style="float:right; background:#d9534f;">Wyloguj</button>
       </nav>
 
-      <div id="tab-wnioski" class="tab">
-        <h2>Lista Wniosków</h2>
-        <div id="wnioskiList">(Tu będzie lista wniosków)</div>
-      </div>
+      <div id="message"></div>
 
-      <div id="tab-konsultacje" class="tab hidden">
+      <section id="tab-wnioski" class="tab">
+        <h2>Lista Wniosków</h2>
+        <div id="wnioskiList">Ładowanie...</div>
+      </section>
+
+      <section id="tab-konsultacje" class="tab hidden">
         <h2>Zarządzanie Konsultacjami</h2>
         <form id="newConsult">
-          <input name="title" placeholder="Tytuł" required />
-          <textarea name="description" placeholder="Opis"></textarea>
-          <button type="submit">Dodaj konsultację</button>
+          <div>
+            <input name="title" placeholder="Tytuł" required />
+            <textarea name="description" placeholder="Opis"></textarea>
+            <button type="submit" class="submit">Dodaj konsultację</button>
+          </div>
         </form>
-        <div id="consultList">(Tu będą konsultacje)</div>
-      </div>
+        <div id="consultList">Ładowanie...</div>
+      </section>
 
-      <div id="tab-admini" class="tab hidden">
+      <section id="tab-admini" class="tab hidden">
         <h2>Zarządzanie Administratorami</h2>
         <form id="addAdmin">
-          <input name="username" placeholder="Nazwa użytkownika" required />
-          <input name="password" placeholder="Hasło" type="password" required />
-          <button type="submit">Dodaj administratora</button>
+          <div>
+            <input name="username" placeholder="Nazwa admina" required />
+            <input name="password" type="password" placeholder="Hasło" required />
+            <button type="submit" class="submit">Dodaj admina</button>
+          </div>
         </form>
-        <div id="adminList">(Tu będzie lista adminów)</div>
-      </div>
+        <div id="adminList">Ładowanie...</div>
+      </section>
 
-      <div id="tab-eksport" class="tab hidden">
+      <section id="tab-eksport" class="tab hidden">
         <h2>Eksport danych</h2>
-        <button onclick="eksportuj('csv')">Eksportuj CSV</button>
-        <button onclick="eksportuj('json')">Eksportuj JSON</button>
-      </div>
+        <button id="exportCsv" class="action">Eksportuj CSV</button>
+        <button id="exportJson" class="action">Eksportuj JSON</button>
+      </section>
 
-      <div id="tab-logi" class="tab hidden">
+      <section id="tab-logi" class="tab hidden">
         <h2>Logi systemowe</h2>
-        <pre id="logList">(Tutaj będą logi)</pre>
-      </div>
+        <pre id="logList">(Brak logów)</pre>
+      </section>
 
-      <div id="tab-webhook" class="tab hidden">
+      <section id="tab-webhook" class="tab hidden">
         <h2>Webhook Discord</h2>
-        <input id="webhookInput" placeholder="Wklej URL webhooka" />
-        <button id="zapiszWebhook">Zapisz</button>
-        <button id="testWebhook">Testuj</button>
-        <p id="webhookMsg"></p>
-      </div>
-
-      <div id="tab-statystyki" class="tab hidden">
-        <h2>Statystyki</h2>
-        <canvas id="statChart"></canvas>
-      </div>
+        <input id="webhookInput" placeholder="Wklej URL webhooka" style="width: 100%;" />
+        <button id="saveWebhook" class="action">Zapisz webhook</button>
+        <button id="testWebhook" class="action">Testuj webhook</button>
+        <p id="webhookMessage" style="margin-top: 0.5rem;"></p>
+      </section>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const loginPanel = document.getElementById('loginPanel');
     const adminContent = document.getElementById('adminContent');
     const loginError = document.getElementById('loginError');
+    const messageBox = document.getElementById('message');
     const themeToggle = document.getElementById('themeToggle');
-    const webhookInput = document.getElementById('webhookInput');
-    const webhookMsg = document.getElementById('webhookMsg');
 
-    // -- Theme toggle --
-    function setTheme(t) {
-      document.body.setAttribute('data-theme', t);
-      localStorage.setItem('theme', t);
+    const tabs = [...document.querySelectorAll('nav button[data-tab]')];
+    const tabSections = [...document.querySelectorAll('.tab')];
+
+    // Helper log system
+    let logs = [];
+    function log(msg, type = 'info') {
+      const prefix = {
+        info: '[INFO]',
+        error: '[ERROR]',
+        success: '[OK]',
+        warn: '[WARN]'
+      }[type] || '[INFO]';
+
+      const timestamp = new Date().toLocaleString();
+      const fullMsg = `${timestamp} ${prefix} ${msg}`;
+      logs.push(fullMsg);
+      // Keep max 100 logs
+      if (logs.length > 100) logs.shift();
+
+      const logList = document.getElementById('logList');
+      if(logList) logList.textContent = logs.join('\n');
+      console.log(fullMsg);
     }
-    themeToggle.onclick = () => setTheme(document.body.getAttribute('data-theme') === 'dark' ? '' : 'dark');
-    setTheme(localStorage.getItem('theme') || '');
 
-    // -- Login/logout --
-    async function login() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      loginError.textContent = 'Logowanie...';
-
-      if (!username || !password) {
-        loginError.textContent = 'Wprowadź login i hasło.';
-        return;
-      }
-
-      try {
-        const res = await fetch('/.netlify/functions/checkAdminAccess', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          loginPanel.classList.add('hidden');
-          adminContent.classList.remove('hidden');
-          loginError.textContent = '';
-          loadAllData();
-        } else {
-          loginError.textContent = data.error || 'Błędne dane lub brak dostępu.';
-        }
-      } catch (e) {
-        loginError.textContent = 'Błąd połączenia z serwerem.';
-        console.error(e);
-      }
-    }
-    document.getElementById('loginBtn').onclick = login;
-
-    document.getElementById('logoutBtn').onclick = () => {
-      loginPanel.classList.remove('hidden');
-      adminContent.classList.add('hidden');
-      clearData();
+    // Theme toggle
+    themeToggle.onclick = () => {
+      const current = document.body.getAttribute('data-theme') || '';
+      const next = current === 'dark' ? '' : 'dark';
+      document.body.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
     };
+    document.body.setAttribute('data-theme', localStorage.getItem('theme') || '');
 
-    // -- Tabs switch --
-    document.querySelectorAll('nav button[data-tab]').forEach(btn => {
+    // Tab switch
+    tabs.forEach(btn => {
       btn.onclick = () => {
-        document.querySelectorAll('.tab').forEach(tab => tab.classList.add('hidden'));
-        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+        tabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        tabSections.forEach(sec => sec.classList.add('hidden'));
+        const id = 'tab-' + btn.dataset.tab;
+        document.getElementById(id).classList.remove('hidden');
       };
     });
 
-    // -- Eksport (prosty alert placeholder) --
-    function eksportuj(format) {
-      alert('Eksport do ' + format + ' w przyszłości...');
+    // Show message
+    function showMessage(text, type='info') {
+      messageBox.textContent = text;
+      messageBox.className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      messageBox.style.display = 'block';
+      setTimeout(() => messageBox.style.display = 'none', 5000);
     }
 
-    // --- Data loading functions ---
-    async function loadAllData() {
-      await Promise.all([
-        loadWnioski(),
-        loadKonsultacje(),
-        loadAdmini(),
-        loadWebhook()
-      ]);
-      loadLogi();
-      loadStatystyki();
+    // API helpers
+    async function apiGet(path) {
+      try {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error('Błąd sieci');
+        return await res.json();
+      } catch (e) {
+        log('Błąd GET ' + path + ': ' + e.message, 'error');
+        showMessage('Błąd sieci podczas pobierania danych', 'error');
+        throw e;
+      }
     }
-    function clearData() {
-      document.getElementById('wnioskiList').textContent = '';
-      document.getElementById('consultList').textContent = '';
-      document.getElementById('adminList').textContent = '';
-      webhookInput.value = '';
-      webhookMsg.textContent = '';
-      document.getElementById('logList').textContent = '';
-      // Statystyki - nie czyścimy wykresu, bo jest canvas
+    async function apiPost(path, data) {
+      try {
+        const res = await fetch(path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Błąd sieci');
+        return await res.json();
+      } catch (e) {
+        log('Błąd POST ' + path + ': ' + e.message, 'error');
+        showMessage('Błąd sieci podczas wysyłania danych', 'error');
+        throw e;
+      }
+    }
+    async function apiDelete(path, data) {
+      try {
+        const res = await fetch(path, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Błąd sieci');
+        return await res.json();
+      } catch (e) {
+        log('Błąd DELETE ' + path + ': ' + e.message, 'error');
+        showMessage('Błąd sieci podczas usuwania danych', 'error');
+        throw e;
+      }
     }
 
-    // --- Load Wnioski ---
+    // Login
+    document.getElementById('loginBtn').onclick = async () => {
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      if (!u || !p) {
+        loginError.textContent = 'Podaj login i hasło';
+        return;
+      }
+      loginError.textContent = 'Logowanie...';
+      try {
+        const res = await apiPost('/.netlify/functions/checkAdminAccess', { username: u, password: p });
+        if (res.success) {
+          localStorage.setItem('adminAuth', 'true');
+          localStorage.setItem('adminUser', u);
+          loginPanel.classList.add('hidden');
+          adminContent.classList.remove('hidden');
+          loginError.textContent = '';
+          showMessage('Zalogowano pomyślnie', 'success');
+          await loadAllData();
+        } else {
+          loginError.textContent = res.error || 'Błąd logowania';
+          localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminUser');
+          log('Nieudane logowanie: ' + u, 'warn');
+        }
+      } catch {
+        loginError.textContent = 'Błąd połączenia';
+      }
+    };
+
+    // Logout
+    document.getElementById('logoutBtn').onclick = () => {
+      localStorage.removeItem('adminAuth');
+      localStorage.removeItem('adminUser');
+      loginPanel.classList.remove('hidden');
+      adminContent.classList.add('hidden');
+      showMessage('Wylogowano');
+    };
+
+    // Check auth on load
+    window.onload = () => {
+      if (localStorage.getItem('adminAuth') === 'true') {
+        loginPanel.classList.add('hidden');
+        adminContent.classList.remove('hidden');
+        loadAllData();
+      }
+    };
+
+    // Load wnioski (submissions)
     async function loadWnioski() {
       const container = document.getElementById('wnioskiList');
       container.textContent = 'Ładowanie...';
       try {
-        const res = await fetch('/.netlify/functions/getSubmissions');
-        const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Niepoprawne dane');
-        if (data.length === 0) {
-          container.textContent = 'Brak wniosków.';
+        const submissions = await apiGet('/.netlify/functions/getSubmissions');
+        if (!submissions.length) {
+          container.textContent = 'Brak wniosków';
           return;
         }
-        // Tworzymy tabelę
-        let html = '<table><thead><tr><th>ID</th><th>Imię i nazwisko</th><th>Discord</th><th>Data</th><th>Status</th><th>Pomysł</th></tr></thead><tbody>';
-        for (const wniosek of data) {
-          html += `<tr>
-            <td>${wniosek.id}</td>
-            <td>${escapeHtml(wniosek.name)}</td>
-            <td>${escapeHtml(wniosek.discord)}</td>
-            <td>${new Date(wniosek.date).toLocaleDateString('pl-PL')}</td>
-            <td>${escapeHtml(wniosek.status || '')}</td>
-            <td>${escapeHtml(wniosek.idea)}</td>
-          </tr>`;
-        }
-        html += '</tbody></table>';
-        container.innerHTML = html;
-      } catch (e) {
-        container.textContent = 'Błąd ładowania wniosków.';
-        console.error(e);
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr><th>ID</th><th>Użytkownik</th><th>Treść</th><th>Data</th></tr>
+          </thead>
+          <tbody>
+            ${submissions.map(s => `
+              <tr>
+                <td>${s.id}</td>
+                <td>${s.username || 'anonim'}</td>
+                <td>${s.content || ''}</td>
+                <td>${new Date(s.date).toLocaleString()}</td>
+              </tr>`).join('')}
+          </tbody>`;
+        container.innerHTML = '';
+        container.appendChild(table);
+        log('Wczytano wnioski');
+      } catch {
+        container.textContent = 'Błąd ładowania wniosków';
       }
     }
 
-    // --- Load Konsultacje ---
-    async function loadKonsultacje() {
+    // Load consultations
+    async function loadConsultations() {
       const container = document.getElementById('consultList');
       container.textContent = 'Ładowanie...';
       try {
-        const res = await fetch('/.netlify/functions/getConsultations');
-        const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Niepoprawne dane');
-        if (data.length === 0) {
-          container.textContent = 'Brak konsultacji.';
+        const consultations = await apiGet('/.netlify/functions/getConsultations');
+        if (!consultations.length) {
+          container.textContent = 'Brak konsultacji';
           return;
         }
-        let html = '<table><thead><tr><th>ID</th><th>Tytuł</th><th>Opis</th><th>Głosy</th><th>Akcje</th></tr></thead><tbody>';
-        for (const k of data) {
-          html += `<tr>
-            <td>${k.id}</td>
-            <td>${escapeHtml(k.title)}</td>
-            <td>${escapeHtml(k.description || '')}</td>
-            <td>${k.votes}</td>
-            <td>
-              <button onclick="usunKonsultacje(${k.id})">Usuń</button>
-              <button onclick="resetujGlosy(${k.id})">Resetuj głosy</button>
-            </td>
-          </tr>`;
-        }
-        html += '</tbody></table>';
-        container.innerHTML = html;
-      } catch (e) {
-        container.textContent = 'Błąd ładowania konsultacji.';
-        console.error(e);
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr><th>ID</th><th>Tytuł</th><th>Opis</th><th>Głosy</th><th>Akcje</th></tr>
+          </thead>
+          <tbody>
+            ${consultations.map(c => `
+              <tr>
+                <td>${c.id}</td>
+                <td>${c.title}</td>
+                <td>${c.description || ''}</td>
+                <td>${c.votes || 0}</td>
+                <td>
+                  <button class="action" data-id="${c.id}" data-action="delete">Usuń</button>
+                </td>
+              </tr>`).join('')}
+          </tbody>`;
+        container.innerHTML = '';
+        container.appendChild(table);
+
+        // Add delete handlers
+        container.querySelectorAll('button[data-action="delete"]').forEach(btn => {
+          btn.onclick = async () => {
+            if(confirm('Na pewno usunąć konsultację?')) {
+              try {
+                await apiDelete('/.netlify/functions/deleteConsultation', { id: btn.dataset.id });
+                showMessage('Konsultacja usunięta', 'success');
+                log(`Usunięto konsultację ID ${btn.dataset.id}`, 'info');
+                loadConsultations();
+              } catch {
+                showMessage('Błąd usuwania konsultacji', 'error');
+              }
+            }
+          };
+        });
+
+        log('Wczytano konsultacje');
+      } catch {
+        container.textContent = 'Błąd ładowania konsultacji';
       }
     }
 
-    // --- Add new consultation ---
-    document.getElementById('newConsult').onsubmit = async e => {
+    // Add new consultation
+    document.getElementById('newConsult').onsubmit = async (e) => {
       e.preventDefault();
       const form = e.target;
       const title = form.title.value.trim();
       const description = form.description.value.trim();
 
       if (!title) {
-        alert('Podaj tytuł konsultacji.');
+        showMessage('Tytuł jest wymagany', 'error');
         return;
       }
 
       try {
-        const res = await fetch('/.netlify/functions/addConsultation', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({title, description})
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('Konsultacja dodana.');
+        const res = await apiPost('/.netlify/functions/addConsultation', { title, description });
+        if(res.success) {
+          showMessage('Dodano konsultację', 'success');
+          log(`Dodano konsultację: ${title}`, 'info');
           form.reset();
-          loadKonsultacje();
-          loguj('Dodano konsultację: ' + title);
+          loadConsultations();
         } else {
-          alert('Błąd dodawania konsultacji.');
+          showMessage('Błąd dodawania konsultacji', 'error');
         }
-      } catch (err) {
-        alert('Błąd połączenia.');
-        console.error(err);
+      } catch {
+        showMessage('Błąd dodawania konsultacji', 'error');
       }
     };
 
-    // --- Usuwanie konsultacji ---
-    async function usunKonsultacje(id) {
-      if (!confirm('Na pewno chcesz usunąć konsultację #' + id + '?')) return;
-      try {
-        const res = await fetch('/.netlify/functions/deleteConsultation', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({id})
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('Usunięto konsultację.');
-          loadKonsultacje();
-          loguj('Usunięto konsultację ID: ' + id);
-        } else {
-          alert('Błąd usuwania.');
-        }
-      } catch (e) {
-        alert('Błąd połączenia.');
-        console.error(e);
-      }
-    }
-
-    // --- Reset głosów ---
-    async function resetujGlosy(id) {
-      if (!confirm('Na pewno chcesz zresetować głosy dla konsultacji #' + id + '?')) return;
-      try {
-        const res = await fetch('/.netlify/functions/resetVotes', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({id})
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('Zresetowano głosy.');
-          loadKonsultacje();
-          loguj('Zresetowano głosy ID: ' + id);
-        } else {
-          alert('Błąd resetowania.');
-        }
-      } catch (e) {
-        alert('Błąd połączenia.');
-        console.error(e);
-      }
-    }
-
-    // --- Load Admini ---
-    async function loadAdmini() {
+    // Load admins
+    async function loadAdmins() {
       const container = document.getElementById('adminList');
       container.textContent = 'Ładowanie...';
       try {
-        const res = await fetch('/.netlify/functions/getAdmins');
-        const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Niepoprawne dane');
-        if (data.length === 0) {
-          container.textContent = 'Brak administratorów.';
+        const admins = await apiGet('/.netlify/functions/getAdmins');
+        if (!admins.length) {
+          container.textContent = 'Brak administratorów';
           return;
         }
-        let html = '<table><thead><tr><th>ID</th><th>Nazwa użytkownika</th><th>Akcje</th></tr></thead><tbody>';
-        for (const admin of data) {
-          html += `<tr>
-            <td>${admin.id}</td>
-            <td>${escapeHtml(admin.username)}</td>
-            <td><button onclick="usunAdmina(${admin.id})">Usuń</button></td>
-          </tr>`;
-        }
-        html += '</tbody></table>';
-        container.innerHTML = html;
-      } catch (e) {
-        container.textContent = 'Błąd ładowania administratorów.';
-        console.error(e);
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr><th>ID</th><th>Nazwa</th><th>Akcje</th></tr>
+          </thead>
+          <tbody>
+            ${admins.map(a => `
+              <tr>
+                <td>${a.id}</td>
+                <td>${a.username}</td>
+                <td><button class="action" data-id="${a.id}" data-action="delete">Usuń</button></td>
+              </tr>`).join('')}
+          </tbody>`;
+        container.innerHTML = '';
+        container.appendChild(table);
+
+        // Delete admin
+        container.querySelectorAll('button[data-action="delete"]').forEach(btn => {
+          btn.onclick = async () => {
+            if(confirm('Na pewno usunąć administratora?')) {
+              try {
+                await apiDelete('/.netlify/functions/deleteAdmin', { id: btn.dataset.id });
+                showMessage('Administrator usunięty', 'success');
+                log(`Usunięto admina ID ${btn.dataset.id}`, 'info');
+                loadAdmins();
+              } catch {
+                showMessage('Błąd usuwania administratora', 'error');
+              }
+            }
+          };
+        });
+
+        log('Wczytano administratorów');
+      } catch {
+        container.textContent = 'Błąd ładowania administratorów';
       }
     }
 
-    // --- Dodaj admina ---
-    document.getElementById('addAdmin').onsubmit = async e => {
+    // Add admin
+    document.getElementById('addAdmin').onsubmit = async (e) => {
       e.preventDefault();
       const form = e.target;
       const username = form.username.value.trim();
       const password = form.password.value;
 
       if (!username || !password) {
-        alert('Podaj nazwę użytkownika i hasło.');
+        showMessage('Podaj nazwę i hasło admina', 'error');
         return;
       }
 
       try {
-        const res = await fetch('/.netlify/functions/addAdmin', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({username, password})
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('Dodano administratora.');
+        const res = await apiPost('/.netlify/functions/addAdmin', { username, password });
+        if(res.success) {
+          showMessage('Dodano administratora', 'success');
+          log(`Dodano admina: ${username}`, 'info');
           form.reset();
-          loadAdmini();
-          loguj('Dodano admina: ' + username);
+          loadAdmins();
         } else {
-          alert('Błąd dodawania administratora.');
+          showMessage('Błąd dodawania administratora', 'error');
         }
-      } catch (e) {
-        alert('Błąd połączenia.');
-        console.error(e);
+      } catch {
+        showMessage('Błąd dodawania administratora', 'error');
       }
     };
 
-    // --- Usuń admina ---
-    async function usunAdmina(id) {
-      if (!confirm('Na pewno chcesz usunąć administratora #' + id + '?')) return;
+    // Export CSV/JSON - tu prosta implementacja (eksportuje listę wniosków i konsultacji)
+    async function eksportuj(format) {
       try {
-        const res = await fetch('/.netlify/functions/deleteAdmin', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({id})
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert('Usunięto administratora.');
-          loadAdmini();
-          loguj('Usunięto admina ID: ' + id);
+        const wnioski = await apiGet('/.netlify/functions/getSubmissions');
+        const konsultacje = await apiGet('/.netlify/functions/getConsultations');
+
+        let content = '';
+        if(format === 'csv') {
+          // CSV header + data (przykład tylko dla wniosków)
+          const csvWnioski = [
+            ['ID', 'Użytkownik', 'Treść', 'Data'],
+            ...wnioski.map(s => [s.id, s.username||'', `"${(s.content||'').replace(/"/g, '""')}"`, new Date(s.date).toISOString()])
+          ].map(row => row.join(',')).join('\n');
+
+          const csvKonsultacje = [
+            ['ID', 'Tytuł', 'Opis', 'Głosy'],
+            ...konsultacje.map(c => [c.id, `"${(c.title||'').replace(/"/g, '""')}"`, `"${(c.description||'').replace(/"/g, '""')}"`, c.votes||0])
+          ].map(row => row.join(',')).join('\n');
+
+          content = `-- Wnioski --\n${csvWnioski}\n\n-- Konsultacje --\n${csvKonsultacje}`;
         } else {
-          alert('Błąd usuwania administratora.');
+          // JSON
+          content = JSON.stringify({ wnioski, konsultacje }, null, 2);
         }
-      } catch (e) {
-        alert('Błąd połączenia.');
-        console.error(e);
+
+        // Pobierz plik:
+        const blob = new Blob([content], { type: format === 'csv' ? 'text/csv' : 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `export.${format}`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showMessage(`Eksportowano dane do ${format.toUpperCase()}`, 'success');
+        log(`Eksportowano dane do ${format.toUpperCase()}`, 'info');
+      } catch {
+        showMessage('Błąd eksportu danych', 'error');
       }
     }
+    document.getElementById('exportCsv').onclick = () => eksportuj('csv');
+    document.getElementById('exportJson').onclick = () => eksportuj('json');
 
-    // --- Webhook ---
-    document.getElementById('zapiszWebhook').onclick = async () => {
+    // Load webhook from localStorage (lub z serwera jeśli masz)
+    const webhookInput = document.getElementById('webhookInput');
+    const webhookMsg = document.getElementById('webhookMessage');
+
+    function saveWebhookToStorage(url) {
+      localStorage.setItem('discordWebhook', url);
+    }
+    function getWebhookFromStorage() {
+      return localStorage.getItem('discordWebhook') || '';
+    }
+
+    webhookInput.value = getWebhookFromStorage();
+
+    document.getElementById('saveWebhook').onclick = () => {
       const url = webhookInput.value.trim();
-      if (!url) {
-        webhookMsg.textContent = 'Wprowadź URL webhooka!';
-        webhookMsg.style.color = 'red';
+      if(!url) {
+        webhookMsg.textContent = 'Wprowadź URL webhooka.';
+        webhookMsg.style.color = 'var(--error)';
         return;
       }
-      try {
-        const res = await fetch('/.netlify/functions/saveWebhook', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({url})
-        });
-        const data = await res.json();
-        if (data.success) {
-          webhookMsg.textContent = 'Webhook zapisany!';
-          webhookMsg.style.color = 'green';
-          loguj('Zapisano webhook: ' + url);
-        } else {
-          webhookMsg.textContent = 'Błąd zapisu webhooka.';
-          webhookMsg.style.color = 'red';
-        }
-      } catch (e) {
-        webhookMsg.textContent = 'Błąd połączenia.';
-        webhookMsg.style.color = 'red';
-        console.error(e);
-      }
+      saveWebhookToStorage(url);
+      webhookMsg.textContent = 'Webhook zapisany.';
+      webhookMsg.style.color = 'var(--success)';
+      log('Webhook zapisany');
     };
 
     document.getElementById('testWebhook').onclick = async () => {
       const url = webhookInput.value.trim();
       if (!url) {
-        webhookMsg.textContent = 'Wprowadź URL webhooka!';
-        webhookMsg.style.color = 'red';
+        webhookMsg.textContent = 'Wprowadź URL webhooka.';
+        webhookMsg.style.color = 'var(--error)';
         return;
       }
       try {
-        const res = await fetch('/.netlify/functions/testWebhook', {
+        const res = await fetch(url, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({url})
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: 'Testowy webhook z panelu admina' })
         });
-        const data = await res.json();
-        if (data.success) {
-          webhookMsg.textContent = 'Test webhooka powiódł się!';
-          webhookMsg.style.color = 'green';
-          loguj('Test webhooka OK');
+        if (res.ok) {
+          webhookMsg.textContent = 'Test powiódł się!';
+          webhookMsg.style.color = 'var(--success)';
+          log('Test webhooka udany');
         } else {
-          webhookMsg.textContent = 'Test webhooka nieudany.';
-          webhookMsg.style.color = 'red';
+          webhookMsg.textContent = 'Test nieudany: ' + res.status;
+          webhookMsg.style.color = 'var(--error)';
+          log('Test webhooka nieudany: ' + res.status, 'error');
         }
       } catch (e) {
-        webhookMsg.textContent = 'Błąd połączenia.';
-        webhookMsg.style.color = 'red';
-        console.error(e);
+        webhookMsg.textContent = 'Błąd testu webhooka';
+        webhookMsg.style.color = 'var(--error)';
+        log('Błąd testu webhooka: ' + e.message, 'error');
       }
     };
 
-    async function loadWebhook() {
-      try {
-        const res = await fetch('/.netlify/functions/getWebhook');
-        const data = await res.json();
-        if (data.url) {
-          webhookInput.value = data.url;
-        }
-      } catch(e) {
-        console.error(e);
-      }
-    }
-
-    // --- Logi ---
-    const logList = document.getElementById('logList');
-    const logs = [];
-    function loguj(text) {
-      const time = new Date().toLocaleTimeString();
-      const entry = `[${time}] ${text}`;
-      logs.push(entry);
-      if (logs.length > 100) logs.shift();
-      logList.textContent = logs.join('\n');
-      logList.scrollTop = logList.scrollHeight;
-    }
-    function loadLogi() {
-      loguj('Panel admina załadowany');
-    }
-
-    // --- Statystyki ---
-    const ctx = document.getElementById('statChart').getContext('2d');
-    let statChart = null;
-    async function loadStatystyki() {
-      // Przykładowe statystyki - zastąp własnymi
-      const labels = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec'];
-      const data = [12, 19, 3, 5, 2, 3];
-
-      if (statChart) statChart.destroy();
-      statChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Liczba zgłoszeń',
-            data,
-            backgroundColor: 'rgba(51, 154, 240, 0.7)',
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    // --- Escape HTML for security ---
-    function escapeHtml(text) {
-      if (!text) return '';
-      return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    // Ładuj wszystkie dane na start
+    async function loadAllData() {
+      await loadWnioski();
+      await loadConsultations();
+      await loadAdmins();
     }
   </script>
 </body>
