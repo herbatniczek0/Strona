@@ -354,36 +354,38 @@
     };
 
     // Load wnioski (submissions)
-    async function loadWnioski() {
-      const container = document.getElementById('wnioskiList');
-      container.textContent = 'Ładowanie...';
-      try {
-        const submissions = await apiGet('/.netlify/functions/getSubmissions');
-        if (!submissions.length) {
-          container.textContent = 'Brak wniosków';
-          return;
-        }
-        const table = document.createElement('table');
-        table.innerHTML = `
-          <thead>
-            <tr><th>ID</th><th>Użytkownik</th><th>Treść</th><th>Data</th></tr>
-          </thead>
-          <tbody>
-            ${submissions.map(s => `
-              <tr>
-                <td>${s.id}</td>
-                <td>${s.username || 'anonim'}</td>
-                <td>${s.content || ''}</td>
-                <td>${new Date(s.date).toLocaleString()}</td>
-              </tr>`).join('')}
-          </tbody>`;
-        container.innerHTML = '';
-        container.appendChild(table);
-        log('Wczytano wnioski');
-      } catch {
-        container.textContent = 'Błąd ładowania wniosków';
-      }
+async function loadWnioski() {
+  const container = document.getElementById('wnioskiList');
+  container.textContent = 'Ładowanie...';
+  try {
+    const submissions = await apiGet('/.netlify/functions/getSubmissions');
+    if (!submissions.length) {
+      container.textContent = 'Brak wniosków';
+      return;
     }
+    const table = document.createElement('table');
+    table.innerHTML = `
+      <thead>
+        <tr><th>ID</th><th>Użytkownik</th><th>Treść</th><th>Data</th></tr>
+      </thead>
+      <tbody>
+        ${submissions.map(s => `
+          <tr>
+            <td>${s.id}</td>
+            <td>${s.name || 'anonim'}</td>
+            <td>${s.idea || ''}</td>
+            <td>${new Date(s.date).toLocaleString()}</td>
+          </tr>`).join('')}
+      </tbody>`;
+    container.innerHTML = '';
+    container.appendChild(table);
+    log('Wczytano wnioski');
+  } catch (err) {
+    console.error('[loadWnioski] Błąd:', err);
+    container.textContent = 'Błąd ładowania wniosków';
+  }
+}
+
 
     // Load consultations
     async function loadConsultations() {
