@@ -1,31 +1,30 @@
 const { neon } = require('@neondatabase/serverless');
-const sql = neon(process.env.NETLIFY_DATABASE_URL);
+const sqlGet = neon(process.env.NETLIFY_DATABASE_URL);
 
 exports.handler = async (event) => {
-  console.info('[getSubmissions] Odebrano żądanie');
-
-  if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Metoda nieobsługiwana' }),
-      headers: { 'Content-Type': 'application/json' },
-    };
-  }
+  console.log("[getSubmissions] Odebrano żądanie");
 
   try {
-    // Pobierz wszystkie wnioski z tabeli submissions
-    const rows = await sql`SELECT id, name, discord, date, idea, status FROM submissions ORDER BY date DESC`;
+    const rows = await sqlGet`
+      SELECT id, name, idea, date
+      FROM submissions
+      ORDER BY date DESC
+      LIMIT 100
+    `;
+
+    console.log("[getSubmissions] Wynik zapytania:", rows);
 
     return {
       statusCode: 200,
       body: JSON.stringify(rows),
       headers: { 'Content-Type': 'application/json' },
     };
-  } catch (error) {
-    console.error('[getSubmissions] Błąd podczas zapytania:', error);
+
+  } catch (err) {
+    console.error("[getSubmissions] Błąd podczas zapytania:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Błąd serwera podczas pobierania wniosków' }),
+      body: JSON.stringify({ error: err.message }),
       headers: { 'Content-Type': 'application/json' },
     };
   }
