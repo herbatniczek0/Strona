@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Admina - Portal Obywatelski</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; text-align: center; padding: 2rem; }
+    #adminPanel { display: none; margin-top: 2rem; }
+    button { padding: 1rem 2rem; font-size: 1.2rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h1>Panel Administratora</h1>
+<div id="login">
+  <button id="discordLoginBtn">Zaloguj się przez Discord</button>
+</div>
+
+<div id="adminPanel">
+  <h2>Witamy w panelu admina!</h2>
+  <p>Tutaj możesz zarządzać wnioskami i konsultacjami.</p>
+  <p id="userInfo"></p>
+  <button id="logoutBtn">Wyloguj się</button>
+</div>
+
+<script>
+  const CLIENT_ID = '1363941305490739440'; // podmień na swój
+  const REDIRECT_URI = window.location.origin + '/admin.html';
+  const SCOPE = 'identify';
+  const RESPONSE_TYPE = 'code';
+  const DISCORD_OAUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`;
+
+  const loginDiv = document.getElementById('login');
+  const adminPanelDiv = document.getElementById('adminPanel');
+  const discordLoginBtn = document.getElementById('discordLoginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const userInfo = document.getElementById('userInfo');
+
+  function parseQueryString() {
+    const params = {};
+    location.search.substr(1).split("&").forEach(pair => {
+      const [key, value] = pair.split("=");
+      if (key) params[key] = decodeURIComponent(value);
+    });
+    return params;
+  }
+
+  function showAdminPanel(user) {
+    loginDiv.style.display = 'none';
+    adminPanelDiv.style.display = 'block';
+    userInfo.textContent = `Zalogowano jako: ${user.username}#${user.discriminator}`;
+  }
+
+  function showLogin() {
+    loginDiv.style.display = 'block';
+    adminPanelDiv.style.display = 'none';
+    userInfo.textContent = '';
+  }
+
+  async function exchangeCodeForToken(code) {
+    console.log('[Admin] Wymiana kodu OAuth na token:', code);
+
+    try {
+      const res = await fetch('/.netlify/functions/exchangeDiscordCode', {
+        method: 'POST',
+        body: JSON.stringify({ code }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem('adminAuth', 'true');
+        localStorage.setItem('adminUser', JSON.stringify(data.user));
+        return data.user;
+      } else {
+        alert('Błąd autoryzacji: ' + (data.error || 'Nieznany błąd'));
+        return null;
+      }
+
+    } catch (e) {
+      alert('Błąd podczas łączenia z serwerem.');
+      console.error(e);
+      return null;
+    }
+  }
+
+  async function init() {
+    const params = parseQueryString();
+    if (params.code) {
+      const user = await exchangeCodeForToken(params.code);
+      if (user) {
+        history.replaceState(null, '', REDIRECT_URI);
+        showAdminPanel(user);
+      } else {
+        showLogin();
+      }
+    } else {
+      if (localStorage.getItem('adminAuth') === 'true') {
+        const user = JSON.parse(localStorage.getItem('adminUser'));
+        showAdminPanel(user);
+      } else {
+        showLogin();
+      }
+    }
+  }
+
+  discordLoginBtn.addEventListener('click', () => {
+    window.location.href = DISCORD_OAUTH_URL;
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminUser');
+    showLogin();
+  });
+
+  init();
+</script>
+
+</body>
+</html>
