@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Obywatelski 24/7</title>
   <style>
-   :root {
+   /* === GLOBAL VARIABLES & BASE === */
+:root {
   --bg: #f0f2f5; --fg: #212529;
   --header-bg: #007bff; --nav-bg: #0056b3; --container-bg: rgba(255,255,255,0.85);
   --footer-bg: #007bff; --primary: #007bff; --accent: #28a745;
   --radius: 14px; --shadow: 0 8px 24px rgba(0,0,0,0.1);
   --blur: 16px;
+  --status-green: #28a745; --status-red: #dc3545;
 }
 [data-theme="dark"] {
   --bg: #121212; --fg: #e0e0e0;
@@ -18,41 +20,61 @@
   --footer-bg: #1c7ed6; --primary: #339af0; --accent: #51cf66;
   --shadow: 0 8px 24px rgba(255,255,255,0.05);
 }
-* {
-  margin: 0; padding: 0; box-sizing: border-box;
-}
+
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 html, body {
   height: 100%; font-family: 'Segoe UI', sans-serif;
   background: var(--bg); color: var(--fg);
   transition: background 0.4s ease, color 0.4s ease;
 }
-.wrapper {
-  display: flex; flex-direction: column; min-height: 100%;
+.wrapper { display: flex; flex-direction: column; min-height: 100%; }
+
+/* === LOADER === */
+#loader::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin: 1rem auto;
+  border: 4px solid #ccc;
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
+
+/* === HEADER === */
 header {
   background: var(--header-bg); color: #fff;
   padding: 1rem 2rem; display: flex;
   justify-content: space-between; align-items: center;
-  box-shadow: var(--shadow);
-  animation: slideDown 0.6s ease;
+  box-shadow: var(--shadow); animation: slideDown 0.6s ease;
 }
 .theme-toggle, #adminPanelBtn {
-  background: transparent; border: 1px solid #fff;
-  color: #fff; padding: 0.5rem 1rem;
-  border-radius: var(--radius); cursor: pointer;
+  background: transparent; border: 1px solid #fff; color: #fff;
+  padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer;
   transition: all 0.3s ease;
 }
 .theme-toggle:hover, #adminPanelBtn:hover {
   background: rgba(255,255,255,0.2); transform: scale(1.05);
 }
+.theme-toggle::before {
+  content: attr(data-theme);
+  display: inline-block; margin-right: 5px;
+}
+
+/* === ADMIN CONFIRM BUTTONS === */
 #adminConfirmBtns button {
   border-radius: var(--radius); transition: all 0.3s ease;
 }
 #adminConfirmBtns button:hover {
   opacity: 0.9; transform: scale(1.03);
 }
+
+/* === NAVBAR === */
 nav {
   background: var(--nav-bg); box-shadow: var(--shadow);
+  position: sticky; top: 0; z-index: 100;
 }
 nav ul {
   list-style: none; display: flex;
@@ -77,6 +99,8 @@ nav button.active::after, nav button:hover::after {
 nav button.active {
   background: var(--primary); font-weight: bold;
 }
+
+/* === MAIN CONTENT === */
 main {
   flex: 1; padding: 2rem 1rem;
 }
@@ -84,8 +108,7 @@ main {
   background: var(--container-bg);
   backdrop-filter: blur(var(--blur));
   padding: 2rem; border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  max-width: 800px; margin: auto;
+  box-shadow: var(--shadow); max-width: 800px; margin: auto;
   animation: fadeIn 0.8s ease;
 }
 h1, h2, h3 {
@@ -108,14 +131,35 @@ input:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
   outline: none; transform: scale(1.02);
 }
+input::placeholder, textarea::placeholder {
+  color: #999; opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+input:focus::placeholder, textarea:focus::placeholder {
+  opacity: 0.3;
+}
 button.submit {
   background: var(--accent); color: #fff;
   border: none; padding: 0.75rem 1rem;
   font-weight: bold; border-radius: var(--radius);
   cursor: pointer; transition: background 0.3s ease, transform 0.2s;
+  position: relative; overflow: hidden;
 }
 button.submit:hover {
   background: #218838; transform: scale(1.03);
+}
+button.submit::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 300%; height: 300%;
+  background: rgba(255,255,255,0.2);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%; pointer-events: none;
+  animation: ripple 0.6s ease-out;
+}
+button.submit:active::after {
+  transform: translate(-50%, -50%) scale(1);
 }
 .message {
   margin-top: 1rem; padding: 1rem;
@@ -156,20 +200,52 @@ footer button:hover {
 .consult-item:hover {
   transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
-.consult-item h3 {
-  margin-bottom: 0.5rem;
-}
+.consult-item h3 { margin-bottom: 0.5rem; }
 .consult-item .votes {
   font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: bold;
 }
+.status-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%; margin-right: 5px;
+  background: var(--status-green);
+}
+.status-dot.red { background: var(--status-red); }
+.toggle-switch {
+  position: relative; display: inline-block;
+  width: 50px; height: 24px;
+}
+.toggle-switch input {
+  opacity: 0; width: 0; height: 0;
+}
+.slider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc; transition: .4s;
+  border-radius: 24px;
+}
+.slider:before {
+  position: absolute; content: "";
+  height: 20px; width: 20px; left: 2px; bottom: 2px;
+  background-color: white; transition: .4s;
+  border-radius: 50%;
+}
+.toggle-switch input:checked + .slider {
+  background-color: var(--accent);
+}
+.toggle-switch input:checked + .slider:before {
+  transform: translateX(26px);
+}
 .panel { display: none; }
 .panel.active { display: block; animation: fadeIn 0.5s ease; }
+
 @media (max-width: 768px) {
   nav ul { flex-direction: column; }
   nav li { width: 100%; }
   .container { padding: 1rem; }
 }
-/* Animations */
+
+/* === ANIMATIONS === */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -177,6 +253,13 @@ footer button:hover {
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes ripple {
+  to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
 
   </style>
