@@ -269,18 +269,18 @@ adminYes.addEventListener('click', () => {
     const res = await fetch('/.netlify/functions/Botblocker');
 
     if (res.status === 403) {
-      console.warn('[IPCheck] ⛔ Otrzymano 403 – blokada IP');
+      console.warn('[BotBlocker] ⛔ Otrzymano 403 – blokada IP');
 
       let result;
       try {
         result = await res.json();
       } catch (parseErr) {
-        console.error('[IPCheck] ❌ Błąd parsowania JSON:', parseErr);
+        console.error('[BotBlocker] ❌ Błąd parsowania JSON:', parseErr);
         result = { error: 'Nieznany (błąd parsowania odpowiedzi)' };
       }
 
       const reason = result?.error || 'Nieznany';
-      console.log('[IPCheck] Powód blokady:', reason);
+      console.log('[BotBlocker] Powód blokady:', reason);
 
       loader.innerHTML = `
         <main style="text-align:center;padding:3rem">
@@ -297,12 +297,12 @@ adminYes.addEventListener('click', () => {
       throw new Error(`Błąd sieci (kod: ${res.status})`);
     }
 
-    console.log('[IPCheck] ✅ Dostęp przyznany');
+    console.log('[BotBlocker] ✅ Dostęp przyznany');
     loader.style.display = 'none';
     wrapper.style.display = 'flex';
 
   } catch (error) {
-    console.error('[IPCheck] 🔥 Błąd połączenia:', error.message);
+    console.error('[BotBlocker] 🔥 Błąd połączenia:', error.message);
     loader.innerHTML = `
       <main style="text-align:center;padding:3rem">
         <h2 style="color:red">Błąd połączenia</h2>
