@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Panel Admina - Portal Obywatelski</title>
   <style>
-/* === ULEPSZONY UI ADMIN PANELU === */
-
 :root {
   --bg: #f4f6fa;
   --fg: #222;
@@ -188,27 +186,46 @@ h1, h2 {
   }
 }
 
-#themeToggle {
-  margin-top: -4.5rem;
-  margin-left: auto;
-  float: right;
+/* Wyśrodkowanie h1 i przycisku w jednym wierszu, tekst po lewej, przycisk po prawej */
+.header-row {
   display: flex;
-  align-items: center;      /* wyśrodkowanie pionowe */
-  justify-content: center;  /* wyśrodkowanie poziome */
-  gap: 0.1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-direction: row;
+}
+
+.header-row h1 {
+  margin: 0;
+  flex: 1;
+  text-align: left;
+  order: 1;
+}
+
+#themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--accent);
   color: white;
   border: none;
-  padding: 0 1.2rem;
+  padding: 0.3rem 1.1rem;
   border-radius: 2rem;
-  font-size: 1.3rem;
-  min-width: 4rem;
-  height: 2.9rem;
+  font-size: 1.10rem;
+  min-width: 3.0rem;
+  height: 2.5rem;
   cursor: pointer;
-  font-weight: 400;         /* normalna waga czcionki */
-  letter-spacing: 0.1em;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   transition: transform 0.2s ease, background 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-weight: 400;
+  letter-spacing: 0.10em;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 0;
+  order: 2;
 }
 
 #themeToggle:hover {
@@ -216,6 +233,125 @@ h1, h2 {
   background: var(--accent-hover);
 }
 
+@media (max-width: 600px) {
+  .header-row {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  #themeToggle {
+    align-self: flex-end;
+  }
+}
+
+#themeToggle .icon {
+  display: inline-block;
+  transition: transform 0.4s ease;
+  will-change: transform;
+  font-size: 1.4rem;
+  user-select: none;
+  line-height: 1;
+}
+
+#themeToggle:hover .icon {
+  transform: rotate(20deg);
+}
+
+#themeToggle:active .icon {
+  animation: spinFast 0.6s linear;
+}
+
+@keyframes spinFast {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Wyśrodkowanie h1 i przycisku w jednym wierszu, tekst po lewej, przycisk po prawej */
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-direction: row;
+}
+
+.header-row h1 {
+  margin: 0;
+  flex: 1;
+  text-align: left;
+  order: 1;
+}
+
+#themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.3rem 1.1rem;
+  border-radius: 2rem;
+  font-size: 1.10rem;
+  min-width: 3.0rem;
+  height: 2.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-weight: 400;
+  letter-spacing: 0.10em;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 0;
+  order: 2;
+}
+
+#themeToggle:hover {
+  transform: rotate(8deg) scale(1.08);
+  background: var(--accent-hover);
+}
+
+@media (max-width: 600px) {
+  .header-row {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  #themeToggle {
+    align-self: flex-end;
+  }
+}
+
+#themeToggle .icon {
+  display: inline-block;
+  transition: transform 0.4s ease;
+  will-change: transform;
+  font-size: 1.4rem;
+  user-select: none;
+  line-height: 1;
+}
+
+#themeToggle:hover .icon {
+  transform: rotate(20deg);
+}
+
+#themeToggle:active .icon {
+  animation: spinFast 0.6s linear;
+}
+
+@keyframes spinFast {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 
 .hidden {
@@ -348,12 +484,17 @@ tr:hover td {
   display: none;
 }
 
+
   </style>
 </head>
 <body data-theme="">
   <div class="container">
-    <h1>Panel Administratora</h1>
-    <button id="themeToggle" title="Przełącz motyw">🌙/☀️</button>
+<div class="header-row">
+  <button id="themeToggle" aria-label="Toggle theme">
+    <span class="icon">🌓</span>
+  </button>
+  <h1>Panel Administratora</h1>
+</div>
     <div id="loginPanel">
       <input id="username" placeholder="Login" autocomplete="username" />
       <input id="password" type="password" placeholder="Hasło" autocomplete="current-password" />
