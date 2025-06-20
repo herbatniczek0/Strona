@@ -7,74 +7,36 @@
   <style>
     /* === GLOBAL VARIABLES & BASE === */
     :root {
-      --bg: #f0f2f5;
-      --fg: #212529;
-      --header-bg: #007bff;
-      --nav-bg: #0056b3;
-      --container-bg: rgba(255, 255, 255, 0.85);
-      --footer-bg: #007bff;
-      --primary: #007bff;
-      --accent: #28a745;
-      --radius: 14px;
-      --shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      --bg: #f0f2f5; --fg: #212529;
+      --header-bg: #007bff; --nav-bg: #0056b3; --container-bg: rgba(255,255,255,0.85);
+      --footer-bg: #007bff; --primary: #007bff; --accent: #28a745;
+      --radius: 14px; --shadow: 0 8px 24px rgba(0,0,0,0.1);
       --blur: 16px;
-      --status-green: #28a745;
-      --status-red: #dc3545;
+      --status-green: #28a745; --status-red: #dc3545;
     }
-
     [data-theme="dark"] {
-      --bg: #121212;
-      --fg: #e0e0e0;
-      --header-bg: #1c7ed6;
-      --nav-bg: #0b5ed7;
-      --container-bg: rgba(30, 30, 30, 0.85);
-      --footer-bg: #1c7ed6;
-      --primary: #339af0;
-      --accent: #51cf66;
-      --shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
+      --bg: #121212; --fg: #e0e0e0;
+      --header-bg: #1c7ed6; --nav-bg: #0b5ed7; --container-bg: rgba(30,30,30,0.85);
+      --footer-bg: #1c7ed6; --primary: #339af0; --accent: #51cf66;
+      --shadow: 0 8px 24px rgba(255,255,255,0.05);
     }
 
     /* === RESET & BASE === */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html,
-    body {
-      height: 100%;
-      font-family: "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--fg);
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%; font-family: 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--fg);
       transition: background 0.4s ease, color 0.4s ease;
     }
-    .wrapper {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    .wrapper { display: flex; flex-direction: column; min-height: 100%; }
 
     /* === LOADER === */
-    #loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.7);
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.2rem;
-      color: var(--primary);
-    }
     #loader::after {
       content: "";
       display: block;
       width: 40px;
       height: 40px;
-      margin: 1rem auto 0 auto;
+      margin: 1rem auto;
       border: 4px solid #ccc;
       border-top: 4px solid var(--primary);
       border-radius: 50%;
@@ -83,332 +45,189 @@
 
     /* === HEADER === */
     header {
-      background: var(--header-bg);
-      color: #fff;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow);
-      animation: slideDown 0.6s ease;
+      background: var(--header-bg); color: #fff;
+      padding: 1rem 2rem; display: flex;
+      justify-content: space-between; align-items: center;
+      box-shadow: var(--shadow); animation: slideDown 0.6s ease;
     }
-    #adminPanelBtn {
-      margin-right: 10px;
-      background: #fff;
-      color: #007bff;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    #adminPanelBtn:hover {
-      background: #e0e0e0;
-      transform: scale(1.05);
-    }
-    .theme-toggle,
-    #adminPanelBtn {
-      font-size: 1rem;
-    }
-    .theme-toggle {
-      background: transparent;
-      border: 1px solid #fff;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius);
-      cursor: pointer;
+    .theme-toggle, #adminPanelBtn {
+      background: transparent; border: 1px solid #fff; color: #fff;
+      padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer;
       transition: all 0.3s ease;
     }
-    .theme-toggle:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
+    .theme-toggle:hover, #adminPanelBtn:hover {
+      background: rgba(255,255,255,0.2); transform: scale(1.05);
     }
     .theme-toggle::before {
       content: attr(data-theme);
-      display: inline-block;
-      margin-right: 5px;
+      display: inline-block; margin-right: 5px;
     }
-    #adminConfirmBtns {
-      margin-top: 10px;
-    }
+
+    /* === ADMIN CONFIRM BUTTONS === */
     #adminConfirmBtns button {
-      border-radius: var(--radius);
-      transition: all 0.3s ease;
-      padding: 0.5rem 1rem;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
+      border-radius: var(--radius); transition: all 0.3s ease;
     }
     #adminConfirmBtns button:hover {
-      opacity: 0.9;
-      transform: scale(1.03);
-    }
-    #adminYes {
-      background: var(--status-green);
-      color: #fff;
-      margin-right: 5px;
-    }
-    #adminNo {
-      background: var(--status-red);
-      color: #fff;
+      opacity: 0.9; transform: scale(1.03);
     }
 
     /* === NAVBAR === */
     nav {
-      background: var(--nav-bg);
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: var(--nav-bg); box-shadow: var(--shadow);
+      position: sticky; top: 0; z-index: 100;
     }
     nav ul {
-      list-style: none;
-      display: flex;
+      list-style: none; display: flex;
     }
     nav li {
-      flex: 1;
-      text-align: center;
+      flex: 1; text-align: center;
     }
     nav button {
-      width: 100%;
-      padding: 1rem;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
-      position: relative;
+      width: 100%; padding: 1rem;
+      background: none; border: none;
+      color: #fff; font-size: 1rem; cursor: pointer;
+      transition: all 0.3s ease-in-out; position: relative;
     }
     nav button::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      height: 3px;
-      width: 0%;
-      background: #fff;
+      content: ""; position: absolute; left: 0; bottom: 0;
+      height: 3px; width: 0%; background: #fff;
       transition: width 0.3s ease-in-out;
     }
-    nav button.active::after,
-    nav button:hover::after {
+    nav button.active::after, nav button:hover::after {
       width: 100%;
     }
     nav button.active {
-      background: var(--primary);
-      font-weight: bold;
+      background: var(--primary); font-weight: bold;
     }
 
     /* === MAIN CONTENT === */
     main {
-      flex: 1;
-      padding: 2rem 1rem;
+      flex: 1; padding: 2rem 1rem;
     }
     .container {
       background: var(--container-bg);
       backdrop-filter: blur(var(--blur));
-      padding: 2rem;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      max-width: 800px;
-      margin: auto;
+      padding: 2rem; border-radius: var(--radius);
+      box-shadow: var(--shadow); max-width: 800px; margin: auto;
       animation: fadeIn 0.8s ease;
     }
-    h1,
-    h2,
-    h3 {
-      color: var(--primary);
-      margin-bottom: 1rem;
+    h1, h2, h3 {
+      color: var(--primary); margin-bottom: 1rem;
     }
     form {
-      display: grid;
-      gap: 1.2rem;
+      display: grid; gap: 1.2rem;
     }
-    input,
-    textarea {
-      font-size: 1rem;
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.9);
-      color: var(--fg);
+    input, textarea {
+      font-size: 1rem; padding: 0.75rem;
+      border: 1px solid #ccc; border-radius: var(--radius);
+      background: rgba(255,255,255,0.9); color: var(--fg);
       transition: all 0.3s ease;
     }
-    [data-theme="dark"] input,
-    [data-theme="dark"] textarea {
-      background: rgba(50, 50, 50, 0.9);
+    [data-theme="dark"] input, [data-theme="dark"] textarea {
+      background: rgba(50,50,50,0.9);
     }
-    input:focus,
-    textarea:focus {
+    input:focus, textarea:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-      outline: none;
-      transform: scale(1.02);
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+      outline: none; transform: scale(1.02);
     }
-    input::placeholder,
-    textarea::placeholder {
-      color: #999;
-      opacity: 0.6;
+    input::placeholder, textarea::placeholder {
+      color: #999; opacity: 0.6;
       transition: opacity 0.3s ease;
     }
-    input:focus::placeholder,
-    textarea:focus::placeholder {
+    input:focus::placeholder, textarea:focus::placeholder {
       opacity: 0.3;
     }
     button.submit {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 0.75rem 1rem;
-      font-weight: bold;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s;
-      position: relative;
-      overflow: hidden;
-      font-size: 1rem;
+      background: var(--accent); color: #fff;
+      border: none; padding: 0.75rem 1rem;
+      font-weight: bold; border-radius: var(--radius);
+      cursor: pointer; transition: background 0.3s ease, transform 0.2s;
+      position: relative; overflow: hidden;
     }
     button.submit:hover {
-      background: #218838;
-      transform: scale(1.03);
+      background: #218838; transform: scale(1.03);
     }
-    /* Ripple effect span */
-    button.submit .ripple {
+    button.submit::after {
+      content: "";
       position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.4);
-      animation: rippleEffect 0.6s ease-out;
-      pointer-events: none;
-      width: 100px;
-      height: 100px;
-      top: 50%;
-      left: 50%;
-      transform-origin: center;
+      top: 50%; left: 50%;
+      width: 300%; height: 300%;
+      background: rgba(255,255,255,0.2);
       transform: translate(-50%, -50%) scale(0);
+      border-radius: 50%; pointer-events: none;
+      animation: ripple 0.6s ease-out;
     }
-
+    button.submit:active::after {
+      transform: translate(-50%, -50%) scale(1);
+    }
     .message {
-      margin-top: 1rem;
-      padding: 1rem;
-      border-radius: var(--radius);
-      display: none;
+      margin-top: 1rem; padding: 1rem;
+      border-radius: var(--radius); display: none;
       font-weight: 500;
     }
     .success {
-      background: #d4edda;
-      color: #155724;
+      background: #d4edda; color: #155724;
       border: 1px solid #c3e6cb;
     }
     .error {
-      background: #f8d7da;
-      color: #721c24;
+      background: #f8d7da; color: #721c24;
       border: 1px solid #f5c6cb;
     }
     footer {
-      background: var(--footer-bg);
-      color: #fff;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-      animation: fadeIn 1.2s ease;
+      background: var(--footer-bg); color: #fff;
+      text-align: center; padding: 1rem;
+      font-size: 0.9rem; animation: fadeIn 1.2s ease;
     }
     footer button {
-      background: none;
-      border: none;
-      color: var(--accent);
-      cursor: pointer;
-      text-decoration: underline;
-      font-size: 1rem;
+      background: none; border: none;
+      color: var(--accent); cursor: pointer;
+      text-decoration: underline; font-size: 1rem;
       transition: transform 0.2s;
     }
     footer button:hover {
       transform: scale(1.05);
     }
-
-    .status-result,
-    .consult-list {
+    .status-result, .consult-list {
       margin-top: 1rem;
     }
     .consult-item {
-      padding: 1.2rem;
-      border: 1px solid #ccc;
-      margin-bottom: 1rem;
-      border-radius: var(--radius);
-      background: var(--container-bg);
-      box-shadow: var(--shadow);
+      padding: 1.2rem; border: 1px solid #ccc;
+      margin-bottom: 1rem; border-radius: var(--radius);
+      background: var(--container-bg); box-shadow: var(--shadow);
       transition: transform 0.2s ease, box-shadow 0.3s;
     }
     .consult-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
-    .consult-item h3 {
-      margin-bottom: 0.5rem;
-    }
+    .consult-item h3 { margin-bottom: 0.5rem; }
     .consult-item .votes {
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
+      font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: bold;
     }
-
-    /* Status */
-    .status {
-      font-weight: bold;
-    }
-    .status.pending {
-      color: orange;
-    }
-    .status.accepted {
-      color: var(--status-green);
-    }
-    .status.rejected {
-      color: var(--status-red);
-    }
-
     .status-dot {
       display: inline-block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-right: 5px;
+      width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 5px;
       background: var(--status-green);
     }
-    .status-dot.red {
-      background: var(--status-red);
-    }
-
-    /* Toggle Switch */
+    .status-dot.red { background: var(--status-red); }
     .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
+      position: relative; display: inline-block;
+      width: 50px; height: 24px;
     }
     .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
+      opacity: 0; width: 0; height: 0;
     }
     .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.4s;
+      position: absolute; cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc; transition: .4s;
       border-radius: 24px;
     }
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 2px;
-      bottom: 2px;
-      background-color: white;
-      transition: 0.4s;
+      position: absolute; content: "";
+      height: 20px; width: 20px; left: 2px; bottom: 2px;
+      background-color: white; transition: .4s;
       border-radius: 50%;
     }
     .toggle-switch input:checked + .slider {
@@ -417,426 +236,342 @@
     .toggle-switch input:checked + .slider:before {
       transform: translateX(26px);
     }
-
-    .panel {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-      height: 0;
-      overflow: hidden;
-    }
-    .panel.active {
-      opacity: 1;
-      pointer-events: auto;
-      height: auto;
-    }
+    .panel { display: none; }
+    .panel.active { display: block; animation: fadeIn 0.5s ease; }
 
     @media (max-width: 768px) {
-      nav ul {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      nav li {
-        width: 100%;
-      }
-      .container {
-        padding: 1rem;
-      }
+      nav ul { flex-direction: column; }
+      nav li { width: 100%; }
+      .container { padding: 1rem; }
     }
 
     /* === ANIMATIONS === */
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
-    @keyframes rippleEffect {
-      to {
-        transform: translate(-50%, -50%) scale(4);
-        opacity: 0;
-      }
-    }
-
-    /* Scroll to top button */
-    #scrollTopBtn {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 0.5rem 0.7rem;
-      font-size: 1.5rem;
-      border: none;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      z-index: 1000;
-      transition: background 0.3s ease;
-    }
-    #scrollTopBtn:hover {
-      background: #0056b3;
+    @keyframes ripple {
+      to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
     }
   </style>
 </head>
 <body data-theme="">
-  <div id="loader" aria-label="Ładowanie strony">Ładowanie...</div>
-
+  <div id="loader" style="padding:3rem;text-align:center;">Ładowanie...</div>
   <div class="wrapper" style="display:none;">
     <header>
       <h1>Portal Obywatelski 24/7</h1>
       <div>
-        <button id="adminPanelBtn" aria-label="Przejdź do panelu administratora">
-          Panel Admina
-        </button>
-        <button class="theme-toggle" id="themeToggle" aria-label="Przełącz tryb jasny/ciemny">
-          🌙/☀️
-        </button>
-        <div id="adminConfirmBtns" style="display: none;">
-          <button id="adminYes" aria-label="Potwierdź wejście do panelu admina">Tak</button>
-          <button id="adminNo" aria-label="Anuluj wejście do panelu admina">Nie</button>
+        <button id="adminPanelBtn" style="margin-right:10px; background:#fff; color:#007bff; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer;">Panel Admina</button>
+        <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
+        <div id="adminConfirmBtns" style="display: none; margin-top: 10px;">
+          <button id="adminYes" style="background: #28a745; color: #fff; border: none; padding: 0.5rem 1rem; margin-right: 5px; border-radius: 4px; cursor: pointer;">Tak</button>
+          <button id="adminNo" style="background: #dc3545; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Nie</button>
         </div>
       </div>
     </header>
-
     <nav>
       <ul>
-        <li><button id="tab-report" class="active" aria-controls="panel-report">Zgłoś wniosek</button></li>
-        <li><button id="tab-track" aria-controls="panel-track">Śledź status</button></li>
-        <li><button id="tab-consult" aria-controls="panel-consult">Konsultacje</button></li>
+        <li><button id="tab-report" class="active">Zgłoś wniosek</button></li>
+        <li><button id="tab-track">Śledź status</button></li>
+        <li><button id="tab-consult">Konsultacje</button></li>
       </ul>
     </nav>
-
     <main>
-      <section id="panel-report" class="panel active" tabindex="0">
+      <div id="panel-report" class="panel active">
         <div class="container">
           <h2>Złóż wniosek</h2>
-          <form id="wniosekForm" novalidate>
-            <input
-              type="text"
-              name="name"
-              placeholder="Imię i nazwisko"
-              required
-              aria-required="true"
-              autocomplete="name"
-            />
-            <input
-              type="text"
-              name="discord"
-              placeholder="Discord ID#nick"
-              required
-              aria-required="true"
-              autocomplete="username"
-            />
-            <input type="date" name="date" required aria-required="true" />
-            <textarea
-              name="idea"
-              rows="4"
-              placeholder="Twój pomysł / opis"
-              required
-              aria-required="true"
-            ></textarea>
+          <form id="wniosekForm">
+            <input type="text" name="name" placeholder="Imię i nazwisko" required />
+            <input type="text" name="discord" placeholder="Discord ID#nick" required />
+            <input type="date" name="date" required />
+            <textarea name="idea" rows="4" placeholder="Twój pomysł / opis" required></textarea>
             <button type="submit" class="submit">Wyślij wniosek</button>
           </form>
-          <div id="msg-report" class="message" role="alert" aria-live="polite"></div>
+          <div id="msg-report" class="message"></div>
         </div>
-      </section>
-
-      <section id="panel-track" class="panel" tabindex="0">
+      </div>
+      <div id="panel-track" class="panel">
         <div class="container">
           <h2>Śledzenie statusu</h2>
-          <form id="trackForm" novalidate>
-            <input
-              type="text"
-              id="trackId"
-              placeholder="Numer wniosku"
-              required
-              aria-required="true"
-              autocomplete="off"
-            />
+          <form id="trackForm">
+            <input type="text" id="trackId" placeholder="Numer wniosku" required />
             <button type="submit" class="submit">Sprawdź status</button>
           </form>
-          <div id="statusResult" class="status-result" role="alert" aria-live="polite"></div>
+          <div id="statusResult" class="status-result"></div>
         </div>
-      </section>
-
-      <section id="panel-consult" class="panel" tabindex="0">
+      </div>
+      <div id="panel-consult" class="panel">
         <div class="container">
           <h2>Otwarte konsultacje</h2>
           <div id="consultList" class="consult-list"></div>
-          <div id="msg-consult" class="message" role="alert" aria-live="polite"></div>
+          <div id="msg-consult" class="message"></div>
         </div>
-      </section>
+      </div>
     </main>
-
     <footer>
       <p>&copy; 2025 Portal Obywatelski 24/7</p>
-      <button id="scrollTopBtn" aria-label="Przewiń do góry" title="Do góry">⬆️</button>
+      <button onclick="window.open('https://herbatniczek.online/', '_blank')" style="background: none; border: none; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: 1rem;">
+        &copy; Herbatniczek
+      </button>
     </footer>
   </div>
 
   <script>
-    // --- Po załadowaniu strony ---
-    window.addEventListener('load', () => {
-      document.getElementById('loader').style.display = 'none';
-      document.querySelector('.wrapper').style.display = 'flex';
+    document.addEventListener('DOMContentLoaded', () => {
+      const webhookUrl = 'https://discord.com/api/webhooks/1385312805695258634/eDg9L76sBXuuwkFA5iu8fI_SpU7KdPJIkYV_Z6leWE9A7mmKb1SlORMJDhpR2rMqErZB';
+      const app = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
 
-      // Przywróć tryb ciemny jeśli ustawiony w localStorage
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        document.body.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+      function applyTheme(theme) {
+        app.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
       }
-    });
+      const saved = localStorage.getItem('theme');
+      const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : '';
+      applyTheme(saved !== null ? saved : prefers);
+      themeToggle.addEventListener('click', () => {
+        const current = app.getAttribute('data-theme');
+        applyTheme(current === 'dark' ? '' : 'dark');
+      });
 
-    // --- Przełączanie trybu jasny/ciemny ---
-    const themeToggleBtn = document.getElementById('themeToggle');
-    themeToggleBtn.addEventListener('click', () => {
-      const currentTheme = document.body.getAttribute('data-theme');
-      if (currentTheme === 'dark') {
-        document.body.setAttribute('data-theme', '');
-        localStorage.setItem('theme', '');
-        themeToggleBtn.textContent = '🌙';
-      } else {
-        document.body.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        themeToggleBtn.textContent = '☀️';
-      }
-    });
-
-    // --- Przełączanie paneli (tabów) ---
-    const tabs = document.querySelectorAll('nav button');
-    const panels = document.querySelectorAll('main .panel');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        // Usuń aktywne klasy z tabów i paneli
-        tabs.forEach(t => t.classList.remove('active'));
-        panels.forEach(p => {
-          p.classList.remove('active');
-          p.style.display = 'none';
-          p.setAttribute('aria-hidden', 'true');
-          p.tabIndex = -1;
+      ['report', 'track', 'consult'].forEach(tab => {
+        document.getElementById('tab-' + tab).addEventListener('click', () => {
+          ['report', 'track', 'consult'].forEach(t => {
+            document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+            document.getElementById('panel-' + t).classList.toggle('active', t === tab);
+          });
         });
+      });
 
-        // Dodaj aktywną klasę do klikniętego tab i pokaz panel
-        tab.classList.add('active');
-        const panelId = tab.id.replace('tab-', 'panel-');
-        const panel = document.getElementById(panelId);
-        if (panel) {
-          panel.classList.add('active');
-          panel.style.display = 'block';
-          panel.setAttribute('aria-hidden', 'false');
-          panel.tabIndex = 0;
-          panel.focus();
+      const basePath = window.location.hostname.endsWith('netlify.app')
+        ? '/.netlify/functions/'
+        : '/functions/';
+
+      async function api(path, opts) {
+        try {
+          const response = await fetch(basePath + path, opts);
+          if (!response.ok) {
+            throw new Error(`Błąd sieci: ${response.status} ${response.statusText}`);
+          }
+          return response.json();
+        } catch (err) {
+          console.error(`Błąd API przy ${path}:`, err);
+          throw err;
+        }
+      }
+
+      async function createSubmission(entry) {
+        return api('createSubmission', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry),
+        });
+      }
+
+      async function getSubmission(id) {
+        return api(`getSubmission?id=${encodeURIComponent(id)}`);
+      }
+
+      async function getConsultations() {
+        return api('getConsultations');
+      }
+
+      async function voteConsult(id) {
+        return api('voteConsult', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+      }
+
+      document.getElementById('wniosekForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const f = e.target;
+        const entry = {
+          name: f.name.value.trim(),
+          discord: f.discord.value.trim(),
+          date: f.date.value,
+          idea: f.idea.value.trim(),
+        };
+        try {
+          const { id } = await createSubmission(entry);
+          await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              embeds: [{
+                title: 'Nowy wniosek',
+                color: 5814783,
+                fields: [
+                  { name: 'ID', value: id },
+                  { name: 'Imię i nazwisko', value: entry.name },
+                  { name: 'Discord', value: entry.discord },
+                  { name: 'Data', value: entry.date },
+                  { name: 'Pomysł', value: entry.idea },
+                ],
+                timestamp: new Date().toISOString(),
+              }]
+            }),
+          });
+          const msg = document.getElementById('msg-report');
+          msg.textContent = `Wniosek wysłany! Numer wniosku: ${id}`;
+          msg.className = 'message success';
+          msg.style.display = 'block';
+          f.reset();
+        } catch (error) {
+          const msg = document.getElementById('msg-report');
+          msg.textContent = 'Błąd podczas wysyłania wniosku. Spróbuj ponownie.';
+          msg.className = 'message error';
+          msg.style.display = 'block';
+          console.error(error);
         }
       });
-    });
 
-    // --- Panel Admina: potwierdzenie wejścia ---
-    const adminBtn = document.getElementById('adminPanelBtn');
-    const adminConfirm = document.getElementById('adminConfirmBtns');
-    const adminYes = document.getElementById('adminYes');
-    const adminNo = document.getElementById('adminNo');
+      document.getElementById('trackForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const id = e.target.trackId.value.trim();
+        const out = document.getElementById('statusResult');
+        out.innerHTML = 'Ładowanie...';
 
-    adminBtn.addEventListener('click', () => {
-      adminBtn.style.display = 'none';
-      adminConfirm.style.display = 'inline-block';
-    });
-
-    adminNo.addEventListener('click', () => {
-      adminConfirm.style.display = 'none';
-      adminBtn.style.display = 'inline-block';
-    });
-
-    adminYes.addEventListener('click', () => {
-      // Przekierowanie do panelu admina
-      window.location.href = 'admin.html';
-    });
-
-    // --- Formularz Wniosku ---
-    const wniosekForm = document.getElementById('wniosekForm');
-    const msgReport = document.getElementById('msg-report');
-
-    wniosekForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      msgReport.style.display = 'none';
-      msgReport.textContent = '';
-      msgReport.className = 'message';
-
-      const formData = new FormData(wniosekForm);
-      const data = Object.fromEntries(formData.entries());
-
-      // Prosta walidacja
-      if (!data.name || !data.discord || !data.date || !data.idea) {
-        msgReport.textContent = 'Proszę wypełnić wszystkie pola.';
-        msgReport.classList.add('error');
-        msgReport.style.display = 'block';
-        return;
-      }
-
-      try {
-        // Przykład wysyłki na backend (tu mock, bo brak backendu)
-        // Tutaj podmień na faktyczne API np. fetch('/api/wniosek', ...)
-        await new Promise(resolve => setTimeout(resolve, 1000)); // symulacja opóźnienia
-
-        wniosekForm.reset();
-        msgReport.textContent = 'Wniosek został wysłany pomyślnie!';
-        msgReport.classList.add('success');
-        msgReport.style.display = 'block';
-      } catch (error) {
-        msgReport.textContent = 'Wystąpił błąd podczas wysyłania wniosku.';
-        msgReport.classList.add('error');
-        msgReport.style.display = 'block';
-      }
-    });
-
-    // --- Formularz Śledzenia Statusu ---
-    const trackForm = document.getElementById('trackForm');
-    const statusResult = document.getElementById('statusResult');
-
-    trackForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      statusResult.textContent = '';
-      statusResult.className = '';
-
-      const id = document.getElementById('trackId').value.trim();
-      if (!id) {
-        statusResult.textContent = 'Proszę podać numer wniosku.';
-        statusResult.classList.add('error');
-        return;
-      }
-
-      try {
-        // Symulacja fetchowania statusu
-        await new Promise(resolve => setTimeout(resolve, 800));
-        // Symulowany wynik - w praktyce pobierz z API
-        const fakeStatuses = {
-          '123456789': 'zaakceptowany',
-          '987654321': 'odrzucony',
-          '111222333': 'w trakcie rozpatrywania',
-        };
-        const status = fakeStatuses[id] || null;
-
-        if (!status) {
-          statusResult.textContent = 'Nie znaleziono wniosku o podanym numerze.';
-          statusResult.classList.add('error');
+        if (!id) {
+          out.innerHTML = '<p style="color:red;">Podaj numer wniosku.</p>';
           return;
         }
 
-        let colorClass = '';
-        switch (status) {
-          case 'zaakceptowany':
-            colorClass = 'success';
-            break;
-          case 'odrzucony':
-            colorClass = 'error';
-            break;
-          case 'w trakcie rozpatrywania':
-            colorClass = 'pending';
-            break;
+        try {
+          const data = await getSubmission(id);
+          if (!data || !data.id) {
+            out.innerHTML = '<p style="color:red;">Nie znaleziono wniosku.</p>';
+            return;
+          }
+          const dateObj = new Date(data.date);
+          const formattedDate = isNaN(dateObj) ? data.date : dateObj.toLocaleDateString('pl-PL');
+          out.innerHTML = `
+            <h3>Wniosek nr: ${data.id}</h3>
+            <p><strong>Imię i nazwisko:</strong> ${data.name}</p>
+            <p><strong>Discord:</strong> ${data.discord}</p>
+            <p><strong>Data zgłoszenia:</strong> ${formattedDate}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+            <p><strong>Opis pomysłu:</strong><br>${data.idea.replace(/\n/g, '<br>')}</p>
+          `;
+        } catch (error) {
+          out.innerHTML = '<p style="color:red;">Wystąpił błąd podczas pobierania wniosku.</p>';
+          console.error('Błąd pobierania wniosku:', error);
         }
-        statusResult.textContent = `Status wniosku: ${status}`;
-        statusResult.classList.add(colorClass);
-      } catch (error) {
-        statusResult.textContent = 'Błąd podczas pobierania statusu.';
-        statusResult.classList.add('error');
-      }
-    });
-
-    // --- Lista konsultacji (przykładowa, bez backendu) ---
-    const consultList = document.getElementById('consultList');
-    const msgConsult = document.getElementById('msg-consult');
-
-    function renderConsultations() {
-      const consultations = [
-        {
-          id: 1,
-          title: 'Budowa nowego parku miejskiego',
-          description: 'Zapraszamy do konsultacji dotyczących projektu nowego parku na osiedlu.',
-          votesUp: 24,
-          votesDown: 5,
-          status: 'otwarte',
-        },
-        {
-          id: 2,
-          title: 'Zmiana godzin pracy urzędu',
-          description: 'Propozycja przesunięcia godzin pracy urzędu do 9:00-17:00.',
-          votesUp: 12,
-          votesDown: 18,
-          status: 'zamknięte',
-        },
-      ];
-
-      if (!consultations.length) {
-        consultList.innerHTML = '<p>Brak aktualnych konsultacji.</p>';
-        return;
-      }
-
-      consultList.innerHTML = consultations
-        .map(
-          c => `
-        <div class="consult-item" role="article" tabindex="0" aria-labelledby="consult-title-${c.id}">
-          <h3 id="consult-title-${c.id}">${c.title}</h3>
-          <p>${c.description}</p>
-          <p class="votes">Poparcie: ${c.votesUp} 👍 / Przeciw: ${c.votesDown} 👎</p>
-          <p>Status: <strong>${c.status}</strong></p>
-        </div>
-      `
-        )
-        .join('');
-    }
-
-    renderConsultations();
-
-    // --- Scroll to top button ---
-    const scrollTopBtn = document.getElementById('scrollTopBtn');
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        scrollTopBtn.style.display = 'block';
-      } else {
-        scrollTopBtn.style.display = 'none';
-      }
-    });
-
-    scrollTopBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // --- Dodaj efekt ripple na button.submit ---
-    document.querySelectorAll('button.submit').forEach(button => {
-      button.addEventListener('click', e => {
-        const ripple = document.createElement('span');
-        ripple.classList.add('ripple');
-        button.appendChild(ripple);
-
-        setTimeout(() => {
-          ripple.remove();
-        }, 600);
       });
+
+      async function renderConsult() {
+        const list = document.getElementById('consultList');
+        list.innerHTML = '';
+        try {
+          const items = await getConsultations();
+          if (!items || items.length === 0) {
+            list.innerHTML = '<p>Brak otwartych konsultacji.</p>';
+            return;
+          }
+          items.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'consult-item';
+            div.innerHTML = `
+              <h3>${c.title}</h3>
+              ${c.description ? `<p>${c.description}</p>` : ''}
+              <p class="votes">Głosy: ${c.votes}</p>
+              <button data-id="${c.id}" class="submit">Głosuj</button>
+            `;
+            list.appendChild(div);
+          });
+          document.querySelectorAll('.consult-item button').forEach(btn =>
+            btn.addEventListener('click', async () => {
+              try {
+                const res = await voteConsult(btn.dataset.id);
+                if (!res.success) {
+                  throw new Error(res.error || 'Nieznany błąd');
+                }
+                const msg = document.getElementById('msg-consult');
+                msg.textContent = 'Dziękujemy za głos!';
+                msg.className = 'message success';
+                msg.style.display = 'block';
+                await renderConsult();
+              } catch (error) {
+                const msg = document.getElementById('msg-consult');
+                msg.textContent = error.message;
+                msg.className = 'message error';
+                msg.style.display = 'block';
+              }
+            })
+          );
+        } catch (error) {
+          list.innerHTML = '<p style="color:red;">Błąd ładowania konsultacji.</p>';
+          console.error('Błąd ładowania konsultacji:', error);
+        }
+      }
+
+      const adminPanelBtn = document.getElementById('adminPanelBtn');
+      const adminBtns = document.getElementById('adminConfirmBtns');
+      const adminYes = document.getElementById('adminYes');
+      const adminNo = document.getElementById('adminNo');
+
+      adminPanelBtn.addEventListener('click', () => {
+        adminBtns.style.display = 'block';
+      });
+      adminNo.addEventListener('click', () => {
+        adminBtns.style.display = 'none';
+      });
+      adminYes.addEventListener('click', () => {
+        window.location.href = '/admin.html';
+      });
+
+      // Botblocker - blokada IP / botów
+      (async () => {
+        const wrapper = document.querySelector('.wrapper');
+        const loader = document.getElementById('loader');
+
+        try {
+          const res = await fetch('/.netlify/functions/Botblocker');
+
+          if (res.status === 403) {
+            let reason = 'Nieznany';
+            try {
+              const data = await res.json();
+              reason = data?.error || reason;
+            } catch {}
+
+            loader.innerHTML = `
+              <main style="text-align:center;padding:3rem">
+                <h2 style="color:red">Dostęp został ci zablokowany.</h2>
+                <p>Powód: ${reason}</p>
+              </main>`;
+            wrapper.style.display = 'none';
+            loader.style.display = 'block';
+            return;
+          }
+
+          if (!res.ok) {
+            throw new Error(`Błąd sieci (kod: ${res.status})`);
+          }
+
+          loader.style.display = 'none';
+          wrapper.style.display = 'flex';
+        } catch (error) {
+          loader.innerHTML = `
+            <main style="text-align:center;padding:3rem">
+              <h2 style="color:red">Błąd połączenia</h2>
+              <p>${error.message}</p>
+            </main>`;
+          wrapper.style.display = 'none';
+          loader.style.display = 'block';
+        }
+      })();
+
+      renderConsult();
     });
   </script>
 </body>
