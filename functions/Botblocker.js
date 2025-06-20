@@ -13,7 +13,11 @@ function isBot(userAgent = '') {
     'go-http-client', 'java/', 'perl/', 'python/', 'scan', 'badbot', 'attack', 'user-agent', 'checker'
   ];
   const ua = userAgent.toLowerCase();
-  return botKeywords.some(keyword => ua.includes(keyword));
+  const matchedKeyword = botKeywords.find(keyword => ua.includes(keyword));
+  if (matchedKeyword) {
+    console.warn(`[Botblocker] ⚠️ Wykryto słowo kluczowe bota: '${matchedKeyword}'`);
+  }
+  return !!matchedKeyword;
 }
 
 exports.handler = async (event) => {
@@ -29,6 +33,7 @@ exports.handler = async (event) => {
     if (isBot(userAgent)) {
       console.warn('[Botblocker] 🤖 Wykryto bota! Blokowanie IP:', ip);
       await sql`INSERT INTO blocked_ips (ip, reason, blocked_at) VALUES (${ip}, 'Wykryto bota', CURRENT_TIMESTAMP)`;
+      console.log('[Botblocker] ✅ Bot zablokowany i zapisany w bazie danych');
       return {
         statusCode: 403,
         body: JSON.stringify({ error: 'Dostęp zablokowany: wykryto bota' }),
