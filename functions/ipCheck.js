@@ -7,7 +7,16 @@ exports.handler = async (event) => {
     event.headers["client-ip"] ||
     "unknown";
 
+  const now = new Date().toISOString();
+
   try {
+    // 🔄 Zapisz IP i datę odwiedzin
+    await sql`
+      INSERT INTO ip_logs (ip, date)
+      VALUES (${ip}, ${now})
+    `;
+
+    // 🔒 Sprawdź, czy IP jest zablokowane
     const blocked = await sql`SELECT reason FROM blocked_ips WHERE ip = ${ip}`;
     if (blocked.length > 0) {
       return {
