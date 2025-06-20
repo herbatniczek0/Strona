@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Portal Obywatelski 24/7</title>
   <style>
    /* === GLOBAL VARIABLES & BASE === */
@@ -22,13 +22,21 @@
 }
 
 /* === RESET & BASE === */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
 html, body {
-  height: 100%; font-family: 'Segoe UI', sans-serif;
+  height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--bg); color: var(--fg);
   transition: background 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.wrapper { display: flex; flex-direction: column; min-height: 100%; }
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
 /* === LOADER === */
 #loader::after {
@@ -45,189 +53,335 @@ html, body {
 
 /* === HEADER === */
 header {
-  background: var(--header-bg); color: #fff;
-  padding: 1rem 2rem; display: flex;
-  justify-content: space-between; align-items: center;
-  box-shadow: var(--shadow); animation: slideDown 0.6s ease;
+  background: var(--header-bg);
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+  animation: slideDown 0.6s ease;
+  position: sticky;
+  top: 0;
+  z-index: 150;
+}
+header h1 {
+  font-weight: 700;
+  font-size: 1.5rem;
+  user-select: none;
+}
+header > div {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 .theme-toggle, #adminPanelBtn {
-  background: transparent; border: 1px solid #fff; color: #fff;
-  padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer;
-  transition: all 0.3s ease;
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
 }
 .theme-toggle:hover, #adminPanelBtn:hover {
-  background: rgba(255,255,255,0.2); transform: scale(1.05);
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.05);
 }
 .theme-toggle::before {
   content: attr(data-theme);
-  display: inline-block; margin-right: 5px;
+  display: inline-block;
+  margin-right: 5px;
+  font-weight: 700;
 }
 
 /* === ADMIN CONFIRM BUTTONS === */
+#adminConfirmBtns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
 #adminConfirmBtns button {
-  border-radius: var(--radius); transition: all 0.3s ease;
+  border-radius: var(--radius);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border: none;
+  user-select: none;
 }
 #adminConfirmBtns button:hover {
-  opacity: 0.9; transform: scale(1.03);
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+#adminYes {
+  background: var(--status-green);
+  color: #fff;
+}
+#adminNo {
+  background: var(--status-red);
+  color: #fff;
 }
 
 /* === NAVBAR === */
 nav {
-  background: var(--nav-bg); box-shadow: var(--shadow);
-  position: sticky; top: 0; z-index: 100;
+  background: var(--nav-bg);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 3.8rem; /* height header ~ 64px */
+  z-index: 100;
 }
 nav ul {
-  list-style: none; display: flex;
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  max-width: 800px;
+  margin: auto;
 }
 nav li {
-  flex: 1; text-align: center;
+  flex: 1;
+  text-align: center;
 }
 nav button {
-  width: 100%; padding: 1rem;
-  background: none; border: none;
-  color: #fff; font-size: 1rem; cursor: pointer;
-  transition: all 0.3s ease-in-out; position: relative;
+  width: 100%;
+  padding: 1rem 0.75rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  user-select: none;
 }
 nav button::after {
-  content: ""; position: absolute; left: 0; bottom: 0;
-  height: 3px; width: 0%; background: #fff;
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0%;
+  background: #fff;
   transition: width 0.3s ease-in-out;
 }
 nav button.active::after, nav button:hover::after {
   width: 100%;
 }
 nav button.active {
-  background: var(--primary); font-weight: bold;
+  background: var(--primary);
+  font-weight: 700;
 }
 
 /* === MAIN CONTENT === */
 main {
-  flex: 1; padding: 2rem 1rem;
+  flex: 1;
+  padding: 2rem 1rem;
+  background: transparent;
 }
 .container {
   background: var(--container-bg);
   backdrop-filter: blur(var(--blur));
-  padding: 2rem; border-radius: var(--radius);
-  box-shadow: var(--shadow); max-width: 800px; margin: auto;
+  padding: 2rem 2.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 800px;
+  margin: auto;
   animation: fadeIn 0.8s ease;
+  min-height: 300px;
 }
 h1, h2, h3 {
-  color: var(--primary); margin-bottom: 1rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  user-select: none;
+  font-weight: 700;
 }
 form {
-  display: grid; gap: 1.2rem;
+  display: grid;
+  gap: 1.2rem;
 }
 input, textarea {
-  font-size: 1rem; padding: 0.75rem;
-  border: 1px solid #ccc; border-radius: var(--radius);
-  background: rgba(255,255,255,0.9); color: var(--fg);
-  transition: all 0.3s ease;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--fg);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  font-family: inherit;
+  resize: vertical;
 }
 [data-theme="dark"] input, [data-theme="dark"] textarea {
-  background: rgba(50,50,50,0.9);
+  background: rgba(50, 50, 50, 0.9);
+  border-color: #555;
 }
 input:focus, textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
-  outline: none; transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+  transform: scale(1.02);
 }
 input::placeholder, textarea::placeholder {
-  color: #999; opacity: 0.6;
+  color: #999;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
 }
 input:focus::placeholder, textarea:focus::placeholder {
   opacity: 0.3;
 }
+
+/* === BUTTONS === */
 button.submit {
-  background: var(--accent); color: #fff;
-  border: none; padding: 0.75rem 1rem;
-  font-weight: bold; border-radius: var(--radius);
-  cursor: pointer; transition: background 0.3s ease, transform 0.2s;
-  position: relative; overflow: hidden;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
 }
 button.submit:hover {
-  background: #218838; transform: scale(1.03);
+  background: #218838;
+  transform: scale(1.05);
 }
 button.submit::after {
   content: "";
   position: absolute;
-  top: 50%; left: 50%;
-  width: 300%; height: 300%;
-  background: rgba(255,255,255,0.2);
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.25);
   transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%; pointer-events: none;
+  border-radius: 50%;
+  pointer-events: none;
   animation: ripple 0.6s ease-out;
 }
 button.submit:active::after {
   transform: translate(-50%, -50%) scale(1);
 }
+
+/* === MESSAGES === */
 .message {
-  margin-top: 1rem; padding: 1rem;
-  border-radius: var(--radius); display: none;
-  font-weight: 500;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius);
+  display: none;
+  font-weight: 600;
+  user-select: none;
 }
 .success {
-  background: #d4edda; color: #155724;
+  background: #d4edda;
+  color: #155724;
   border: 1px solid #c3e6cb;
 }
 .error {
-  background: #f8d7da; color: #721c24;
+  background: #f8d7da;
+  color: #721c24;
   border: 1px solid #f5c6cb;
 }
+
+/* === FOOTER === */
 footer {
-  background: var(--footer-bg); color: #fff;
-  text-align: center; padding: 1rem;
-  font-size: 0.9rem; animation: fadeIn 1.2s ease;
+  background: var(--footer-bg);
+  color: #fff;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  font-size: 0.9rem;
+  animation: fadeIn 1.2s ease;
+  user-select: none;
 }
 footer button {
-  background: none; border: none;
-  color: var(--accent); cursor: pointer;
-  text-decoration: underline; font-size: 1rem;
-  transition: transform 0.2s;
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+  user-select: none;
 }
 footer button:hover {
   transform: scale(1.05);
 }
-.status-result, .consult-list {
+
+/* === CONSULT LIST === */
+.status-result,
+.consult-list {
   margin-top: 1rem;
 }
 .consult-item {
-  padding: 1.2rem; border: 1px solid #ccc;
-  margin-bottom: 1rem; border-radius: var(--radius);
-  background: var(--container-bg); box-shadow: var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.3s;
+  padding: 1.2rem;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+  border-radius: var(--radius);
+  background: var(--container-bg);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  cursor: default;
+  user-select: none;
 }
 .consult-item:hover {
-  transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
-.consult-item h3 { margin-bottom: 0.5rem; }
+.consult-item h3 {
+  margin-bottom: 0.5rem;
+}
 .consult-item .votes {
-  font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
 }
+
+/* === STATUS DOTS === */
 .status-dot {
   display: inline-block;
-  width: 10px; height: 10px;
-  border-radius: 50%; margin-right: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
   background: var(--status-green);
 }
-.status-dot.red { background: var(--status-red); }
+.status-dot.red {
+  background: var(--status-red);
+}
+
+/* === TOGGLE SWITCH === */
 .toggle-switch {
-  position: relative; display: inline-block;
-  width: 50px; height: 24px;
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
 }
 .toggle-switch input {
-  opacity: 0; width: 0; height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 .slider {
-  position: absolute; cursor: pointer;
+  position: absolute;
+  cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc; transition: .4s;
+  background-color: #ccc;
+  transition: 0.4s;
   border-radius: 24px;
 }
 .slider:before {
-  position: absolute; content: "";
-  height: 20px; width: 20px; left: 2px; bottom: 2px;
-  background-color: white; transition: .4s;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.4s;
   border-radius: 50%;
 }
 .toggle-switch input:checked + .slider {
@@ -236,49 +390,95 @@ footer button:hover {
 .toggle-switch input:checked + .slider:before {
   transform: translateX(26px);
 }
-.panel { display: none; }
-.panel.active { display: block; animation: fadeIn 0.5s ease; }
 
+/* === PANELS === */
+.panel {
+  display: none;
+}
+.panel.active {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-  nav ul { flex-direction: column; }
-  nav li { width: 100%; }
-  .container { padding: 1rem; }
+  nav ul {
+    flex-direction: column;
+  }
+  nav li {
+    width: 100%;
+  }
+  .container {
+    padding: 1rem 1.5rem;
+  }
+  header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  header > div {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  main {
+    padding: 1.5rem 1rem;
+  }
+  button.submit {
+    width: 100%;
+  }
 }
 
 /* === ANIMATIONS === */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 @keyframes ripple {
-  to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
 }
-
   </style>
 </head>
 <body data-theme="">
   <div id="loader" style="padding:3rem;text-align:center;">Ładowanie...</div>
   <div class="wrapper" style="display:none;">
-<header>
-  <h1>Portal Obywatelski 24/7</h1>
-  <div>
-    <button id="adminPanelBtn" style="margin-right:10px; background:#fff; color:#007bff; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer;">Panel Admina</button>
-    <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
-    <div id="adminConfirmBtns" style="display: none; margin-top: 10px;">
-      <button id="adminYes" style="background: #28a745; color: #fff; border: none; padding: 0.5rem 1rem; margin-right: 5px; border-radius: 4px; cursor: pointer;">Tak</button>
-      <button id="adminNo" style="background: #dc3545; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Nie</button>
-    </div>
-  </div>
-</header>
-</header>
+    <header>
+      <h1>Portal Obywatelski 24/7</h1>
+      <div>
+        <button id="adminPanelBtn">Panel Admina</button>
+        <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
+      </div>
+      <div id="adminConfirmBtns" style="display: none;">
+        <button id="adminYes">Tak</button>
+        <button id="adminNo">Nie</button>
+      </div>
+    </header>
+
     <nav>
       <ul>
         <li><button id="tab-report" class="active">Zgłoś wniosek</button></li>
@@ -286,30 +486,33 @@ footer button:hover {
         <li><button id="tab-consult">Konsultacje</button></li>
       </ul>
     </nav>
+
     <main>
       <div id="panel-report" class="panel active">
         <div class="container">
           <h2>Złóż wniosek</h2>
           <form id="wniosekForm">
-            <input type="text" name="name" placeholder="Imię i nazwisko" required>
-            <input type="text" name="discord" placeholder="Discord ID#nick" required>
-            <input type="date" name="date" required>
+            <input type="text" name="name" placeholder="Imię i nazwisko" required />
+            <input type="text" name="discord" placeholder="Discord ID#nick" required />
+            <input type="date" name="date" required />
             <textarea name="idea" rows="4" placeholder="Twój pomysł / opis" required></textarea>
             <button type="submit" class="submit">Wyślij wniosek</button>
           </form>
           <div id="msg-report" class="message"></div>
         </div>
       </div>
+
       <div id="panel-track" class="panel">
         <div class="container">
           <h2>Śledzenie statusu</h2>
           <form id="trackForm">
-            <input type="text" id="trackId" placeholder="Numer wniosku" required>
+            <input type="text" id="trackId" placeholder="Numer wniosku" required />
             <button type="submit" class="submit">Sprawdź status</button>
           </form>
           <div id="statusResult" class="status-result"></div>
         </div>
       </div>
+
       <div id="panel-consult" class="panel">
         <div class="container">
           <h2>Otwarte konsultacje</h2>
@@ -318,11 +521,12 @@ footer button:hover {
         </div>
       </div>
     </main>
+
     <footer>
       <p>&copy; 2025 Portal Obywatelski 24/7</p>
-    <button onclick="window.open('https://herbatniczek.online/', '_blank')" style="background: none; border: none; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: 1rem;">
-  &copy; Herbatniczek
-</button>
+      <button onclick="window.open('https://herbatniczek.online/', '_blank')">
+        &copy; Herbatniczek
+      </button>
     </footer>
   </div>
   <script>
