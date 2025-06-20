@@ -262,7 +262,7 @@ adminYes.addEventListener('click', () => {
 });
 
 (async () => {
-  const res = await fetch('/.netlify/functions/ipCheck');
+  const res = await fetch('/.netlify/functions/botblocker');
   const result = await res.json();
   const wrapper = document.querySelector('.wrapper');
   const loader = document.getElementById('loader');
