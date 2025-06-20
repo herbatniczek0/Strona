@@ -5,233 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Obywatelski 24/7</title>
   <style>
- /* ===== VARIABLES & RESET ===== */
-:root {
-  /* Kolory */
-  --primary: #4361ee;
-  --primary-dark: #3a0ca3;
-  --accent: #4cc9f0;
-  --success: #2ecc71;
-  --error: #e74c3c;
-  --warning: #f39c12;
-  --dark: #212529;
-  --light: #f8f9fa;
-
-  /* Typografia */
-  --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Courier New', monospace;
-  
-  /* Cienie */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
-
-  /* Zaokrąglenia */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
-
-  /* Przejścia */
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s ease;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-main);
-  background: var(--light);
-  color: var(--dark);
-  line-height: 1.6;
-}
-
-/* ===== LAYOUT ===== */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.grid {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.flex {
-  display: flex;
-  gap: 1rem;
-}
-
-/* ===== TYPOGRAPHY ===== */
-h1, h2, h3 {
-  line-height: 1.2;
-  margin-bottom: 1rem;
-}
-
-h1 {
-  font-size: 2.5rem;
-  color: var(--primary);
-}
-
-h2 {
-  font-size: 2rem;
-  border-bottom: 2px solid var(--accent);
-  padding-bottom: 0.5rem;
-}
-
-h3 {
-  font-size: 1.5rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-/* ===== COMPONENTS ===== */
-/* Karty */
-.card {
-  background: white;
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition-normal);
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Przyciski */
-.btn {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  border: none;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-}
-
-.btn-primary:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-}
-
-.btn-accent {
-  background: var(--accent);
-  color: white;
-}
-
-/* Formularze */
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-main);
-  transition: var(--transition-fast);
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
-}
-
-/* Listy */
-.list {
-  list-style: none;
-}
-
-.list-item {
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
-  transition: var(--transition-fast);
-}
-
-.list-item:hover {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-/* ===== SECTIONS ===== */
-header {
-  background: var(--primary);
-  color: white;
-  padding: 1.5rem 0;
-  box-shadow: var(--shadow-md);
-}
-
-nav {
-  background: var(--primary-dark);
-}
-
-section {
-  padding: 3rem 0;
-}
-
-footer {
-  background: var(--dark);
-  color: white;
-  padding: 2rem 0;
-  margin-top: 3rem;
-}
-
-/* ===== UTILITIES ===== */
-.shadow {
-  box-shadow: var(--shadow-sm);
-}
-
-.rounded {
-  border-radius: var(--radius-md);
-}
-
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mt-3 { margin-top: 1.5rem; }
-
-/* ===== DARK MODE ===== */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --light: #212529;
-    --dark: #f8f9fa;
-  }
-  
-  .card {
-    background: var(--dark);
-    color: var(--light);
-  }
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-  
-  h1 {
-    font-size: 2rem;
-  }
-}
+    :root {
+      --bg: #f0f2f5;
+      --fg: #333;
+      --header-bg: #007bff;
+      --nav-bg: #0056b3;
+      --container-bg: #ffffff;
+      --footer-bg: #007bff;
+      --primary: #007bff;
+      --accent: #28a745;
+    }
+    [data-theme="dark"] {
+      --bg: #121212;
+      --fg: #e0e0e0;
+      --header-bg: #1c7ed6;
+      --nav-bg: #0b5ed7;
+      --container-bg: #1e1e1e;
+      --footer-bg: #1c7ed6;
+      --primary: #339af0;
+      --accent: #51cf66;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: Arial, sans-serif; background: var(--bg); color: var(--fg); transition: background 0.3s, color 0.3s; }
+    .wrapper { display: flex; flex-direction: column; min-height: 100%; }
+    header { background: var(--header-bg); color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .theme-toggle { background: none; border: 1px solid #fff; color: #fff; padding: 0.5rem; border-radius: 4px; cursor: pointer; }
+    nav { background: var(--nav-bg); }
+    nav ul { list-style: none; display: flex; }
+    nav li { flex: 1; text-align: center; }
+    nav button { width: 100%; padding: 1rem; background: none; border: none; color: #fff; font-size: 1rem; cursor: pointer; }
+    nav button.active, nav button:hover { background: var(--primary); }
+    main { flex: 1; padding: 2rem; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .container { background: var(--container-bg); padding: 2rem; border-radius: 8px; max-width: 600px; margin: auto; color: var(--fg); }
+    h1, h2 { color: var(--primary); margin-bottom: 1rem; }
+    form { display: grid; gap: 1rem; }
+    input, textarea { font-size: 1rem; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; background: var(--bg); color: var(--fg); }
+    button.submit { background: var(--accent); color: #fff; border: none; padding: 0.75rem; cursor: pointer; }
+    button.submit:hover { background: #1e7e34; }
+    .message { margin-top: 1rem; padding: 1rem; border-radius: 4px; display: none; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    footer { background: var(--footer-bg); color: #fff; text-align: center; padding: 1rem; }
+    .status-result, .consult-list { margin-top: 1rem; }
+    .consult-item { padding: 1rem; border: 1px solid #ccc; margin-bottom: 0.5rem; border-radius: 4px; background: var(--container-bg); }
+    .consult-item .votes { font-size: 0.9rem; margin-bottom: 0.5rem; }
   </style>
 </head>
 <body data-theme="">
@@ -450,18 +269,18 @@ adminYes.addEventListener('click', () => {
     const res = await fetch('/.netlify/functions/Botblocker');
 
     if (res.status === 403) {
-      console.warn('[BotBlocker] ⛔ Otrzymano 403 – blokada IP');
+      console.warn('[IPCheck] ⛔ Otrzymano 403 – blokada IP');
 
       let result;
       try {
         result = await res.json();
       } catch (parseErr) {
-        console.error('[BotBlocker] ❌ Błąd parsowania JSON:', parseErr);
+        console.error('[IPCheck] ❌ Błąd parsowania JSON:', parseErr);
         result = { error: 'Nieznany (błąd parsowania odpowiedzi)' };
       }
 
       const reason = result?.error || 'Nieznany';
-      console.log('[BotBlocker] Powód blokady:', reason);
+      console.log('[IPCheck] Powód blokady:', reason);
 
       loader.innerHTML = `
         <main style="text-align:center;padding:3rem">
@@ -478,12 +297,12 @@ adminYes.addEventListener('click', () => {
       throw new Error(`Błąd sieci (kod: ${res.status})`);
     }
 
-    console.log('[BotBlocker] ✅ Dostęp przyznany');
+    console.log('[IPCheck] ✅ Dostęp przyznany');
     loader.style.display = 'none';
     wrapper.style.display = 'flex';
 
   } catch (error) {
-    console.error('[BotBlocker] 🔥 Błąd połączenia:', error.message);
+    console.error('[IPCheck] 🔥 Błąd połączenia:', error.message);
     loader.innerHTML = `
       <main style="text-align:center;padding:3rem">
         <h2 style="color:red">Błąd połączenia</h2>
