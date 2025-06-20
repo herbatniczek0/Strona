@@ -17,7 +17,7 @@ function isBot(userAgent = '') {
   if (matchedKeyword) {
     console.warn(`[Botblocker] ⚠️ Wykryto słowo kluczowe bota: '${matchedKeyword}'`);
   }
-  return !!matchedKeyword;
+  return matchedKeyword;
 }
 
 exports.handler = async (event) => {
@@ -29,27 +29,33 @@ exports.handler = async (event) => {
   console.log('[Botblocker] 🧭 User-Agent:', userAgent);
 
   try {
-    // Jeśli to bot — blokuj
-    if (isBot(userAgent)) {
-      console.warn('[Botblocker] 🤖 Wykryto bota! Blokowanie IP:', ip);
-      await sql`INSERT INTO blocked_ips (ip, reason, blocked_at) VALUES (${ip}, 'Wykryto bota', CURRENT_TIMESTAMP)`;
-      console.log('[Botblocker] ✅ Bot zablokowany i zapisany w bazie danych');
+    // Sprawdź, czy IP jest już zablokowane
+    console.log('[Botblocker] 🔍 Sprawdzanie, czy IP jest zablokowane...');
+    const res = await sql`SELECT reason FROM blocked_ips WHERE ip = ${ip}`;
+
+    if (res.length > 0) {
+      const reason = res[0].reason || 'Nieznany';
+      console.warn('[Botblocker] 🚫 IP już zablokowane:', ip, '| Powód:', reason);
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: 'Dostęp zablokowany: wykryto bota' }),
+        body: JSON.stringify({ error: reason }),
         headers: { 'Content-Type': 'application/json' }
       };
     }
 
-    // Sprawdź, czy IP już jest zablokowane
-    console.log('[Botblocker] 🔍 Sprawdzanie, czy IP jest zablokowane...');
-    const res = await sql`SELECT 1 FROM blocked_ips WHERE ip = ${ip}`;
-
-    if (res.length > 0) {
-      console.warn('[Botblocker] 🚫 IP już zablokowane:', ip);
+    // Jeśli to bot — blokuj i zapisz (jeśli jeszcze nie ma)
+    const keyword = isBot(userAgent);
+    if (keyword) {
+      console.warn('[Botblocker] 🤖 Wykryto bota! Blokowanie IP:', ip);
+      await sql`
+        INSERT INTO blocked_ips (ip, reason, blocked_at)
+        VALUES (${ip}, ${'Wykryto bota: ' + keyword}, CURRENT_TIMESTAMP)
+        ON CONFLICT (ip) DO NOTHING
+      `;
+      console.log('[Botblocker] ✅ Bot zablokowany i zapisany w bazie danych');
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: 'Dostęp zablokowany' }),
+        body: JSON.stringify({ error: 'Wykryto bota: ' + keyword }),
         headers: { 'Content-Type': 'application/json' }
       };
     }
