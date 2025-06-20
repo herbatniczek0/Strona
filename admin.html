@@ -5,128 +5,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Panel Admina - Portal Obywatelski</title>
   <style>
-    :root {
-      --bg: #f0f2f5;
-      --fg: #333;
-      --panel-bg: #fff;
-      --accent: #007bff;
-      --error: #d9534f;
-      --success: #5cb85c;
-    }
-    [data-theme="dark"] {
-      --bg: #121212;
-      --fg: #eee;
-      --panel-bg: #1e1e1e;
-      --accent: #339af0;
-    }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      padding: 2rem;
-    }
-    h1, h2 {
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-    .hidden { display: none; }
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      background: var(--panel-bg);
-      padding: 2rem;
-      border-radius: 8px;
-    }
-    nav button {
-      margin: 0.3rem 0.5rem 1rem 0;
-      padding: 0.5rem 1rem;
-      background: var(--accent);
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    nav button.active {
-      background: darkblue;
-    }
-    input, textarea, select {
-      display: block;
-      margin: 0.3rem 0 0.8rem 0;
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-      color: var(--fg);
-      background: var(--panel-bg);
-    }
-    button.submit, button.action {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border-radius: 4px;
-      margin-top: 0.5rem;
-    }
-    button.submit:hover, button.action:hover {
-      background: darkblue;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.4rem 0.7rem;
-      text-align: left;
-    }
-    th {
-      background: var(--accent);
-      color: white;
-    }
-    #themeToggle {
-      float: right;
-      margin-top: -3.5rem;
-      margin-bottom: 1rem;
-      padding: 0.3rem 0.7rem;
-      font-size: 1.2rem;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #message {
-      margin: 1rem 0;
-      padding: 0.7rem;
-      border-radius: 4px;
-      display: none;
-    }
-    #message.success {
-      background: var(--success);
-      color: white;
-    }
-    #message.error {
-      background: var(--error);
-      color: white;
-    }
-    pre#logList {
-      max-height: 300px;
-      overflow-y: scroll;
-      background: #222;
-      color: #ddd;
-      padding: 1rem;
-      border-radius: 6px;
-      white-space: pre-wrap;
-      font-family: monospace;
-      margin-top: 1rem;
-    }
-    form > div {
-      max-width: 500px;
-    }
+    /* admin.html - Panel Admina */
+:root {
+  /* Kolory admin */
+  --admin-primary: #3a0ca3;
+  --admin-accent: #7209b7;
+  --admin-danger: #f72585;
+  --admin-success: #4cc9f0;
+  
+  /* Dodatkowe zmienne jak wyżej... */
+}
+
+/* Override dla panelu admina */
+#adminContent {
+  --primary: var(--admin-primary);
+  --accent: var(--admin-accent);
+}
+
+/* Specyficzne style dla panelu admina */
+#adminPanelBtn {
+  background: white;
+  color: var(--admin-primary);
+  border: 2px solid white;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+#adminPanelBtn:hover {
+  background: transparent;
+  color: white;
+}
+
+#adminConfirmBtns {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Tabele w panelu admina */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+th, td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: var(--primary);
+  color: white;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+tr:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Akcje w tabelach */
+.action {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.action[data-action="delete"] {
+  background: var(--admin-danger);
+  color: white;
+}
+
+/* Logi systemowe */
+pre#logList {
+  background: var(--card-bg-dark);
+  color: var(--text-dark);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Zakładki */
+.tab {
+  animation: fadeIn 0.4s ease;
+}
+
+/* Formularze admina */
+#addAdmin, #newConsult {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+}
+
+/* Przyciski eksportu */
+#exportCsv, #exportJson {
+  background: var(--admin-success);
+  margin-right: 1rem;
+}
+
+/* Dark mode dla admina */
+[data-theme="dark"] #adminContent {
+  --primary: var(--admin-accent);
+  --card-bg: var(--card-bg-dark);
+}
+
+[data-theme="dark"] table {
+  border-color: #444;
+}
+
+[data-theme="dark"] tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
   </style>
 </head>
 <body data-theme="">
