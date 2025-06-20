@@ -554,7 +554,12 @@ footer button:hover {
       const saved = localStorage.getItem('theme');
       const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : '';
       applyTheme(saved !== null ? saved : prefers);
-      themeToggle.addEventListener('click', () => applyTheme(app.getAttribute('data-theme') === 'dark' ? '' : 'dark'));
+     themeToggle.addEventListener('click', () => {
+  const newTheme = app.getAttribute('data-theme') === 'dark' ? '' : 'dark';
+  applyTheme(newTheme);
+  themeToggle.setAttribute('data-theme', newTheme);
+});
+
 
 
       
