@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Portal Obywatelski 24/7</title>
   <style>
-   /* === GLOBAL VARIABLES & BASE === */
+/* === GLOBAL VARIABLES & BASE === */
 :root {
   --bg: #f0f2f5; --fg: #212529;
   --header-bg: #007bff; --nav-bg: #0056b3; --container-bg: rgba(255,255,255,0.85);
@@ -73,56 +73,122 @@ header h1 {
 header > div {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-.theme-toggle, #adminPanelBtn {
-  background: transparent;
-  border: 1px solid #fff;
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  user-select: none;
-}
-.theme-toggle:hover, #adminPanelBtn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: scale(1.05);
-}
-.theme-toggle::before {
-  content: attr(data-theme);
-  display: inline-block;
-  margin-right: 5px;
-  font-weight: 700;
+  gap: 1rem; /* większy gap */
 }
 
-/* === ADMIN CONFIRM BUTTONS === */
+/* --- Animacje --- */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Panel Admina + przyciski Tak/Nie */
+#adminPanelBtn {
+  background: var(--primary);
+  border: none;
+  color: white;
+  padding: 0.55rem 1.2rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  user-select: none;
+}
+#adminPanelBtn:hover {
+  background: #0056b3;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+
+/* Przycisk Tak i Nie */
 #adminConfirmBtns {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  animation: fadeSlideIn 0.3s ease forwards;
 }
+
 #adminConfirmBtns button {
+  min-width: 65px;
+  padding: 0.45rem 1rem;
+  font-weight: 700;
   border-radius: var(--radius);
-  transition: all 0.3s ease;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
   border: none;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background-color 0.3s ease, transform 0.25s ease;
   user-select: none;
 }
 #adminConfirmBtns button:hover {
-  opacity: 0.9;
-  transform: scale(1.03);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  opacity: 0.95;
 }
 #adminYes {
   background: var(--status-green);
-  color: #fff;
 }
 #adminNo {
   background: var(--status-red);
-  color: #fff;
+}
+
+/* --- Theme toggle button --- */
+.theme-toggle {
+  position: relative;
+  font-size: 1.1rem;
+  background: transparent;
+  border: 2px solid white;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease, transform 0.3s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.theme-toggle::before {
+  content: attr(data-theme);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+.theme-toggle:hover {
+  background: white;
+  color: var(--primary);
+  transform: translateY(-3px) scale(1.05);
+}
+.theme-toggle:hover::before {
+  opacity: 1;
+}
+
+/* Ikonka zmienia się przy kliknięciu */
+.theme-toggle[data-theme="dark"]::after {
+  content: "☀️";
+  margin-left: 5px;
+  animation: pulse 2s infinite;
+}
+.theme-toggle[data-theme=""]::after {
+  content: "🌙";
+  margin-left: 5px;
+  animation: pulse 2s infinite;
 }
 
 /* === NAVBAR === */
@@ -461,15 +527,6 @@ footer button:hover {
     transform: translate(-50%, -50%) scale(1);
     opacity: 0;
   }
-}
-#adminConfirmBtns {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0; /* usuń margines góra */
-  margin-left: 0.5rem; /* lub dodaj, żeby było odstęp z lewej */
-}
-#adminConfirmBtns button {
-  min-width: 60px;
 }
 
   </style>
