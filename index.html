@@ -462,22 +462,32 @@ footer button:hover {
     opacity: 0;
   }
 }
+#adminConfirmBtns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0; /* usuń margines góra */
+  margin-left: 0.5rem; /* lub dodaj, żeby było odstęp z lewej */
+}
+
   </style>
 </head>
 <body data-theme="">
   <div id="loader" style="padding:3rem;text-align:center;">Ładowanie...</div>
   <div class="wrapper" style="display:none;">
-    <header>
-      <h1>Portal Obywatelski 24/7</h1>
-      <div>
-        <button id="adminPanelBtn">Panel Admina</button>
-        <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
-      </div>
+<header>
+  <h1>Portal Obywatelski 24/7</h1>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <div id="adminWrapper" style="display: flex; align-items: center; gap: 8px;">
+      <button id="adminPanelBtn">Panel Admina</button>
       <div id="adminConfirmBtns" style="display: none;">
         <button id="adminYes">Tak</button>
         <button id="adminNo">Nie</button>
       </div>
-    </header>
+    </div>
+    <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
+  </div>
+</header>
+
 
     <nav>
       <ul>
