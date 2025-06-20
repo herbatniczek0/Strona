@@ -262,18 +262,43 @@ adminYes.addEventListener('click', () => {
 });
 
 (async () => {
-  const res = await fetch('/.netlify/functions/Botblocker');
-  const result = await res.json();
   const wrapper = document.querySelector('.wrapper');
   const loader = document.getElementById('loader');
 
-  if (result.blocked) {
-    loader.innerHTML = `<main style="text-align:center;padding:3rem"><h2 style="color:red">Dostęp z Twojego IP został zablokowany.</h2><p>Powód: ${result.reason || 'Nieznany'}</p></main>`;
-  } else {
+  try {
+    const res = await fetch('/.netlify/functions/Botblocker');
+
+    if (res.status === 403) {
+      // Pobierz szczegóły błędu
+      const result = await res.json();
+      loader.innerHTML = `<main style="text-align:center;padding:3rem">
+        <h2 style="color:red">Dostęp z Twojego IP został zablokowany.</h2>
+        <p>Powód: ${result.error || 'Nieznany'}</p>
+      </main>`;
+      // Ukryj wrapper (resztę strony)
+      wrapper.style.display = 'none';
+      loader.style.display = 'block';
+      return; // przerwij dalsze działanie
+    }
+
+    if (!res.ok) {
+      throw new Error('Błąd sieci');
+    }
+
+    // Jeśli dostęp OK, pokaż stronę, ukryj loader
     loader.style.display = 'none';
     wrapper.style.display = 'flex';
+
+  } catch (error) {
+    loader.innerHTML = `<main style="text-align:center;padding:3rem">
+      <h2 style="color:red">Błąd połączenia</h2>
+      <p>${error.message}</p>
+    </main>`;
+    wrapper.style.display = 'none';
+    loader.style.display = 'block';
   }
 })();
+
 
 
   // Wywołanie renderConsult() po załadowaniu DOM
