@@ -4,7 +4,13 @@ const sql = neon(process.env.NETLIFY_DATABASE_URL);
 // Prosty wykrywacz botów na podstawie User-Agent
 function isBot(userAgent = '') {
   const botKeywords = [
-    'bot', 'crawl', 'spider', 'curl', 'wget', 'python', 'fetch', 'node', 'axios', 'libwww', 'httpclient', 'Go-http-client'
+    'bot', 'crawl', 'spider', 'curl', 'wget', 'python', 'fetch', 'node', 'axios',
+    'libwww', 'httpclient', 'go-http-client', 'perl', 'java', 'php', 'scrapy', 'urllib',
+    'powershell', 'httpx', 'ruby', 'jakarta', 'http-request', 'httpget', 'urlgrabber', 'okhttp',
+    'aiohttp', 'restsharp', 'faraday', 'mechanize', 'winhttp', 'lwp', 'dart', 'guzzle', 'reqwest',
+    'http-client', 'urlfetch', 'masscan', 'crawler', 'python-requests', 'netsparker', 'nikto', 'curl/',
+    'nmap', 'masscan', 'screaming frog', 'headless', 'phantomjs', 'slimerjs', 'wget/', 'libcurl',
+    'go-http-client', 'java/', 'perl/', 'python/', 'scan', 'badbot', 'attack', 'user-agent', 'checker'
   ];
   const ua = userAgent.toLowerCase();
   return botKeywords.some(keyword => ua.includes(keyword));
