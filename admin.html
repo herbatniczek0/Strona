@@ -5,92 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Panel Admina - Portal Obywatelski</title>
   <style>
-   :root {
-  --bg: #f0f2f5;
-  --fg: #333;
+/* === ULEPSZONY UI ADMIN PANELU === */
+
+:root {
+  --bg: #f4f6fa;
+  --fg: #222;
   --panel-bg: #fff;
   --accent: #007bff;
+  --accent-hover: #0056b3;
   --error: #d9534f;
   --success: #5cb85c;
+  --border-radius: 12px;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --font: 'Segoe UI', sans-serif;
+  --highlight: #007bff22;
 }
+
 [data-theme="dark"] {
-  --bg: #121212;
+  --bg: #111;
   --fg: #eee;
-  --panel-bg: #1e1e1e;
+  --panel-bg: #1a1a1a;
   --accent: #339af0;
+  --accent-hover: #1c7ed6;
+  --shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
+  --highlight: #339af022;
 }
+
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: var(--font);
   background: var(--bg);
   color: var(--fg);
+  margin: 0;
   padding: 2rem;
   transition: background 0.4s ease, color 0.4s ease;
 }
-h1, h2 {
-  color: var(--accent);
-  margin-bottom: 0.5rem;
-}
-.hidden { display: none; }
+
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: auto;
   background: var(--panel-bg);
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  animation: fadeIn 0.5s ease;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.5s ease-in-out;
 }
+
 nav button {
-  margin: 0.3rem 0.5rem 1rem 0;
-  padding: 0.5rem 1rem;
+  margin: 0.4rem;
+  padding: 0.6rem 1.2rem;
   background: var(--accent);
   color: white;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 6px;
   transition: background 0.3s ease, transform 0.2s ease;
+  font-weight: 600;
 }
+
 nav button:hover {
-  background: #0056b3;
+  background: var(--accent-hover);
   transform: scale(1.05);
 }
+
 nav button.active {
-  background: darkblue;
+  box-shadow: 0 0 0 3px var(--highlight);
 }
+
 input, textarea, select {
-  display: block;
-  margin: 0.3rem 0 0.8rem 0;
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1rem;
   font-size: 1rem;
-  color: var(--fg);
+  border: 1px solid #ccc;
+  border-radius: 8px;
   background: var(--panel-bg);
-  transition: border 0.2s ease, box-shadow 0.2s ease;
+  color: var(--fg);
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
-input:focus, textarea:focus {
+
+input:focus, textarea:focus, select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 4px var(--accent);
   outline: none;
 }
+
 button.submit, button.action {
   background: var(--accent);
-  color: white;
+  color: #fff;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
   cursor: pointer;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-  transition: transform 0.2s ease, background 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
   position: relative;
   overflow: hidden;
+  font-weight: bold;
 }
+
 button.submit:hover, button.action:hover {
+  background: var(--accent-hover);
   transform: scale(1.05);
-  background: #0056b3;
 }
+
 button.submit::after, button.action::after {
   content: "";
   position: absolute;
@@ -98,139 +114,118 @@ button.submit::after, button.action::after {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.1);
   transform: skewX(-20deg);
   transition: left 0.5s ease;
 }
+
 button.submit:hover::after, button.action:hover::after {
   left: 120%;
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  border-radius: 6px;
-  overflow: hidden;
+
+h1, h2 {
+  color: var(--accent);
+  margin-bottom: 1rem;
 }
-th, td {
-  border: 1px solid #ccc;
-  padding: 0.6rem 0.9rem;
-  text-align: left;
-}
-th {
-  background: var(--accent);
-  color: white;
-}
-td {
-  background: var(--panel-bg);
-}
-tr:hover td {
-  background: #007bff11;
-  transition: background-color 0.3s ease;
-}
+
 #themeToggle {
   float: right;
   margin-top: -3.5rem;
-  margin-bottom: 1rem;
-  padding: 0.3rem 0.7rem;
-  font-size: 1.2rem;
   background: var(--accent);
   color: white;
   border: none;
+  padding: 0.4rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 #themeToggle:hover {
-  transform: rotate(10deg);
+  transform: rotate(12deg);
 }
-#message {
-  margin: 1rem 0;
-  padding: 0.7rem;
-  border-radius: 6px;
+
+.hidden {
   display: none;
 }
+
+#message {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  display: none;
+  font-weight: bold;
+}
+
 #message.success {
   background: var(--success);
   color: white;
 }
+
 #message.error {
   background: var(--error);
   color: white;
 }
+
 pre#logList {
-  max-height: 300px;
-  overflow-y: scroll;
-  background: #222;
-  color: #ddd;
+  background: #1e1e1e;
+  color: #eee;
   padding: 1rem;
   border-radius: 8px;
   white-space: pre-wrap;
+  max-height: 300px;
+  overflow-y: auto;
   font-family: monospace;
+}
+
+/* === TABLES === */
+table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 1rem;
-}
-form > div {
-  max-width: 500px;
-}
-
-/* --- Konsultacje --- */
-#tab-konsultacje {
-  animation: fadeInSlide 0.6s ease-in-out;
-  perspective: 1000px;
-}
-#tab-konsultacje h2 {
-  font-size: 1.6rem;
-  margin-bottom: 1rem;
-  animation: popIn 0.4s ease;
-}
-#tab-konsultacje form {
-  background: linear-gradient(135deg, var(--panel-bg), #e0eaff22);
-  border: 1px solid #aaa4;
-  padding: 1.2rem;
-  border-radius: 10px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-  transform-style: preserve-3d;
-  transition: transform 0.3s ease;
-}
-#tab-konsultacje form:hover {
-  transform: rotateY(3deg) scale(1.02);
-}
-#tab-konsultacje button.submit {
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-#tab-konsultacje button.submit:hover {
-  transform: scale(1.05);
-}
-#consultList table {
-  margin-top: 1.5rem;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  animation: fadeIn 0.5s ease;
-}
-#consultList table tr:hover {
-  background-color: #007bff11;
-  transition: background-color 0.3s ease;
-}
-#consultList button.action {
-  transition: transform 0.2s ease, background 0.3s ease;
-}
-#consultList button.action:hover {
-  transform: scale(1.1) rotate(-1deg);
-  background-color: #c62828;
+  box-shadow: var(--shadow);
 }
 
-/* Animacje */
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+th {
+  background: var(--accent);
+  color: white;
+}
+
+td {
+  background: var(--panel-bg);
+}
+
+tr:hover td {
+  background-color: var(--highlight);
+}
+
+/* === ANIMATIONS === */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-@keyframes fadeInSlide {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes popIn {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .container {
+    padding: 1.2rem;
+  }
+
+  nav button {
+    display: block;
+    width: 100%;
+    margin: 0.3rem 0;
+  }
 }
 
   </style>
