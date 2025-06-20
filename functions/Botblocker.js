@@ -29,13 +29,13 @@ exports.handler = async (event) => {
   console.log('[Botblocker] 🧭 User-Agent:', userAgent);
 
   try {
-    // Sprawdź, czy IP jest już zablokowane
+    // Sprawdź, czy IP już jest zablokowane
     console.log('[Botblocker] 🔍 Sprawdzanie, czy IP jest zablokowane...');
-    const res = await sql`SELECT reason FROM blocked_ips WHERE ip = ${ip}`;
+    const existing = await sql`SELECT reason FROM blocked_ips WHERE ip = ${ip}`;
 
-    if (res.length > 0) {
-      const reason = res[0].reason || 'Nieznany';
-      console.warn('[Botblocker] 🚫 IP już zablokowane:', ip, '| Powód:', reason);
+    if (existing.length > 0) {
+      console.warn('[Botblocker] 🚫 IP już zablokowane:', ip);
+      const reason = existing[0].reason || 'Dostęp zablokowany';
       return {
         statusCode: 403,
         body: JSON.stringify({ error: reason }),
@@ -43,14 +43,13 @@ exports.handler = async (event) => {
       };
     }
 
-    // Jeśli to bot — blokuj i zapisz (jeśli jeszcze nie ma)
+    // Jeśli to bot — blokuj
     const keyword = isBot(userAgent);
     if (keyword) {
       console.warn('[Botblocker] 🤖 Wykryto bota! Blokowanie IP:', ip);
       await sql`
         INSERT INTO blocked_ips (ip, reason, blocked_at)
         VALUES (${ip}, ${'Wykryto bota: ' + keyword}, CURRENT_TIMESTAMP)
-        ON CONFLICT (ip) DO NOTHING
       `;
       console.log('[Botblocker] ✅ Bot zablokowany i zapisany w bazie danych');
       return {
