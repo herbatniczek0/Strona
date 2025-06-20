@@ -19,6 +19,10 @@
   --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   --font: 'Segoe UI', sans-serif;
   --highlight: #007bff22;
+  --tooltip-bg: rgba(0, 0, 0, 0.8);
+  --tooltip-color: white;
+  --scrollbar-bg: transparent;
+  --scrollbar-thumb: #888;
 }
 
 [data-theme="dark"] {
@@ -29,6 +33,9 @@
   --accent-hover: #1c7ed6;
   --shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
   --highlight: #339af022;
+  --tooltip-bg: rgba(255, 255, 255, 0.9);
+  --tooltip-color: #111;
+  --scrollbar-thumb: #aaa;
 }
 
 body {
@@ -48,6 +55,16 @@ body {
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   animation: fadeIn 0.5s ease-in-out;
+  display: grid;
+  gap: 1rem;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  background: var(--panel-bg);
+  padding: 0.5rem;
+  z-index: 10;
 }
 
 nav button {
@@ -60,6 +77,8 @@ nav button {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
   font-weight: 600;
+  position: relative;
+  overflow: hidden;
 }
 
 nav button:hover {
@@ -69,6 +88,22 @@ nav button:hover {
 
 nav button.active {
   box-shadow: 0 0 0 3px var(--highlight);
+}
+
+nav button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.1);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+nav button:hover::after {
+  left: 120%;
 }
 
 input, textarea, select {
@@ -85,8 +120,21 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 4px var(--accent);
+  box-shadow: 0 0 4px var(--accent) inset;
   outline: none;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 0.5rem;
+  color: var(--accent);
 }
 
 button.submit, button.action {
@@ -126,6 +174,18 @@ button.submit:hover::after, button.action:hover::after {
 h1, h2 {
   color: var(--accent);
   margin-bottom: 1rem;
+  animation: splitFade 0.6s ease forwards;
+}
+
+@keyframes splitFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #themeToggle {
@@ -138,6 +198,7 @@ h1, h2 {
   border-radius: 6px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  position: relative;
 }
 
 #themeToggle:hover {
@@ -175,6 +236,44 @@ pre#logList {
   max-height: 300px;
   overflow-y: auto;
   font-family: monospace;
+}
+
+pre#logList::-webkit-scrollbar {
+  width: 8px;
+  background: var(--scrollbar-bg);
+}
+
+pre#logList::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 8px;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: max-content;
+  max-width: 200px;
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-color);
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 
 /* === TABLES === */
@@ -226,6 +325,14 @@ tr:hover td {
     width: 100%;
     margin: 0.3rem 0;
   }
+}
+
+.tab-content {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.tab-content:not(.active) {
+  display: none;
 }
 
   </style>
