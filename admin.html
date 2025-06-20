@@ -189,28 +189,33 @@ h1, h2 {
 }
 
 #themeToggle {
+  margin-top: -4.5rem;
+  margin-left: auto;
   float: right;
-  margin-top: -2.5rem;
+  display: flex;
+  align-items: center;      /* wyśrodkowanie pionowe */
+  justify-content: center;  /* wyśrodkowanie poziome */
+  gap: 0.1rem;
   background: var(--accent);
   color: white;
   border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  width: 2.4rem;
-  height: 2.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0 1.2rem;
+  border-radius: 2rem;
+  font-size: 1.3rem;
+  min-width: 4rem;
+  height: 2.9rem;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.3s ease;
+  font-weight: 400;         /* normalna waga czcionki */
+  letter-spacing: 0.1em;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, background 0.3s ease;
 }
 
 #themeToggle:hover {
-  transform: rotate(15deg) scale(1.1);
+  transform: rotate(8deg) scale(1.08);
   background: var(--accent-hover);
 }
+
 
 
 .hidden {
