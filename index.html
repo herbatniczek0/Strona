@@ -1,282 +1,284 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Obywatelski 24/7</title>
   <style>
-    /* === GLOBAL VARIABLES & BASE === */
-    :root {
-      --bg: #f0f2f5; --fg: #212529;
-      --header-bg: #007bff; --nav-bg: #0056b3; --container-bg: rgba(255,255,255,0.85);
-      --footer-bg: #007bff; --primary: #007bff; --accent: #28a745;
-      --radius: 14px; --shadow: 0 8px 24px rgba(0,0,0,0.1);
-      --blur: 16px;
-      --status-green: #28a745; --status-red: #dc3545;
-    }
-    [data-theme="dark"] {
-      --bg: #121212; --fg: #e0e0e0;
-      --header-bg: #1c7ed6; --nav-bg: #0b5ed7; --container-bg: rgba(30,30,30,0.85);
-      --footer-bg: #1c7ed6; --primary: #339af0; --accent: #51cf66;
-      --shadow: 0 8px 24px rgba(255,255,255,0.05);
-    }
+   /* === GLOBAL VARIABLES & BASE === */
+:root {
+  --bg: #f0f2f5; --fg: #212529;
+  --header-bg: #007bff; --nav-bg: #0056b3; --container-bg: rgba(255,255,255,0.85);
+  --footer-bg: #007bff; --primary: #007bff; --accent: #28a745;
+  --radius: 14px; --shadow: 0 8px 24px rgba(0,0,0,0.1);
+  --blur: 16px;
+  --status-green: #28a745; --status-red: #dc3545;
+}
+[data-theme="dark"] {
+  --bg: #121212; --fg: #e0e0e0;
+  --header-bg: #1c7ed6; --nav-bg: #0b5ed7; --container-bg: rgba(30,30,30,0.85);
+  --footer-bg: #1c7ed6; --primary: #339af0; --accent: #51cf66;
+  --shadow: 0 8px 24px rgba(255,255,255,0.05);
+}
 
-    /* === RESET & BASE === */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%; font-family: 'Segoe UI', sans-serif;
-      background: var(--bg); color: var(--fg);
-      transition: background 0.4s ease, color 0.4s ease;
-    }
-    .wrapper { display: flex; flex-direction: column; min-height: 100%; }
+/* === RESET & BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%; font-family: 'Segoe UI', sans-serif;
+  background: var(--bg); color: var(--fg);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.wrapper { display: flex; flex-direction: column; min-height: 100%; }
 
-    /* === LOADER === */
-    #loader::after {
-      content: "";
-      display: block;
-      width: 40px;
-      height: 40px;
-      margin: 1rem auto;
-      border: 4px solid #ccc;
-      border-top: 4px solid var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+/* === LOADER === */
+#loader::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin: 1rem auto;
+  border: 4px solid #ccc;
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 
-    /* === HEADER === */
-    header {
-      background: var(--header-bg); color: #fff;
-      padding: 1rem 2rem; display: flex;
-      justify-content: space-between; align-items: center;
-      box-shadow: var(--shadow); animation: slideDown 0.6s ease;
-    }
-    .theme-toggle, #adminPanelBtn {
-      background: transparent; border: 1px solid #fff; color: #fff;
-      padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .theme-toggle:hover, #adminPanelBtn:hover {
-      background: rgba(255,255,255,0.2); transform: scale(1.05);
-    }
-    .theme-toggle::before {
-      content: attr(data-theme);
-      display: inline-block; margin-right: 5px;
-    }
+/* === HEADER === */
+header {
+  background: var(--header-bg); color: #fff;
+  padding: 1rem 2rem; display: flex;
+  justify-content: space-between; align-items: center;
+  box-shadow: var(--shadow); animation: slideDown 0.6s ease;
+}
+.theme-toggle, #adminPanelBtn {
+  background: transparent; border: 1px solid #fff; color: #fff;
+  padding: 0.5rem 1rem; border-radius: var(--radius); cursor: pointer;
+  transition: all 0.3s ease;
+}
+.theme-toggle:hover, #adminPanelBtn:hover {
+  background: rgba(255,255,255,0.2); transform: scale(1.05);
+}
+.theme-toggle::before {
+  content: attr(data-theme);
+  display: inline-block; margin-right: 5px;
+}
 
-    /* === ADMIN CONFIRM BUTTONS === */
-    #adminConfirmBtns button {
-      border-radius: var(--radius); transition: all 0.3s ease;
-    }
-    #adminConfirmBtns button:hover {
-      opacity: 0.9; transform: scale(1.03);
-    }
+/* === ADMIN CONFIRM BUTTONS === */
+#adminConfirmBtns button {
+  border-radius: var(--radius); transition: all 0.3s ease;
+}
+#adminConfirmBtns button:hover {
+  opacity: 0.9; transform: scale(1.03);
+}
 
-    /* === NAVBAR === */
-    nav {
-      background: var(--nav-bg); box-shadow: var(--shadow);
-      position: sticky; top: 0; z-index: 100;
-    }
-    nav ul {
-      list-style: none; display: flex;
-    }
-    nav li {
-      flex: 1; text-align: center;
-    }
-    nav button {
-      width: 100%; padding: 1rem;
-      background: none; border: none;
-      color: #fff; font-size: 1rem; cursor: pointer;
-      transition: all 0.3s ease-in-out; position: relative;
-    }
-    nav button::after {
-      content: ""; position: absolute; left: 0; bottom: 0;
-      height: 3px; width: 0%; background: #fff;
-      transition: width 0.3s ease-in-out;
-    }
-    nav button.active::after, nav button:hover::after {
-      width: 100%;
-    }
-    nav button.active {
-      background: var(--primary); font-weight: bold;
-    }
+/* === NAVBAR === */
+nav {
+  background: var(--nav-bg); box-shadow: var(--shadow);
+  position: sticky; top: 0; z-index: 100;
+}
+nav ul {
+  list-style: none; display: flex;
+}
+nav li {
+  flex: 1; text-align: center;
+}
+nav button {
+  width: 100%; padding: 1rem;
+  background: none; border: none;
+  color: #fff; font-size: 1rem; cursor: pointer;
+  transition: all 0.3s ease-in-out; position: relative;
+}
+nav button::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  height: 3px; width: 0%; background: #fff;
+  transition: width 0.3s ease-in-out;
+}
+nav button.active::after, nav button:hover::after {
+  width: 100%;
+}
+nav button.active {
+  background: var(--primary); font-weight: bold;
+}
 
-    /* === MAIN CONTENT === */
-    main {
-      flex: 1; padding: 2rem 1rem;
-    }
-    .container {
-      background: var(--container-bg);
-      backdrop-filter: blur(var(--blur));
-      padding: 2rem; border-radius: var(--radius);
-      box-shadow: var(--shadow); max-width: 800px; margin: auto;
-      animation: fadeIn 0.8s ease;
-    }
-    h1, h2, h3 {
-      color: var(--primary); margin-bottom: 1rem;
-    }
-    form {
-      display: grid; gap: 1.2rem;
-    }
-    input, textarea {
-      font-size: 1rem; padding: 0.75rem;
-      border: 1px solid #ccc; border-radius: var(--radius);
-      background: rgba(255,255,255,0.9); color: var(--fg);
-      transition: all 0.3s ease;
-    }
-    [data-theme="dark"] input, [data-theme="dark"] textarea {
-      background: rgba(50,50,50,0.9);
-    }
-    input:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
-      outline: none; transform: scale(1.02);
-    }
-    input::placeholder, textarea::placeholder {
-      color: #999; opacity: 0.6;
-      transition: opacity 0.3s ease;
-    }
-    input:focus::placeholder, textarea:focus::placeholder {
-      opacity: 0.3;
-    }
-    button.submit {
-      background: var(--accent); color: #fff;
-      border: none; padding: 0.75rem 1rem;
-      font-weight: bold; border-radius: var(--radius);
-      cursor: pointer; transition: background 0.3s ease, transform 0.2s;
-      position: relative; overflow: hidden;
-    }
-    button.submit:hover {
-      background: #218838; transform: scale(1.03);
-    }
-    button.submit::after {
-      content: "";
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 300%; height: 300%;
-      background: rgba(255,255,255,0.2);
-      transform: translate(-50%, -50%) scale(0);
-      border-radius: 50%; pointer-events: none;
-      animation: ripple 0.6s ease-out;
-    }
-    button.submit:active::after {
-      transform: translate(-50%, -50%) scale(1);
-    }
-    .message {
-      margin-top: 1rem; padding: 1rem;
-      border-radius: var(--radius); display: none;
-      font-weight: 500;
-    }
-    .success {
-      background: #d4edda; color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    .error {
-      background: #f8d7da; color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-    footer {
-      background: var(--footer-bg); color: #fff;
-      text-align: center; padding: 1rem;
-      font-size: 0.9rem; animation: fadeIn 1.2s ease;
-    }
-    footer button {
-      background: none; border: none;
-      color: var(--accent); cursor: pointer;
-      text-decoration: underline; font-size: 1rem;
-      transition: transform 0.2s;
-    }
-    footer button:hover {
-      transform: scale(1.05);
-    }
-    .status-result, .consult-list {
-      margin-top: 1rem;
-    }
-    .consult-item {
-      padding: 1.2rem; border: 1px solid #ccc;
-      margin-bottom: 1rem; border-radius: var(--radius);
-      background: var(--container-bg); box-shadow: var(--shadow);
-      transition: transform 0.2s ease, box-shadow 0.3s;
-    }
-    .consult-item:hover {
-      transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .consult-item h3 { margin-bottom: 0.5rem; }
-    .consult-item .votes {
-      font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: bold;
-    }
-    .status-dot {
-      display: inline-block;
-      width: 10px; height: 10px;
-      border-radius: 50%; margin-right: 5px;
-      background: var(--status-green);
-    }
-    .status-dot.red { background: var(--status-red); }
-    .toggle-switch {
-      position: relative; display: inline-block;
-      width: 50px; height: 24px;
-    }
-    .toggle-switch input {
-      opacity: 0; width: 0; height: 0;
-    }
-    .slider {
-      position: absolute; cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc; transition: .4s;
-      border-radius: 24px;
-    }
-    .slider:before {
-      position: absolute; content: "";
-      height: 20px; width: 20px; left: 2px; bottom: 2px;
-      background-color: white; transition: .4s;
-      border-radius: 50%;
-    }
-    .toggle-switch input:checked + .slider {
-      background-color: var(--accent);
-    }
-    .toggle-switch input:checked + .slider:before {
-      transform: translateX(26px);
-    }
-    .panel { display: none; }
-    .panel.active { display: block; animation: fadeIn 0.5s ease; }
+/* === MAIN CONTENT === */
+main {
+  flex: 1; padding: 2rem 1rem;
+}
+.container {
+  background: var(--container-bg);
+  backdrop-filter: blur(var(--blur));
+  padding: 2rem; border-radius: var(--radius);
+  box-shadow: var(--shadow); max-width: 800px; margin: auto;
+  animation: fadeIn 0.8s ease;
+}
+h1, h2, h3 {
+  color: var(--primary); margin-bottom: 1rem;
+}
+form {
+  display: grid; gap: 1.2rem;
+}
+input, textarea {
+  font-size: 1rem; padding: 0.75rem;
+  border: 1px solid #ccc; border-radius: var(--radius);
+  background: rgba(255,255,255,0.9); color: var(--fg);
+  transition: all 0.3s ease;
+}
+[data-theme="dark"] input, [data-theme="dark"] textarea {
+  background: rgba(50,50,50,0.9);
+}
+input:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+  outline: none; transform: scale(1.02);
+}
+input::placeholder, textarea::placeholder {
+  color: #999; opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+input:focus::placeholder, textarea:focus::placeholder {
+  opacity: 0.3;
+}
+button.submit {
+  background: var(--accent); color: #fff;
+  border: none; padding: 0.75rem 1rem;
+  font-weight: bold; border-radius: var(--radius);
+  cursor: pointer; transition: background 0.3s ease, transform 0.2s;
+  position: relative; overflow: hidden;
+}
+button.submit:hover {
+  background: #218838; transform: scale(1.03);
+}
+button.submit::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 300%; height: 300%;
+  background: rgba(255,255,255,0.2);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%; pointer-events: none;
+  animation: ripple 0.6s ease-out;
+}
+button.submit:active::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+.message {
+  margin-top: 1rem; padding: 1rem;
+  border-radius: var(--radius); display: none;
+  font-weight: 500;
+}
+.success {
+  background: #d4edda; color: #155724;
+  border: 1px solid #c3e6cb;
+}
+.error {
+  background: #f8d7da; color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+footer {
+  background: var(--footer-bg); color: #fff;
+  text-align: center; padding: 1rem;
+  font-size: 0.9rem; animation: fadeIn 1.2s ease;
+}
+footer button {
+  background: none; border: none;
+  color: var(--accent); cursor: pointer;
+  text-decoration: underline; font-size: 1rem;
+  transition: transform 0.2s;
+}
+footer button:hover {
+  transform: scale(1.05);
+}
+.status-result, .consult-list {
+  margin-top: 1rem;
+}
+.consult-item {
+  padding: 1.2rem; border: 1px solid #ccc;
+  margin-bottom: 1rem; border-radius: var(--radius);
+  background: var(--container-bg); box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.3s;
+}
+.consult-item:hover {
+  transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.consult-item h3 { margin-bottom: 0.5rem; }
+.consult-item .votes {
+  font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: bold;
+}
+.status-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%; margin-right: 5px;
+  background: var(--status-green);
+}
+.status-dot.red { background: var(--status-red); }
+.toggle-switch {
+  position: relative; display: inline-block;
+  width: 50px; height: 24px;
+}
+.toggle-switch input {
+  opacity: 0; width: 0; height: 0;
+}
+.slider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc; transition: .4s;
+  border-radius: 24px;
+}
+.slider:before {
+  position: absolute; content: "";
+  height: 20px; width: 20px; left: 2px; bottom: 2px;
+  background-color: white; transition: .4s;
+  border-radius: 50%;
+}
+.toggle-switch input:checked + .slider {
+  background-color: var(--accent);
+}
+.toggle-switch input:checked + .slider:before {
+  transform: translateX(26px);
+}
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.5s ease; }
 
-    @media (max-width: 768px) {
-      nav ul { flex-direction: column; }
-      nav li { width: 100%; }
-      .container { padding: 1rem; }
-    }
+@media (max-width: 768px) {
+  nav ul { flex-direction: column; }
+  nav li { width: 100%; }
+  .container { padding: 1rem; }
+}
 
-    /* === ANIMATIONS === */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    @keyframes ripple {
-      to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-    }
+/* === ANIMATIONS === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes ripple {
+  to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
   </style>
 </head>
 <body data-theme="">
   <div id="loader" style="padding:3rem;text-align:center;">Ładowanie...</div>
   <div class="wrapper" style="display:none;">
-    <header>
-      <h1>Portal Obywatelski 24/7</h1>
-      <div>
-        <button id="adminPanelBtn" style="margin-right:10px; background:#fff; color:#007bff; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer;">Panel Admina</button>
-        <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
-        <div id="adminConfirmBtns" style="display: none; margin-top: 10px;">
-          <button id="adminYes" style="background: #28a745; color: #fff; border: none; padding: 0.5rem 1rem; margin-right: 5px; border-radius: 4px; cursor: pointer;">Tak</button>
-          <button id="adminNo" style="background: #dc3545; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Nie</button>
-        </div>
-      </div>
-    </header>
+<header>
+  <h1>Portal Obywatelski 24/7</h1>
+  <div>
+    <button id="adminPanelBtn" style="margin-right:10px; background:#fff; color:#007bff; border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer;">Panel Admina</button>
+    <button class="theme-toggle" id="themeToggle">🌙/☀️</button>
+    <div id="adminConfirmBtns" style="display: none; margin-top: 10px;">
+      <button id="adminYes" style="background: #28a745; color: #fff; border: none; padding: 0.5rem 1rem; margin-right: 5px; border-radius: 4px; cursor: pointer;">Tak</button>
+      <button id="adminNo" style="background: #dc3545; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Nie</button>
+    </div>
+  </div>
+</header>
+</header>
     <nav>
       <ul>
         <li><button id="tab-report" class="active">Zgłoś wniosek</button></li>
@@ -289,9 +291,9 @@
         <div class="container">
           <h2>Złóż wniosek</h2>
           <form id="wniosekForm">
-            <input type="text" name="name" placeholder="Imię i nazwisko" required />
-            <input type="text" name="discord" placeholder="Discord ID#nick" required />
-            <input type="date" name="date" required />
+            <input type="text" name="name" placeholder="Imię i nazwisko" required>
+            <input type="text" name="discord" placeholder="Discord ID#nick" required>
+            <input type="date" name="date" required>
             <textarea name="idea" rows="4" placeholder="Twój pomysł / opis" required></textarea>
             <button type="submit" class="submit">Wyślij wniosek</button>
           </form>
@@ -302,7 +304,7 @@
         <div class="container">
           <h2>Śledzenie statusu</h2>
           <form id="trackForm">
-            <input type="text" id="trackId" placeholder="Numer wniosku" required />
+            <input type="text" id="trackId" placeholder="Numer wniosku" required>
             <button type="submit" class="submit">Sprawdź status</button>
           </form>
           <div id="statusResult" class="status-result"></div>
@@ -318,18 +320,16 @@
     </main>
     <footer>
       <p>&copy; 2025 Portal Obywatelski 24/7</p>
-      <button onclick="window.open('https://herbatniczek.online/', '_blank')" style="background: none; border: none; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: 1rem;">
-        &copy; Herbatniczek
-      </button>
+    <button onclick="window.open('https://herbatniczek.online/', '_blank')" style="background: none; border: none; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: 1rem;">
+  &copy; Herbatniczek
+</button>
     </footer>
   </div>
-
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const webhookUrl = 'https://discord.com/api/webhooks/1385312805695258634/eDg9L76sBXuuwkFA5iu8fI_SpU7KdPJIkYV_Z6leWE9A7mmKb1SlORMJDhpR2rMqErZB';
       const app = document.documentElement;
       const themeToggle = document.getElementById('themeToggle');
-
       function applyTheme(theme) {
         app.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
@@ -337,16 +337,15 @@
       const saved = localStorage.getItem('theme');
       const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : '';
       applyTheme(saved !== null ? saved : prefers);
-      themeToggle.addEventListener('click', () => {
-        const current = app.getAttribute('data-theme');
-        applyTheme(current === 'dark' ? '' : 'dark');
-      });
+      themeToggle.addEventListener('click', () => applyTheme(app.getAttribute('data-theme') === 'dark' ? '' : 'dark'));
 
-      ['report', 'track', 'consult'].forEach(tab => {
+
+      
+      ['report','track','consult'].forEach(tab => {
         document.getElementById('tab-' + tab).addEventListener('click', () => {
-          ['report', 'track', 'consult'].forEach(t => {
-            document.getElementById('tab-' + t).classList.toggle('active', t === tab);
-            document.getElementById('panel-' + t).classList.toggle('active', t === tab);
+          ['report','track','consult'].forEach(t => {
+            document.getElementById('tab-' + t).classList.toggle('active', t===tab);
+            document.getElementById('panel-' + t).classList.toggle('active', t===tab);
           });
         });
       });
@@ -354,225 +353,186 @@
       const basePath = window.location.hostname.endsWith('netlify.app')
         ? '/.netlify/functions/'
         : '/functions/';
-
       async function api(path, opts) {
-        try {
-          const response = await fetch(basePath + path, opts);
-          if (!response.ok) {
-            throw new Error(`Błąd sieci: ${response.status} ${response.statusText}`);
-          }
-          return response.json();
-        } catch (err) {
-          console.error(`Błąd API przy ${path}:`, err);
-          throw err;
-        }
+        return fetch(basePath + path, opts);
       }
 
       async function createSubmission(entry) {
-        return api('createSubmission', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(entry),
-        });
+        const res = await api('createSubmission', {
+          method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(entry)
+        }); return res.json();
       }
-
       async function getSubmission(id) {
-        return api(`getSubmission?id=${encodeURIComponent(id)}`);
+        const res = await api(`getSubmission?id=${encodeURIComponent(id)}`);
+        return res.json();
       }
-
       async function getConsultations() {
-        return api('getConsultations');
+        const res = await api('getConsultations');
+        return res.json();
       }
-
       async function voteConsult(id) {
-        return api('voteConsult', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id }),
-        });
+        const res = await api('voteConsult', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id })
+        }); return res.json();
       }
 
       document.getElementById('wniosekForm').addEventListener('submit', async e => {
-        e.preventDefault();
-        const f = e.target;
-        const entry = {
-          name: f.name.value.trim(),
-          discord: f.discord.value.trim(),
-          date: f.date.value,
-          idea: f.idea.value.trim(),
-        };
+        e.preventDefault(); const f=e.target;
+        const entry={ name:f.name.value, discord:f.discord.value, date:f.date.value, idea:f.idea.value };
+        const { id } = await createSubmission(entry);
+        await fetch(webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ embeds:[{ title:'Nowy wniosek', color:5814783, fields:[{name:'ID',value:id},{name:'Imię i nazwisko',value:entry.name},{name:'Discord',value:entry.discord},{name:'Data',value:entry.date},{name:'Pomysł',value:entry.idea}], timestamp:new Date().toISOString() }] }) });
+        const msg=document.getElementById('msg-report'); msg.textContent=`Wniosek wysłany! Numer wniosku: ${id}`; msg.className='message success'; msg.style.display='block'; f.reset();
+      });
+
+document.getElementById('trackForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = e.target.trackId.value.trim();
+  const out = document.getElementById('statusResult');
+  out.innerHTML = 'Ładowanie...';
+
+  if (!id) {
+    out.innerHTML = '<p style="color:red;">Podaj numer wniosku.</p>';
+    return;
+  }
+
+  try {
+    const data = await getSubmission(id);
+    if (!data || !data.id) {
+      out.innerHTML = '<p style="color:red;">Nie znaleziono wniosku.</p>';
+      return;
+    }
+
+    // Format daty czytelnie
+    const dateObj = new Date(data.date);
+    const formattedDate = isNaN(dateObj) ? data.date : dateObj.toLocaleDateString('pl-PL');
+
+    // Wyświetlenie pełnego wniosku
+    out.innerHTML = `
+      <h3>Wniosek nr: ${data.id}</h3>
+      <p><strong>Imię i nazwisko:</strong> ${data.name}</p>
+      <p><strong>Discord:</strong> ${data.discord}</p>
+      <p><strong>Data zgłoszenia:</strong> ${formattedDate}</p>
+      <p><strong>Status:</strong> ${data.status}</p>
+      <p><strong>Opis pomysłu:</strong><br>${data.idea.replace(/\n/g, '<br>')}</p>
+    `;
+
+  } catch (error) {
+    console.error('Błąd pobierania wniosku:', error);
+    out.innerHTML = '<p style="color:red;">Wystąpił błąd podczas pobierania wniosku.</p>';
+  }
+});
+
+
+  async function renderConsult() {
+    const list = document.getElementById('consultList');
+    list.innerHTML = '';
+    const items = await getConsultations();
+    items.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'consult-item';
+      div.innerHTML = `<h3>${c.title}</h3>${c.description ? `<p>${c.description}</p>` : ''}<p class="votes">Głosy: ${c.votes}</p><button data-id="${c.id}" class="submit">Głosuj</button>`;
+      list.appendChild(div);
+    });
+
+    document.querySelectorAll('.consult-item button').forEach(btn =>
+      btn.addEventListener('click', async () => {
         try {
-          const { id } = await createSubmission(entry);
-          await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              embeds: [{
-                title: 'Nowy wniosek',
-                color: 5814783,
-                fields: [
-                  { name: 'ID', value: id },
-                  { name: 'Imię i nazwisko', value: entry.name },
-                  { name: 'Discord', value: entry.discord },
-                  { name: 'Data', value: entry.date },
-                  { name: 'Pomysł', value: entry.idea },
-                ],
-                timestamp: new Date().toISOString(),
-              }]
-            }),
-          });
-          const msg = document.getElementById('msg-report');
-          msg.textContent = `Wniosek wysłany! Numer wniosku: ${id}`;
+          const res = await voteConsult(btn.dataset.id);
+          if (!res.success) {
+            throw new Error(res.error || "Nieznany błąd");
+          }
+          const msg = document.getElementById('msg-consult');
+          msg.textContent = 'Dziękujemy za głos!';
           msg.className = 'message success';
           msg.style.display = 'block';
-          f.reset();
+          await renderConsult();
         } catch (error) {
-          const msg = document.getElementById('msg-report');
-          msg.textContent = 'Błąd podczas wysyłania wniosku. Spróbuj ponownie.';
+          const msg = document.getElementById('msg-consult');
+          msg.textContent = error.message;
           msg.className = 'message error';
           msg.style.display = 'block';
-          console.error(error);
         }
-      });
+      })
+    );
+  }
+const adminPanelBtn = document.getElementById('adminPanelBtn');
+const adminBtns = document.getElementById('adminConfirmBtns');
+const adminYes = document.getElementById('adminYes');
+const adminNo = document.getElementById('adminNo');
 
-      document.getElementById('trackForm').addEventListener('submit', async e => {
-        e.preventDefault();
-        const id = e.target.trackId.value.trim();
-        const out = document.getElementById('statusResult');
-        out.innerHTML = 'Ładowanie...';
+adminPanelBtn.addEventListener('click', () => {
+  adminBtns.style.display = 'block';
+});
 
-        if (!id) {
-          out.innerHTML = '<p style="color:red;">Podaj numer wniosku.</p>';
-          return;
-        }
+adminNo.addEventListener('click', () => {
+  adminBtns.style.display = 'none';
+});
 
-        try {
-          const data = await getSubmission(id);
-          if (!data || !data.id) {
-            out.innerHTML = '<p style="color:red;">Nie znaleziono wniosku.</p>';
-            return;
-          }
-          const dateObj = new Date(data.date);
-          const formattedDate = isNaN(dateObj) ? data.date : dateObj.toLocaleDateString('pl-PL');
-          out.innerHTML = `
-            <h3>Wniosek nr: ${data.id}</h3>
-            <p><strong>Imię i nazwisko:</strong> ${data.name}</p>
-            <p><strong>Discord:</strong> ${data.discord}</p>
-            <p><strong>Data zgłoszenia:</strong> ${formattedDate}</p>
-            <p><strong>Status:</strong> ${data.status}</p>
-            <p><strong>Opis pomysłu:</strong><br>${data.idea.replace(/\n/g, '<br>')}</p>
-          `;
-        } catch (error) {
-          out.innerHTML = '<p style="color:red;">Wystąpił błąd podczas pobierania wniosku.</p>';
-          console.error('Błąd pobierania wniosku:', error);
-        }
-      });
+adminYes.addEventListener('click', () => {
+  window.location.href = '/admin.html';
+});
 
-      async function renderConsult() {
-        const list = document.getElementById('consultList');
-        list.innerHTML = '';
-        try {
-          const items = await getConsultations();
-          if (!items || items.length === 0) {
-            list.innerHTML = '<p>Brak otwartych konsultacji.</p>';
-            return;
-          }
-          items.forEach(c => {
-            const div = document.createElement('div');
-            div.className = 'consult-item';
-            div.innerHTML = `
-              <h3>${c.title}</h3>
-              ${c.description ? `<p>${c.description}</p>` : ''}
-              <p class="votes">Głosy: ${c.votes}</p>
-              <button data-id="${c.id}" class="submit">Głosuj</button>
-            `;
-            list.appendChild(div);
-          });
-          document.querySelectorAll('.consult-item button').forEach(btn =>
-            btn.addEventListener('click', async () => {
-              try {
-                const res = await voteConsult(btn.dataset.id);
-                if (!res.success) {
-                  throw new Error(res.error || 'Nieznany błąd');
-                }
-                const msg = document.getElementById('msg-consult');
-                msg.textContent = 'Dziękujemy za głos!';
-                msg.className = 'message success';
-                msg.style.display = 'block';
-                await renderConsult();
-              } catch (error) {
-                const msg = document.getElementById('msg-consult');
-                msg.textContent = error.message;
-                msg.className = 'message error';
-                msg.style.display = 'block';
-              }
-            })
-          );
-        } catch (error) {
-          list.innerHTML = '<p style="color:red;">Błąd ładowania konsultacji.</p>';
-          console.error('Błąd ładowania konsultacji:', error);
-        }
+(async () => {
+  const wrapper = document.querySelector('.wrapper');
+  const loader = document.getElementById('loader');
+
+  try {
+    const res = await fetch('/.netlify/functions/Botblocker');
+
+    if (res.status === 403) {
+      console.warn('[IPCheck] ⛔ Otrzymano 403 – blokada IP');
+
+      let result;
+      try {
+        result = await res.json();
+      } catch (parseErr) {
+        console.error('[IPCheck] ❌ Błąd parsowania JSON:', parseErr);
+        result = { error: 'Nieznany (błąd parsowania odpowiedzi)' };
       }
 
-      const adminPanelBtn = document.getElementById('adminPanelBtn');
-      const adminBtns = document.getElementById('adminConfirmBtns');
-      const adminYes = document.getElementById('adminYes');
-      const adminNo = document.getElementById('adminNo');
+      const reason = result?.error || 'Nieznany';
+      console.log('[IPCheck] Powód blokady:', reason);
 
-      adminPanelBtn.addEventListener('click', () => {
-        adminBtns.style.display = 'block';
-      });
-      adminNo.addEventListener('click', () => {
-        adminBtns.style.display = 'none';
-      });
-      adminYes.addEventListener('click', () => {
-        window.location.href = '/admin.html';
-      });
+      loader.innerHTML = `
+        <main style="text-align:center;padding:3rem">
+          <h2 style="color:red">Dostęp został ci zablokowany.</h2>
+          <p>Powód: ${reason}</p>
+        </main>`;
 
-      // Botblocker - blokada IP / botów
-      (async () => {
-        const wrapper = document.querySelector('.wrapper');
-        const loader = document.getElementById('loader');
+      wrapper.style.display = 'none';
+      loader.style.display = 'block';
+      return;
+    }
 
-        try {
-          const res = await fetch('/.netlify/functions/Botblocker');
+    if (!res.ok) {
+      throw new Error(`Błąd sieci (kod: ${res.status})`);
+    }
 
-          if (res.status === 403) {
-            let reason = 'Nieznany';
-            try {
-              const data = await res.json();
-              reason = data?.error || reason;
-            } catch {}
+    console.log('[IPCheck] ✅ Dostęp przyznany');
+    loader.style.display = 'none';
+    wrapper.style.display = 'flex';
 
-            loader.innerHTML = `
-              <main style="text-align:center;padding:3rem">
-                <h2 style="color:red">Dostęp został ci zablokowany.</h2>
-                <p>Powód: ${reason}</p>
-              </main>`;
-            wrapper.style.display = 'none';
-            loader.style.display = 'block';
-            return;
-          }
+  } catch (error) {
+    console.error('[IPCheck] 🔥 Błąd połączenia:', error.message);
+    loader.innerHTML = `
+      <main style="text-align:center;padding:3rem">
+        <h2 style="color:red">Błąd połączenia</h2>
+        <p>${error.message}</p>
+      </main>`;
+    wrapper.style.display = 'none';
+    loader.style.display = 'block';
+  }
+})();
 
-          if (!res.ok) {
-            throw new Error(`Błąd sieci (kod: ${res.status})`);
-          }
 
-          loader.style.display = 'none';
-          wrapper.style.display = 'flex';
-        } catch (error) {
-          loader.innerHTML = `
-            <main style="text-align:center;padding:3rem">
-              <h2 style="color:red">Błąd połączenia</h2>
-              <p>${error.message}</p>
-            </main>`;
-          wrapper.style.display = 'none';
-          loader.style.display = 'block';
-        }
-      })();
 
-      renderConsult();
-    });
+
+
+  // Wywołanie renderConsult() po załadowaniu DOM
+  renderConsult();
+
+}); // <-- zamknięcie DOMContentLoaded
+
   </script>
 </body>
 </html>
