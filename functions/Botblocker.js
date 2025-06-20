@@ -1,10 +1,11 @@
 const { neon } = require('@neondatabase/serverless');
 const sql = neon(process.env.NETLIFY_DATABASE_URL);
 
-// Prosty wykrywacz botów na podstawie User-Agent
+// Wykrywanie botów na podstawie User-Agent
 function isBot(userAgent = '') {
   const botKeywords = [
-    'bot', 'crawl', 'spider', 'curl', 'wget', 'python', 'fetch', 'node', 'axios', 'libwww', 'httpclient', 'Go-http-client'
+    'bot', 'crawl', 'spider', 'curl', 'wget', 'python',
+    'fetch', 'node', 'axios', 'libwww', 'httpclient', 'Go-http-client'
   ];
   const ua = userAgent.toLowerCase();
   return botKeywords.some(keyword => ua.includes(keyword));
@@ -15,9 +16,13 @@ exports.handler = async (event) => {
   const userAgent = event.headers['user-agent'] || '';
 
   try {
-    // Jeśli to bot — blokuj
+    // Jeśli User-Agent to bot, zablokuj i zapisz do blocked_ips
     if (isBot(userAgent)) {
-      await sql`INSERT INTO blocked_ips (ip, reason, blocked_at) VALUES (${ip}, 'Wykryto bota', CURRENT_TIMESTAMP)`;
+      await sql`
+        INSERT INTO blocked_ips (ip, reason, blocked_at)
+        VALUES (${ip}, 'Wykryto bota', CURRENT_TIMESTAMP)
+        ON CONFLICT (ip) DO NOTHING
+      `;
       return {
         statusCode: 403,
         body: JSON.stringify({ error: 'Dostęp zablokowany: wykryto bota' }),
@@ -25,7 +30,7 @@ exports.handler = async (event) => {
       };
     }
 
-    // Sprawdź, czy IP już jest zablokowane
+    // Jeśli IP już zablokowane
     const res = await sql`SELECT 1 FROM blocked_ips WHERE ip = ${ip}`;
     if (res.length > 0) {
       return {
@@ -35,7 +40,7 @@ exports.handler = async (event) => {
       };
     }
 
-    // Jeśli nie jest zablokowane, zwróć sukces
+    // IP czyste
     return {
       statusCode: 200,
       body: JSON.stringify({ success: true }),
