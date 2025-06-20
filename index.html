@@ -269,27 +269,30 @@ adminYes.addEventListener('click', () => {
     const res = await fetch('/.netlify/functions/Botblocker');
 
     if (res.status === 403) {
-      // Pobierz szczegóły błędu
+      console.warn('[IPCheck] ⛔ Otrzymano 403 – blokada IP');
       const result = await res.json();
+      console.log('[IPCheck] Powód blokady:', result.error);
+
       loader.innerHTML = `<main style="text-align:center;padding:3rem">
-        <h2 style="color:red">Dostęp z Twojego IP został zablokowany.</h2>
+        <h2 style="color:red">Dostęp został ci zablokowany.</h2>
         <p>Powód: ${result.error || 'Nieznany'}</p>
       </main>`;
-      // Ukryj wrapper (resztę strony)
+      
       wrapper.style.display = 'none';
       loader.style.display = 'block';
-      return; // przerwij dalsze działanie
+      return;
     }
 
     if (!res.ok) {
       throw new Error('Błąd sieci');
     }
 
-    // Jeśli dostęp OK, pokaż stronę, ukryj loader
+    console.log('[IPCheck] ✅ Dostęp przyznany');
     loader.style.display = 'none';
     wrapper.style.display = 'flex';
 
   } catch (error) {
+    console.error('[IPCheck] 🔥 Błąd połączenia:', error.message);
     loader.innerHTML = `<main style="text-align:center;padding:3rem">
       <h2 style="color:red">Błąd połączenia</h2>
       <p>${error.message}</p>
@@ -298,6 +301,7 @@ adminYes.addEventListener('click', () => {
     loader.style.display = 'block';
   }
 })();
+
 
 
 
