@@ -1,23 +1,39 @@
 const { neon } = require('@neondatabase/serverless');
 const sql = neon(process.env.NETLIFY_DATABASE_URL);
 
-// Prosty wykrywacz botów na podstawie User-Agent
-function isBot(userAgent = '') {
-  const botKeywords = [
-    'bot', 'crawl', 'spider', 'curl', 'wget', 'python', 'fetch', 'node', 'axios',
-    'libwww', 'httpclient', 'go-http-client', 'perl', 'java', 'php', 'scrapy', 'urllib',
-    'powershell', 'httpx', 'ruby', 'jakarta', 'http-request', 'httpget', 'urlgrabber', 'okhttp',
-    'aiohttp', 'restsharp', 'faraday', 'mechanize', 'winhttp', 'lwp', 'dart', 'guzzle', 'reqwest',
-    'http-client', 'urlfetch', 'masscan', 'crawler', 'python-requests', 'netsparker', 'nikto', 'curl/',
-    'nmap', 'masscan', 'screaming frog', 'headless', 'phantomjs', 'slimerjs', 'wget/', 'libcurl',
-    'go-http-client', 'java/', 'perl/', 'python/', 'scan', 'badbot', 'attack', 'user-agent', 'checker'
-  ];
+const whitelistedAgents = [
+  'discordbot', 'facebookexternalhit', 'telegrambot', 'slackbot', 'linkedinbot',
+  'embedly', 'quora link preview', 'whatsapp', 'pinterest', 'vkshare', 'twitterbot'
+];
+
+const suspiciousAgents = [
+  'uptime', 'pingdom', 'statuscake', 'newrelic', 'gtmetrix', 'pagespeed',
+  'monitoring', 'cfnetwork', 'unknown', 'anonymouse',
+  'mozilla/5.0 (compatible;)', 'undefined'
+];
+
+const blacklistedAgents = [
+  'bot', 'crawl', 'crawler', 'spider', 'curl', 'wget', 'python', 'node', 'axios',
+  'libwww', 'httpclient', 'go-http-client', 'perl', 'java', 'php', 'scrapy', 'urllib',
+  'powershell', 'httpx', 'ruby', 'jakarta', 'http-request', 'httpget', 'urlgrabber',
+  'okhttp', 'aiohttp', 'restsharp', 'faraday', 'mechanize', 'winhttp', 'lwp', 'dart',
+  'guzzle', 'reqwest', 'http-client', 'urlfetch', 'masscan', 'netsparker', 'nikto',
+  'nmap', 'acunetix', 'sqlmap', 'wpscan', 'xss', 'scanner', 'fuzzer', 'dirbuster',
+  'dirb', 'attack', 'payload', 'shodan', 'whatweb', 'jaeles', 'headless',
+  'headlesschrome', 'puppeteer', 'selenium', 'phantomjs', 'slimerjs', 'playwright',
+  'scraper', 'grabber', 'insomnia', 'postman', 'fetch', 'python-requests', 'zapier',
+  'rssbot', 'mailchimp', 'extractor', 'screaming frog', 'content grabber',
+  'tor', 'proxy', 'botlibre'
+];
+
+function classifyUserAgent(userAgent = '') {
   const ua = userAgent.toLowerCase();
-  const matchedKeyword = botKeywords.find(keyword => ua.includes(keyword));
-  if (matchedKeyword) {
-    console.warn(`[Botblocker] ⚠️ Wykryto słowo kluczowe bota: '${matchedKeyword}'`);
-  }
-  return matchedKeyword;
+
+  if (whitelistedAgents.some(kw => ua.includes(kw))) return 'whitelisted';
+  if (blacklistedAgents.some(kw => ua.includes(kw))) return 'blacklisted';
+  if (suspiciousAgents.some(kw => ua.includes(kw))) return 'suspicious';
+
+  return 'unknown';
 }
 
 exports.handler = async (event) => {
@@ -29,32 +45,33 @@ exports.handler = async (event) => {
   console.log('[Botblocker] 🧭 User-Agent:', userAgent);
 
   try {
-    // Sprawdź, czy IP już jest zablokowane
-    console.log('[Botblocker] 🔍 Sprawdzanie, czy IP jest zablokowane...');
-    const existing = await sql`SELECT reason FROM blocked_ips WHERE ip = ${ip}`;
+    const classification = classifyUserAgent(userAgent);
+    console.log('[Botblocker] 🔍 Klasyfikacja UA:', classification);
 
-    if (existing.length > 0) {
-      console.warn('[Botblocker] 🚫 IP już zablokowane:', ip);
-      const reason = existing[0].reason || 'Dostęp zablokowany';
+    if (classification === 'blacklisted') {
+      console.warn('[Botblocker] 🤖 Wykryto bota! Blokowanie IP:', ip);
+      await sql`INSERT INTO blocked_ips (ip, reason, blocked_at) VALUES (${ip}, ${'Wykryto bota: ' + userAgent}, CURRENT_TIMESTAMP) ON CONFLICT DO NOTHING`;
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: reason }),
+        body: JSON.stringify({ error: 'Wykryto bota: ' + userAgent }),
         headers: { 'Content-Type': 'application/json' }
       };
     }
 
-    // Jeśli to bot — blokuj
-    const keyword = isBot(userAgent);
-    if (keyword) {
-      console.warn('[Botblocker] 🤖 Wykryto bota! Blokowanie IP:', ip);
-      await sql`
-        INSERT INTO blocked_ips (ip, reason, blocked_at)
-        VALUES (${ip}, ${'Wykryto bota: ' + keyword}, CURRENT_TIMESTAMP)
-      `;
-      console.log('[Botblocker] ✅ Bot zablokowany i zapisany w bazie danych');
+    if (classification === 'suspicious') {
+      console.warn('[Botblocker] ⚠️ Podejrzany UA:', userAgent);
+    }
+
+    // Sprawdź, czy IP już jest zablokowane
+    console.log('[Botblocker] 🔍 Sprawdzanie, czy IP jest zablokowane...');
+    const res = await sql`SELECT reason FROM blocked_ips WHERE ip = ${ip}`;
+
+    if (res.length > 0) {
+      console.warn('[Botblocker] 🚫 IP już zablokowane:', ip);
+      const reason = res[0].reason || 'Dostęp zablokowany';
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: 'Wykryto bota: ' + keyword }),
+        body: JSON.stringify({ error: reason }),
         headers: { 'Content-Type': 'application/json' }
       };
     }
