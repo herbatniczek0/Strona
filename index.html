@@ -260,6 +260,19 @@ adminYes.addEventListener('click', () => {
   window.location.href = '/admin.html';
 });
 
+(async () => {
+  const res = await fetch('/.netlify/functions/ipCheck');
+  const result = await res.json();
+  const wrapper = document.querySelector('.wrapper');
+  const loader = document.getElementById('loader');
+
+  if (result.blocked) {
+    loader.innerHTML = `<main style="text-align:center;padding:3rem"><h2 style="color:red">Dostęp z Twojego IP został zablokowany.</h2><p>Powód: ${result.reason || 'Nieznany'}</p></main>`;
+  } else {
+    loader.style.display = 'none';
+    wrapper.style.display = 'flex';
+  }
+})();
 
 
   // Wywołanie renderConsult() po załadowaniu DOM
