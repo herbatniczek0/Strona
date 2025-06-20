@@ -270,21 +270,31 @@ adminYes.addEventListener('click', () => {
 
     if (res.status === 403) {
       console.warn('[IPCheck] ⛔ Otrzymano 403 – blokada IP');
-      const result = await res.json();
-      console.log('[IPCheck] Powód blokady:', result.error);
 
-      loader.innerHTML = `<main style="text-align:center;padding:3rem">
-        <h2 style="color:red">Dostęp został ci zablokowany.</h2>
-        <p>Powód: ${result.error || 'Nieznany'}</p>
-      </main>`;
-      
+      let result;
+      try {
+        result = await res.json();
+      } catch (parseErr) {
+        console.error('[IPCheck] ❌ Błąd parsowania JSON:', parseErr);
+        result = { error: 'Nieznany (błąd parsowania odpowiedzi)' };
+      }
+
+      const reason = result?.error || 'Nieznany';
+      console.log('[IPCheck] Powód blokady:', reason);
+
+      loader.innerHTML = `
+        <main style="text-align:center;padding:3rem">
+          <h2 style="color:red">Dostęp został ci zablokowany.</h2>
+          <p>Powód: ${reason}</p>
+        </main>`;
+
       wrapper.style.display = 'none';
       loader.style.display = 'block';
       return;
     }
 
     if (!res.ok) {
-      throw new Error('Błąd sieci');
+      throw new Error(`Błąd sieci (kod: ${res.status})`);
     }
 
     console.log('[IPCheck] ✅ Dostęp przyznany');
@@ -293,14 +303,16 @@ adminYes.addEventListener('click', () => {
 
   } catch (error) {
     console.error('[IPCheck] 🔥 Błąd połączenia:', error.message);
-    loader.innerHTML = `<main style="text-align:center;padding:3rem">
-      <h2 style="color:red">Błąd połączenia</h2>
-      <p>${error.message}</p>
-    </main>`;
+    loader.innerHTML = `
+      <main style="text-align:center;padding:3rem">
+        <h2 style="color:red">Błąd połączenia</h2>
+        <p>${error.message}</p>
+      </main>`;
     wrapper.style.display = 'none';
     loader.style.display = 'block';
   }
 })();
+
 
 
 
