@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Logowanie – Restauracja + Crime</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <style>
@@ -47,6 +47,7 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--fg);
+      font-size: 1rem;
     }
     .input-group i {
       position: absolute;
@@ -65,30 +66,33 @@
       font-weight: bold;
       cursor: pointer;
       transition: 0.3s;
+      font-size: 1rem;
     }
     button:hover {
       background: #e60000;
     }
     .error-message {
-      color: red;
+      color: var(--accent);
       margin-top: 1rem;
       text-align: center;
+      min-height: 1.2em;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
   <div class="login-card">
     <h1>Panel Dostępowy</h1>
-    <form id="login-form">
+    <form id="login-form" autocomplete="off">
       <div class="input-group">
         <i class="fas fa-id-card"></i>
-        <input type="text" name="uid" placeholder="Identyfikator UID" required>
+        <input type="text" name="uid" placeholder="Identyfikator UID" required />
       </div>
       <div class="input-group">
         <i class="fas fa-lock"></i>
-        <input type="password" name="password" placeholder="Hasło" required>
+        <input type="password" name="password" placeholder="Hasło" required />
       </div>
-      <button type="submit">Zaloguj się</button>
+      <button type="submit" id="submit-btn">Zaloguj się</button>
     </form>
     <div class="error-message" id="error-message"></div>
   </div>
@@ -96,28 +100,55 @@
   <script>
     const form = document.getElementById('login-form');
     const errorBox = document.getElementById('error-message');
+    const submitBtn = document.getElementById('submit-btn');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      errorBox.textContent = '';
+      submitBtn.disabled = true;
+
       const formData = new FormData(form);
       const body = {
-        uid: formData.get('uid'),
-        password: formData.get('password')
+        UID: formData.get('uid').trim(),
+        password: formData.get('password'),
       };
 
-      const response = await fetch('/.netlify/functions/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
+      if (!body.UID || !body.password) {
+        errorBox.textContent = 'Proszę uzupełnić wszystkie pola.';
+        submitBtn.disabled = false;
+        return;
+      }
 
-      const result = await response.json();
+      try {
+        const response = await fetch('/.netlify/functions/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
 
-      if (result.success) {
-        const isAdmin = result.role === 'admin';
-        window.location.href = isAdmin ? 'admin.html' : 'panel.html';
-      } else {
-        errorBox.textContent = result.message || 'Nieprawidłowy UID lub hasło.';
+        const result = await response.json();
+
+        if (response.ok && result.status === 'success') {
+          errorBox.style.color = '#4caf50';
+          errorBox.textContent = result.message || 'Zalogowano pomyślnie!';
+
+          setTimeout(() => {
+            if (result.user && result.user.role === 'admin') {
+              window.location.href = '/admin.html';
+            } else {
+              window.location.href = '/panel.html';
+            }
+          }, 1000);
+
+        } else {
+          errorBox.style.color = 'var(--accent)';
+          errorBox.textContent = result.message || 'Nieprawidłowy UID lub hasło.';
+          submitBtn.disabled = false;
+        }
+      } catch (err) {
+        errorBox.style.color = 'var(--accent)';
+        errorBox.textContent = 'Błąd połączenia z serwerem.';
+        submitBtn.disabled = false;
       }
     });
   </script>
