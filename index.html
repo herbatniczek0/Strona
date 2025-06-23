@@ -488,7 +488,6 @@ footer button:hover {
   </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const webhookUrl = 'https://discord.com/api/webhooks/1385312805695258634/eDg9L76sBXuuwkFA5iu8fI_SpU7KdPJIkYV_Z6leWE9A7mmKb1SlORMJDhpR2rMqErZB';
       const app = document.documentElement;
       const themeToggle = document.getElementById('themeToggle');
       function applyTheme(theme) {
@@ -543,12 +542,41 @@ footer button:hover {
       }
 
       document.getElementById('wniosekForm').addEventListener('submit', async e => {
-        e.preventDefault(); const f=e.target;
-        const entry={ name:f.name.value, discord:f.discord.value, date:f.date.value, idea:f.idea.value };
-        const { id } = await createSubmission(entry);
-        await fetch(webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ embeds:[{ title:'Nowy wniosek', color:5814783, fields:[{name:'ID',value:id},{name:'Imię i nazwisko',value:entry.name},{name:'Discord',value:entry.discord},{name:'Data',value:entry.date},{name:'Pomysł',value:entry.idea}], timestamp:new Date().toISOString() }] }) });
-        const msg=document.getElementById('msg-report'); msg.textContent=`Wniosek wysłany! Numer wniosku: ${id}`; msg.className='message success'; msg.style.display='block'; f.reset();
-      });
+  e.preventDefault();
+  const f = e.target;
+  const entry = {
+    name: f.name.value,
+    discord: f.discord.value,
+    date: f.date.value,
+    idea: f.idea.value
+  };
+
+  try {
+    // 1. Tworzenie rekordu w bazie
+    const { id } = await createSubmission(entry);
+
+    // 2. Wysyłka danych do webhooka przez funkcję serwerową
+    await fetch('/.netlify/functions/sendWebhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...entry, id })
+    });
+
+    // 3. Wyświetlenie potwierdzenia
+    const msg = document.getElementById('msg-report');
+    msg.textContent = `Wniosek wysłany! Numer wniosku: ${id}`;
+    msg.className = 'message success';
+    msg.style.display = 'block';
+    f.reset();
+
+  } catch (err) {
+    console.error('Błąd przy wysyłaniu wniosku:', err);
+    const msg = document.getElementById('msg-report');
+    msg.textContent = 'Wystąpił błąd podczas wysyłania wniosku.';
+    msg.className = 'message error';
+    msg.style.display = 'block';
+  }
+});
 
 document.getElementById('trackForm').addEventListener('submit', async e => {
   e.preventDefault();
