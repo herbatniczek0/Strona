@@ -275,7 +275,7 @@
   font-size: 1rem;
   user-select: none;
   opacity: 0;
-  animation: fadeInTimer 1s forwards;
+  transition: opacity 0.5s ease;
   z-index: 10000;
   pointer-events: none;
 }
@@ -329,6 +329,16 @@
       }, 500);
     }, 1500); // Dostosowane do czasu animacji skullSpin
   });
+setTimeout(() => {
+  document.getElementById('preloader').style.display = 'none';
+
+  // Po 1.5 sekundy pokaż timer
+  setTimeout(() => {
+    const timer = document.getElementById('inactivity-timer');
+    timer.style.opacity = '1';
+  }, 1500);
+
+}, 1000);
 
     const TIMEOUT = 5 * 60 * 1000;
 
