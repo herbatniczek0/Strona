@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logowanie – Restauracja + Crime</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0c0c;
+      --accent: #ff2d2d;
+      --fg: #f0f0f0;
+      --input-bg: #1a1a1a;
+      --border: #333;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .login-card {
+      background: #111;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(255, 45, 45, 0.2);
+    }
+    .login-card h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .input-group {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 2.5rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--fg);
+    }
+    .input-group i {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      color: #777;
+    }
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #e60000;
+    }
+    .error-message {
+      color: red;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>Panel Dostępowy</h1>
+    <form id="login-form">
+      <div class="input-group">
+        <i class="fas fa-id-card"></i>
+        <input type="text" name="uid" placeholder="Identyfikator UID" required>
+      </div>
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password" placeholder="Hasło" required>
+      </div>
+      <button type="submit">Zaloguj się</button>
+    </form>
+    <div class="error-message" id="error-message"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const errorBox = document.getElementById('error-message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const body = {
+        uid: formData.get('uid'),
+        password: formData.get('password')
+      };
+
+      const response = await fetch('/.netlify/functions/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const isAdmin = result.role === 'admin';
+        window.location.href = isAdmin ? 'admin.html' : 'panel.html';
+      } else {
+        errorBox.textContent = result.message || 'Nieprawidłowy UID lub hasło.';
+      }
+    });
+  </script>
+</body>
+</html>
