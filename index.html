@@ -1,34 +1,54 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Przerwa techniczna</title>
-  <style>
-    body {
-      background-color: #0e0e0e;
-      color: #ff2d2d;
-      font-family: 'Rubik', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      flex-direction: column;
-      text-align: center;
-    }
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 0.5em;
-    }
-    p {
-      font-size: 1.2rem;
-      color: #ccc;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Strona tymczasowo niedostępna</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+  body {
+    margin: 0; 
+    height: 100vh;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    background: linear-gradient(135deg, #1a1a1a, #4b0000);
+    font-family: 'Rubik', sans-serif;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+  }
+  .container {
+    max-width: 400px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 12px;
+    padding: 30px 25px;
+    box-shadow: 0 0 15px #b22222aa;
+    animation: pulse 2.5s infinite ease-in-out;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #ff4c4c;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  p {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: #eee;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 15px #b22222aa; }
+    50% { box-shadow: 0 0 25px #ff4c4ccc; }
+  }
+</style>
 </head>
 <body>
-  <h1>Przerwa techniczna</h1>
-  <p>Strona jest chwilowo niedostępna z powodu prac serwisowych.<br />Wrócimy za chwilę! 🔧</p>
+  <div class="container" role="main" aria-label="Informacja o przerwie technicznej">
+    <h1>Przerwa techniczna</h1>
+    <p>Strona jest tymczasowo niedostępna z powodu prac serwisowych.<br />
+    Przepraszamy za utrudnienia i zapraszamy wkrótce ponownie.</p>
+  </div>
 </body>
 </html>
