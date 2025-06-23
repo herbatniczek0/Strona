@@ -551,32 +551,36 @@ footer button:hover {
     idea: f.idea.value
   };
 
-  try {
-    // 1. Tworzenie rekordu w bazie
-    const { id } = await createSubmission(entry);
+  const msg = document.getElementById('msg-report');
+  msg.style.display = 'block';
 
-    // 2. Wysyłka danych do webhooka przez funkcję serwerową
+  try {
+    const response = await createSubmission(entry);
+
+
+    if (!response || !response.id) {
+      const errorText = response?.error || 'Nie udało się utworzyć wniosku.';
+      throw new Error(errorText);
+    }
+
+    const id = response.id;
     await fetch('/.netlify/functions/sendWebhook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...entry, id })
     });
 
-    // 3. Wyświetlenie potwierdzenia
-    const msg = document.getElementById('msg-report');
-    msg.textContent = `Wniosek wysłany! Numer wniosku: ${id}`;
+    msg.textContent = `✅ Wniosek wysłany! Numer wniosku: ${id}`;
     msg.className = 'message success';
-    msg.style.display = 'block';
     f.reset();
 
   } catch (err) {
-    console.error('Błąd przy wysyłaniu wniosku:', err);
-    const msg = document.getElementById('msg-report');
-    msg.textContent = 'Wystąpił błąd podczas wysyłania wniosku.';
+    console.error('❌ Błąd przy wysyłaniu wniosku:', err);
+    msg.textContent = `❌ ${err.message}`;
     msg.className = 'message error';
-    msg.style.display = 'block';
   }
 });
+
 
 document.getElementById('trackForm').addEventListener('submit', async e => {
   e.preventDefault();
