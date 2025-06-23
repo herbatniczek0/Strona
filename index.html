@@ -1,54 +1,210 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Strona tymczasowo niedostępna</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
-  body {
-    margin: 0; 
-    height: 100vh;
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-    background: linear-gradient(135deg, #1a1a1a, #4b0000);
-    font-family: 'Rubik', sans-serif;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-  }
-  .container {
-    max-width: 400px;
-    background: rgba(0,0,0,0.6);
-    border-radius: 12px;
-    padding: 30px 25px;
-    box-shadow: 0 0 15px #b22222aa;
-    animation: pulse 2.5s infinite ease-in-out;
-  }
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    color: #ff4c4c;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-  p {
-    font-size: 1.15rem;
-    line-height: 1.5;
-    color: #eee;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 15px #b22222aa; }
-    50% { box-shadow: 0 0 25px #ff4c4ccc; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redline Garage</title>
+  <link rel="icon" href="assets/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Rubik', sans-serif;
+      background-color: #0e0e0e;
+      color: #f1f1f1;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      transition: background-color 0.5s, color 0.5s;
+    }
+
+    header {
+      background: url('assets/bg/parallax1.jpg') center/cover fixed;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    header img {
+      width: 120px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin-top: 20px;
+      color: #ff3b3b;
+      animation: slideIn 1s ease-out;
+    }
+
+    header p {
+      font-size: 1.3rem;
+      color: #ccc;
+    }
+
+    section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: auto;
+      animation: fadeInUp 0.8s ease-in;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      color: #ff2d2d;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card, .form, .gallery {
+      background: #1a1a1a;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(255, 45, 45, 0.2);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      color: #ff4444;
+    }
+
+    form input, form textarea, form button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #111;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 5px;
+    }
+
+    form button {
+      background-color: #ff2d2d;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    form button:hover {
+      background-color: #e60000;
+    }
+
+    footer {
+      background: #111;
+      color: #888;
+      text-align: center;
+      padding: 30px 10px;
+      margin-top: 60px;
+    }
+
+    footer a {
+      color: #ff4444;
+      text-decoration: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
 </head>
+
 <body>
-  <div class="container" role="main" aria-label="Informacja o przerwie technicznej">
-    <h1>Przerwa techniczna</h1>
-    <p>Strona jest tymczasowo niedostępna z powodu prac serwisowych.<br />
-    Przepraszamy za utrudnienia i zapraszamy wkrótce ponownie.</p>
+  <!-- PRZERWA TECHNICZNA -->
+  <!-- Aby aktywować tryb konserwacji, odkomentuj poniższy div i zakomentuj zawartość strony -->
+  <
+  <div style="text-align:center;padding:100px 20px;">
+    <h1 style="color:#ff2d2d;font-size:3rem;">Przerwa techniczna</h1>
+    <p style="color:#ccc;font-size:1.2rem;">Strona Redline Garage jest chwilowo niedostępna z powodu prac serwisowych.<br>Wrócimy za chwilę! 🔧</p>
   </div>
+  
+
+  <!-- Strona główna -->
+  <header>
+    <img src="assets/logo.png" alt="Redline Garage">
+    <h1>Redline Garage</h1>
+    <p>Legalnie. Nielegalnie. Po naszej stronie.</p>
+  </header>
+
+  <section id="about">
+    <h2>O nas</h2>
+    <p>Redline Garage to miejsce, gdzie pasja do motoryzacji spotyka się z ulicznym charakterem. Oferujemy usługi od klasycznych napraw po ekstremalne tuningi. Nasza VIP Zone działa dla tych, którzy cenią sobie pełną dyskrecję i profesjonalizm.</p>
+  </section>
+
+  <section id="services">
+    <h2>Usługi</h2>
+    <div class="grid">
+      <div class="card"><h3>Naprawy mechaniczne</h3><p>Pełny zakres napraw aut osobowych i sportowych.</p></div>
+      <div class="card"><h3>Tuning silnika</h3><p>Więcej mocy, lepsza reakcja – legalnie i nielegalnie.</p></div>
+      <div class="card"><h3>Tuning wizualny</h3><p>Felgi, spoilery, LEDy – stwórz swój styl.</p></div>
+      <div class="card"><h3>Lakiernictwo</h3><p>Pełne malowanie, detale, customowe kolory.</p></div>
+      <div class="card"><h3>Mobilny serwis</h3><p>Dojeżdżamy do klienta – na zlecenie lub awaryjnie.</p></div>
+    </div>
+  </section>
+
+  <section id="vip">
+    <h2>VIP Zone</h2>
+    <p>Dla wybranych klientów oferujemy ukrywanie VIN, schowki, nietypowe przebudowy i pełną dyskrecję.</p>
+  </section>
+
+  <section id="crew">
+    <h2>Ekipa</h2>
+    <div class="grid">
+      <div class="card"><h3>Jeremy</h3><p>Szef warsztatu, specjalista od silników.</p></div>
+      <div class="card"><h3>Mike</h3><p>Lakiernik z 10-letnim doświadczeniem.</p></div>
+      <div class="card"><h3>Kara</h3><p>Ekspertka od tuningu wizualnego.</p></div>
+      <div class="card"><h3>Dex</h3><p>Mobilny mechanik i kontakt VIP.</p></div>
+    </div>
+  </section>
+
+  <section id="join">
+    <h2>Dołącz do nas</h2>
+    <form class="form" method="POST" action="/api/createApplication">
+      <input type="text" name="nickname" placeholder="Nick IC" required>
+      <input type="text" name="discord" placeholder="Discord (np. user#0000)" required>
+      <textarea name="motivation" placeholder="Dlaczego chcesz do nas dołączyć?" required></textarea>
+      <button type="submit">Wyślij zgłoszenie</button>
+    </form>
+  </section>
+
+  <section id="contact">
+    <h2>Kontakt</h2>
+    <form class="form" method="POST" action="/api/contactMessage">
+      <input type="text" name="name" placeholder="Twoje imię lub nick">
+      <input type="email" name="email" placeholder="E-mail">
+      <textarea name="message" placeholder="Wiadomość do administracji" required></textarea>
+      <button type="submit">Wyślij</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Redline Garage – <a href="#">#RedlineRP</a></p>
+    <p>Dołącz do nas na Discordzie: <a href="https://discord.gg/">discord.gg/redline</a></p>
+  </footer>
 </body>
+
 </html>
