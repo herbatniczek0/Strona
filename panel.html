@@ -5,224 +5,299 @@
   <title>Panel użytkownika – Restauracja + Crime</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-      :root {
-    --primary-red: #551212;
-    --dark-red: #360b0b;
-    --bg-dark: #000000;
-    --bg-card: rgba(25, 10, 10, 0.65);
-    --border-color: rgba(85, 18, 18, 0.4);
-    --hover-bg: rgba(85, 18, 18, 0.6);
-    --text-light: #f0f0f0;
-    --shadow-color: rgba(0, 0, 0, 0.4);
-    --glow-color: rgba(85, 18, 18, 0.3);
-  }
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-dark);
-    background-image:
-      radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
-      radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
-    color: var(--text-light);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
-  }
-  h1 {
-    color: var(--primary-red);
-    margin-bottom: 1.5rem;
-    text-shadow: 0 0 8px var(--primary-red);
-    opacity: 0;
-    animation: fadeInUp 0.6s forwards 0.3s;
-  }
-  table {
-    width: 100%;
-    max-width: 900px;
-    border-collapse: collapse;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow:
-      0 8px 32px 0 var(--shadow-color),
-      0 0 40px -10px var(--glow-color);
-    opacity: 0;
-    transform: translateY(15px);
-    animation: fadeInUp 0.6s forwards 0.6s;
-  }
-  th, td {
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border-color);
-    text-align: left;
-    user-select: none;
-  }
-  th {
-    background-color: var(--dark-red);
-    font-weight: 600;
-  }
-  tbody tr:hover {
-    background-color: var(--hover-bg);
-    cursor: default;
-    transition: background-color 0.3s ease;
-  }
-  .logout-btn {
-    margin-top: 2.5rem;
-    background-color: var(--primary-red);
-    border: none;
-    padding: 1rem 3rem;
-    color: #fff;
-    cursor: pointer;
-    font-weight: 700;
-    border-radius: 1rem;
-    box-shadow: 0 0 15px var(--primary-red);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    opacity: 0;
-    animation: fadeInUp 0.6s forwards 0.9s;
-  }
-  .logout-btn:hover {
-    background-color: #a31b1b;
-    box-shadow: 0 0 20px #a31b1b;
-  }
-
-  /* Animacje */
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    :root {
+      --primary-red: #551212;
+      --dark-red: #360b0b;
+      --bg-dark: #000000;
+      --bg-card: rgba(25, 10, 10, 0.65);
+      --border-color: rgba(85, 18, 18, 0.4);
+      --hover-bg: rgba(85, 18, 18, 0.6);
+      --text-light: #f0f0f0;
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --glow-color: rgba(85, 18, 18, 0.3);
     }
-  }
-
-  /* Responsywność */
-  @media (max-width: 700px) {
-    table, th, td {
-      font-size: 0.9rem;
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
+        radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      position: relative;
+    }
+    h1 {
+      color: var(--primary-red);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 8px var(--primary-red);
+      opacity: 0;
+      animation: fadeInUp 0.6s forwards 0.3s;
+    }
+    table {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow:
+        0 8px 32px 0 var(--shadow-color),
+        0 0 40px -10px var(--glow-color);
+      opacity: 0;
+      transform: translateY(15px);
+      animation: fadeInUp 0.6s forwards 0.6s;
+    }
+    th, td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      user-select: none;
+    }
+    th {
+      background-color: var(--dark-red);
+      font-weight: 600;
+    }
+    tbody tr:hover {
+      background-color: var(--hover-bg);
+      cursor: default;
+      transition: background-color 0.3s ease;
     }
     .logout-btn {
-      padding: 0.85rem 2rem;
+      margin-top: 2.5rem;
+      background-color: var(--primary-red);
+      border: none;
+      padding: 1rem 3rem;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px var(--primary-red);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      animation: fadeInUp 0.6s forwards 0.9s;
     }
-  }
+    .logout-btn:hover {
+      background-color: #a31b1b;
+      box-shadow: 0 0 20px #a31b1b;
+    }
+
+   .credit-btn {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #b11e1ed8;
+  background: #111;
+  border: 2px solid #b11e1ed8;
+  border-radius: 50px;
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.4s ease;
+  box-shadow:
+    0 5px 15px rgba(255, 45, 45, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  perspective: 1000px;
+  z-index: 100;
+}
+
+.credit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, #6d1313, transparent);
+  transition: all 0.4s ease-in-out;
+  z-index: 0;
+}
+
+.credit-btn:hover::before {
+  left: 100%;
+}
+
+.credit-btn:hover {
+  color: #ff0000;
+  transform: translateX(-50%) translateY(-4px) scale(1.05);
+  box-shadow:
+    0 8px 20px rgba(184, 31, 31, 0.5),
+    inset 0 2px 1px rgba(255,255,255,0.1);
+}
+
+.credit-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+    .preloader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border: 6px solid var(--primary-red);
+      border-top: 6px solid transparent;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preloader span {
+      font-size: 2rem;
+      animation: rotateEmoji 1.2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes rotateEmoji {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 700px) {
+      table, th, td {
+        font-size: 0.9rem;
+      }
+      .logout-btn {
+        padding: 0.85rem 2rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="preloader" id="preloader">
+    <span>💀</span>
+  </div>
 
-<div id="inactivity-timer" aria-live="polite" aria-atomic="true">
-  Przez brak aktywności za 05:00 zostaniesz wylogowany
-</div>
+  <div id="inactivity-timer" aria-live="polite" aria-atomic="true">
+    Przez brak aktywności za 05:00 zostaniesz wylogowany
+  </div>
 
-<script>
-  // Czas nieaktywności: 5 minut w ms
-  const TIMEOUT = 5 * 60 * 1000;
+  <h1>Lista użytkowników</h1>
 
-  function updateActivity() {
-    localStorage.setItem('lastActivity', Date.now().toString());
-  }
+  <table aria-label="Lista użytkowników">
+    <thead>
+      <tr>
+        <th>Imię i nazwisko</th>
+        <th>Discord</th>
+        <th>Gang</th>
+        <th>UID</th>
+      </tr>
+    </thead>
+    <tbody id="users-table-body">
+      <!-- Wiersze pojawią się tutaj dynamicznie -->
+    </tbody>
+  </table>
 
-  function formatTime(ms) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-    return `${minutes}:${seconds}`;
-  }
+  <button class="logout-btn" id="logoutBtn" aria-label="Wyloguj się">Wyloguj się</button>
+  <a href="https://herbatniczek.online" class="credit-btn" target="_blank"><span>Strona by Herbatniczek</span></a>
 
-  function checkInactivity() {
-    const lastActivity = parseInt(localStorage.getItem('lastActivity') || '0', 10);
-    const elapsed = Date.now() - lastActivity;
-    const remaining = TIMEOUT - elapsed;
+  <script>
+    setTimeout(() => {
+      document.getElementById('preloader').style.display = 'none';
+    }, 1000);
 
-    if (remaining <= 0) {
-      logoutUser();
-    } else {
-      // Aktualizuj licznik na ekranie
-      const timerEl = document.getElementById('inactivity-timer');
-      timerEl.textContent = `Przez brak aktywności za ${formatTime(remaining)} zostaniesz wylogowany`;
+    const TIMEOUT = 5 * 60 * 1000;
+
+    function updateActivity() {
+      localStorage.setItem('lastActivity', Date.now().toString());
     }
-  }
 
-  function logoutUser() {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('lastActivity');
-    window.location.href = 'index.html';
-  }
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+      const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    }
 
-  // Sprawdź, czy użytkownik jest zalogowany
-  if (localStorage.getItem('loggedIn') !== 'true') {
-    window.location.href = 'index.html';
-  } else {
-    // Ustaw początkowy czas aktywności
-    updateActivity();
+    function checkInactivity() {
+      const lastActivity = parseInt(localStorage.getItem('lastActivity') || '0', 10);
+      const elapsed = Date.now() - lastActivity;
+      const remaining = TIMEOUT - elapsed;
 
-    // Nasłuchuj aktywności użytkownika
-    ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
-      window.addEventListener(event, updateActivity);
-    });
+      if (remaining <= 0) {
+        logoutUser();
+      } else {
+        const timerEl = document.getElementById('inactivity-timer');
+        timerEl.textContent = `Przez brak aktywności za ${formatTime(remaining)} zostaniesz wylogowany`;
+      }
+    }
 
-    // Sprawdzaj co sekundę nieaktywność i aktualizuj licznik
-    setInterval(checkInactivity, 1000);
-
-    // Przy opuszczaniu strony wyloguj
-    window.addEventListener('beforeunload', () => {
+    function logoutUser() {
       localStorage.removeItem('loggedIn');
       localStorage.removeItem('lastActivity');
-    });
-  }
-</script>
-
-<h1>Lista użytkowników</h1>
-
-<table aria-label="Lista użytkowników">
-  <thead>
-    <tr>
-      <th>Imię i nazwisko</th>
-      <th>Discord</th>
-      <th>Gang</th>
-      <th>UID</th>
-    </tr>
-  </thead>
-  <tbody id="users-table-body">
-    <!-- Wiersze pojawią się tutaj dynamicznie -->
-  </tbody>
-</table>
-
-<button class="logout-btn" id="logoutBtn" aria-label="Wyloguj się">Wyloguj się</button>
-
-<script>
-  async function loadUsers() {
-    try {
-      const response = await fetch('/.netlify/functions/users');
-      if (!response.ok) throw new Error('Błąd ładowania danych');
-      const data = await response.json();
-      const tbody = document.getElementById('users-table-body');
-      tbody.innerHTML = '';
-
-      data.users.forEach(user => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${user.name || '-'}</td>
-          <td>${user.discord || '-'}</td>
-          <td>${user.gang || '-'}</td>
-          <td>${user.uid || '-'}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    } catch (error) {
-      alert('Nie udało się załadować listy użytkowników.');
-      console.error(error);
+      window.location.href = 'index.html';
     }
-  }
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('lastActivity');
-    window.location.href = 'index.html';
-  });
+    if (localStorage.getItem('loggedIn') !== 'true') {
+      window.location.href = 'index.html';
+    } else {
+      updateActivity();
+      ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
+        window.addEventListener(event, updateActivity);
+      });
+      setInterval(checkInactivity, 1000);
+      window.addEventListener('beforeunload', () => {
+        localStorage.removeItem('loggedIn');
+        localStorage.removeItem('lastActivity');
+      });
+    }
 
-  loadUsers();
-</script>
+    async function loadUsers() {
+      try {
+        const response = await fetch('/.netlify/functions/users');
+        if (!response.ok) throw new Error('Błąd ładowania danych');
+        const data = await response.json();
+        const tbody = document.getElementById('users-table-body');
+        tbody.innerHTML = '';
 
+        data.users.forEach(user => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${user.name || '-'}</td>
+            <td>${user.discord || '-'}</td>
+            <td>${user.gang || '-'}</td>
+            <td>${user.uid || '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        alert('Nie udało się załadować listy użytkowników.');
+        console.error(error);
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('lastActivity');
+      window.location.href = 'index.html';
+    });
+
+    loadUsers();
+  </script>
 </body>
 </html>
