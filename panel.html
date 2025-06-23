@@ -24,6 +24,7 @@
       flex-direction: column;
       align-items: center;
       padding: 2rem 1rem;
+      position: relative;
     }
     h1 {
       color: var(--primary-red);
@@ -66,19 +67,92 @@
     .logout-btn:hover {
       background-color: #a31b1b;
     }
+    #inactivity-timer {
+      position: fixed;
+      top: 10px;
+      right: 15px;
+      background: var(--table-bg);
+      padding: 0.4rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      box-shadow: 0 0 10px var(--primary-red);
+      color: var(--text-light);
+      user-select: none;
+      z-index: 9999;
+      font-weight: 600;
+    }
     @media (max-width: 600px) {
       table, th, td {
         font-size: 0.9rem;
+      }
+      #inactivity-timer {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
       }
     }
   </style>
 </head>
 <body>
 
+<div id="inactivity-timer" aria-live="polite" aria-atomic="true">
+  Przez brak aktywności za 05:00 zostaniesz wylogowany
+</div>
+
 <script>
-  // Sprawdzenie czy użytkownik jest zalogowany (lokalnie)
+  // Czas nieaktywności: 5 minut w ms
+  const TIMEOUT = 5 * 60 * 1000;
+
+  function updateActivity() {
+    localStorage.setItem('lastActivity', Date.now().toString());
+  }
+
+  function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
+
+  function checkInactivity() {
+    const lastActivity = parseInt(localStorage.getItem('lastActivity') || '0', 10);
+    const elapsed = Date.now() - lastActivity;
+    const remaining = TIMEOUT - elapsed;
+
+    if (remaining <= 0) {
+      logoutUser();
+    } else {
+      // Aktualizuj licznik na ekranie
+      const timerEl = document.getElementById('inactivity-timer');
+      timerEl.textContent = `Przez brak aktywności za ${formatTime(remaining)} zostaniesz wylogowany`;
+    }
+  }
+
+  function logoutUser() {
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('lastActivity');
+    window.location.href = 'index.html';
+  }
+
+  // Sprawdź, czy użytkownik jest zalogowany
   if (localStorage.getItem('loggedIn') !== 'true') {
     window.location.href = 'index.html';
+  } else {
+    // Ustaw początkowy czas aktywności
+    updateActivity();
+
+    // Nasłuchuj aktywności użytkownika
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(event => {
+      window.addEventListener(event, updateActivity);
+    });
+
+    // Sprawdzaj co sekundę nieaktywność i aktualizuj licznik
+    setInterval(checkInactivity, 1000);
+
+    // Przy opuszczaniu strony wyloguj
+    window.addEventListener('beforeunload', () => {
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('lastActivity');
+    });
   }
 </script>
 
@@ -127,6 +201,7 @@
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('loggedIn');
+    localStorage.removeItem('lastActivity');
     window.location.href = 'index.html';
   });
 
