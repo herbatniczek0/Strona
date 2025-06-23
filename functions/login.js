@@ -20,10 +20,11 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ message: 'UID and password required' }) };
     }
 
-    client = new Client({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-    });
+const client = new Client({
+  connectionString: process.env.NETLIFY_DATABASE_URL_UNPOOLED || process.env.NETLIFY_DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+
 
     console.log('[login.js] Connecting to database...');
     await client.connect();
