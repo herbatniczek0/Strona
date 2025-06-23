@@ -23,6 +23,25 @@
       transition: background-color 0.5s, color 0.5s;
     }
 
+    body.przerwa-techniczna > *:not(.maintenance) {
+      display: none !important;
+    }
+
+    .maintenance {
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .maintenance h1 {
+      color: #ff2d2d;
+      font-size: 3rem;
+    }
+
+    .maintenance p {
+      color: #ccc;
+      font-size: 1.2rem;
+    }
+
     header {
       background: url('assets/bg/parallax1.jpg') center/cover fixed;
       text-align: center;
@@ -133,15 +152,12 @@
   </style>
 </head>
 
-<body>
-  <!-- PRZERWA TECHNICZNA -->
-  <!-- Aby aktywować tryb konserwacji, odkomentuj poniższy div i zakomentuj zawartość strony -->
-  <
-  <div style="text-align:center;padding:100px 20px;">
-    <h1 style="color:#ff2d2d;font-size:3rem;">Przerwa techniczna</h1>
-    <p style="color:#ccc;font-size:1.2rem;">Strona Redline Garage jest chwilowo niedostępna z powodu prac serwisowych.<br>Wrócimy za chwilę! 🔧</p>
+<!-- Ustaw "przerwa-techniczna" poniżej aby aktywować tryb -->
+<body class="">
+  <div class="maintenance">
+    <h1>Przerwa techniczna</h1>
+    <p>Strona Redline Garage jest chwilowo niedostępna z powodu prac serwisowych.<br>Wrócimy za chwilę! 🔧</p>
   </div>
-  
 
   <!-- Strona główna -->
   <header>
