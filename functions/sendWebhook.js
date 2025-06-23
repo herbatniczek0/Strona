@@ -1,3 +1,5 @@
+const fetch = require('node-fetch'); // jeśli używasz Node <18
+
 exports.handler = async (event) => {
   try {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
