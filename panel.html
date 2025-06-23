@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Użytkownika – Restauracja + Crime</title>
+  <style>
+    :root {
+      --bg: #0c0c0c;
+      --fg: #eee;
+      --accent: #ff2d2d;
+      --table-bg: #111;
+      --table-border: #222;
+      --header-bg: #1a1a1a;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: collapse;
+      background: var(--table-bg);
+      border: 1px solid var(--table-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    thead {
+      background: var(--header-bg);
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--table-border);
+      text-align: left;
+    }
+    tbody tr:hover {
+      background-color: #33000033;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .loading {
+      margin-top: 50px;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+    .error {
+      margin-top: 50px;
+      color: #d92525;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lista osób</h1>
+  <div id="content">
+    <div class="loading" id="loading">Ładowanie danych...</div>
+    <div class="error" id="error" style="display:none;"></div>
+    <table id="users-table" style="display:none;">
+      <thead>
+        <tr>
+          <th>Imię i Nazwisko</th>
+          <th>Discord</th>
+          <th>Gang/Organizacja</th>
+          <th>UID</th>
+        </tr>
+      </thead>
+      <tbody id="users-body">
+        <!-- Wiersze pojawią się tutaj -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function fetchUsers() {
+      try {
+        const res = await fetch('/.netlify/functions/users');
+        if (!res.ok) throw new Error(`Błąd sieci: ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data.users)) {
+          throw new Error('Niepoprawne dane z serwera');
+        }
+
+        const tbody = document.getElementById('users-body');
+        tbody.innerHTML = ''; // czyścimy przed dodaniem
+
+        data.users.forEach(user => {
+          const tr = document.createElement('tr');
+
+          // scalamy first_name i last_name
+          const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() || '-';
+          tr.innerHTML = `
+            <td>${name}</td>
+            <td>${user.discord ?? '-'}</td>
+            <td>${user.gang ?? '-'}</td>
+            <td>${user.uid ?? '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('users-table').style.display = 'table';
+      } catch (err) {
+        document.getElementById('loading').style.display = 'none';
+        const errorEl = document.getElementById('error');
+        errorEl.textContent = 'Błąd ładowania danych: ' + err.message;
+        errorEl.style.display = 'block';
+      }
+    }
+
+    fetchUsers();
+  </script>
+</body>
+</html>
