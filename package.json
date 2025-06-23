@@ -1,9 +1,9 @@
 {
-  "name": "portal-obywatelski",
+  "name": "restauracja_crime",
   "version": "1.0.0",
-  "description": "Netlify functions for Portal Obywatelski",
-"dependencies": {
-  "@neondatabase/serverless": "^0.6.0",
-  "bcrypt": "^5.1.0"
-}
+  "description": "Netlify functions for restauracja",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.6.0",
+    "pg": "^8.11.0"
+  }
 }
