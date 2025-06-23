@@ -2,126 +2,136 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
+  <title>Panel użytkownika – Restauracja + Crime</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Panel Użytkownika – Restauracja + Crime</title>
   <style>
     :root {
-      --bg: #0c0c0c;
-      --fg: #eee;
-      --accent: #ff2d2d;
-      --table-bg: #111;
-      --table-border: #222;
-      --header-bg: #1a1a1a;
+      --primary-red: #551212;
+      --dark-red: #360b0b;
+      --bg-dark: #000000;
+      --text-light: #f0f0f0;
+      --table-bg: rgba(25, 10, 10, 0.7);
+      --border-color: rgba(85, 18, 18, 0.4);
+      --hover-bg: rgba(85, 18, 18, 0.6);
     }
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg);
-      color: var(--fg);
+      background-color: var(--bg-dark);
+      color: var(--text-light);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 2rem 1rem;
     }
     h1 {
-      color: var(--accent);
-      margin-bottom: 20px;
+      color: var(--primary-red);
+      margin-bottom: 1rem;
     }
     table {
       width: 100%;
-      max-width: 900px;
+      max-width: 800px;
       border-collapse: collapse;
       background: var(--table-bg);
-      border: 1px solid var(--table-border);
-      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
       overflow: hidden;
-    }
-    thead {
-      background: var(--header-bg);
+      box-shadow: 0 0 20px var(--primary-red);
     }
     th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid var(--table-border);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
       text-align: left;
     }
+    th {
+      background-color: var(--dark-red);
+    }
     tbody tr:hover {
-      background-color: #33000033;
+      background-color: var(--hover-bg);
+      cursor: default;
     }
-    tbody tr:last-child td {
-      border-bottom: none;
+    .logout-btn {
+      margin-top: 2rem;
+      background-color: var(--primary-red);
+      border: none;
+      padding: 0.75rem 2rem;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 10px var(--primary-red);
+      transition: background-color 0.3s ease;
     }
-    .loading {
-      margin-top: 50px;
-      font-size: 1.2rem;
-      color: var(--accent);
+    .logout-btn:hover {
+      background-color: #a31b1b;
     }
-    .error {
-      margin-top: 50px;
-      color: #d92525;
-      font-weight: bold;
+    @media (max-width: 600px) {
+      table, th, td {
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Lista osób</h1>
-  <div id="content">
-    <div class="loading" id="loading">Ładowanie danych...</div>
-    <div class="error" id="error" style="display:none;"></div>
-    <table id="users-table" style="display:none;">
-      <thead>
-        <tr>
-          <th>Imię i Nazwisko</th>
-          <th>Discord</th>
-          <th>Gang/Organizacja</th>
-          <th>UID</th>
-        </tr>
-      </thead>
-      <tbody id="users-body">
-        <!-- Wiersze pojawią się tutaj -->
-      </tbody>
-    </table>
-  </div>
 
-  <script>
-    async function fetchUsers() {
-      try {
-        const res = await fetch('/.netlify/functions/users');
-        if (!res.ok) throw new Error(`Błąd sieci: ${res.status}`);
-        const data = await res.json();
+<script>
+  // Sprawdzenie czy użytkownik jest zalogowany
+  if (localStorage.getItem('loggedIn') !== 'true') {
+    window.location.href = 'index.html';
+  }
+</script>
 
-        if (!Array.isArray(data.users)) {
-          throw new Error('Niepoprawne dane z serwera');
-        }
+<h1>Lista użytkowników</h1>
 
-        const tbody = document.getElementById('users-body');
-        tbody.innerHTML = ''; // czyścimy przed dodaniem
+<table aria-label="Lista użytkowników">
+  <thead>
+    <tr>
+      <th>Imię i nazwisko</th>
+      <th>Discord</th>
+      <th>Gang</th>
+      <th>UID</th>
+    </tr>
+  </thead>
+  <tbody id="users-table-body">
+    <!-- Wiersze pojawią się tutaj dynamicznie -->
+  </tbody>
+</table>
 
-        data.users.forEach(user => {
-          const tr = document.createElement('tr');
+<button class="logout-btn" id="logoutBtn" aria-label="Wyloguj się">Wyloguj się</button>
 
-          // scalamy first_name i last_name
-          const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim() || '-';
-          tr.innerHTML = `
-            <td>${name}</td>
-            <td>${user.discord ?? '-'}</td>
-            <td>${user.gang ?? '-'}</td>
-            <td>${user.uid ?? '-'}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+<script>
+  async function loadUsers() {
+    try {
+      const response = await fetch('/.netlify/functions/users');
+      if (!response.ok) throw new Error('Błąd ładowania danych');
+      const data = await response.json();
+      const tbody = document.getElementById('users-table-body');
+      tbody.innerHTML = '';
 
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('users-table').style.display = 'table';
-      } catch (err) {
-        document.getElementById('loading').style.display = 'none';
-        const errorEl = document.getElementById('error');
-        errorEl.textContent = 'Błąd ładowania danych: ' + err.message;
-        errorEl.style.display = 'block';
-      }
+      data.users.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${user.name || '-'}</td>
+          <td>${user.discord || '-'}</td>
+          <td>${user.gang || '-'}</td>
+          <td>${user.uid || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (error) {
+      alert('Nie udało się załadować listy użytkowników.');
+      console.error(error);
     }
+  }
 
-    fetchUsers();
-  </script>
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('loggedIn');
+    window.location.href = 'index.html';
+  });
+
+  loadUsers();
+</script>
+
 </body>
 </html>
