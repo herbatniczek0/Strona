@@ -25,7 +25,8 @@ exports.handler = async (event) => {
     if (count >= 2) {
       return {
         statusCode: 429,
-        body: JSON.stringify({ error: 'Limit 2 wniosków na IP został osiągnięty.' }),
+body: JSON.stringify({ error: 'Limit 2 wniosków został osiągnięty.\nOdczekaj jakiś czas lub napisz do mnie.' }),
+
         headers: { 'Content-Type': 'application/json' },
       };
     }
