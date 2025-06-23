@@ -12,7 +12,7 @@ exports.handler = async (event) => {
   }
 
   const client = new Client({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: process.env.NETLIFY_DATABASE_URL_UNPOOLED, // tutaj jest zmienione!
     ssl: { rejectUnauthorized: false },
   });
 
@@ -21,7 +21,6 @@ exports.handler = async (event) => {
     await client.connect();
     console.info('[users.js] Connected to DB');
 
-    // Użyj swojej właściwej nazwy kolumn i tabeli
     const queryText = `
       SELECT id, uid, name, discord, gang
       FROM users
