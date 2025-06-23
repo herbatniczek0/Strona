@@ -285,6 +285,10 @@
     opacity: 1;
   }
 }
+.hidden {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
 
   </style>
 </head>
@@ -320,25 +324,19 @@
   <a href="https://herbatniczek.online" class="credit-btn" target="_blank"><span>Strona by Herbatniczek</span></a>
 
   <script>
-  window.addEventListener("load", () => {
-    const loader = document.getElementById("preloader");
-    setTimeout(() => {
-      loader.classList.add("hidden");
-      setTimeout(() => {
-        loader.style.display = "none";
-      }, 500);
-    }, 1500); // Dostosowane do czasu animacji skullSpin
-  });
-setTimeout(() => {
-  document.getElementById('preloader').style.display = 'none';
+window.addEventListener("load", () => {
+  const loader = document.getElementById("preloader");
+  const timer = document.getElementById("inactivity-timer");
 
-  // Po 1.5 sekundy pokaż timer
   setTimeout(() => {
-    const timer = document.getElementById('inactivity-timer');
-    timer.style.opacity = '1';
+    loader.classList.add("hidden"); // zakładam, że masz animację CSS na klasę hidden
+    setTimeout(() => {
+      loader.style.display = "none";
+      timer.style.opacity = "1"; // pokaz timer dopiero po zniknięciu preloadera
+    }, 500);
   }, 1500);
+});
 
-}, 1000);
 
     const TIMEOUT = 5 * 60 * 1000;
 
