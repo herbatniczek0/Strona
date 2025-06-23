@@ -20,7 +20,7 @@ exports.handler = async (event) => {
     await client.connect();
 
     const res = await client.query(
-      'SELECT id, first_name, last_name, gang, discord, uid, password_hash FROM users WHERE uid = $1',
+      'SELECT id, name, gang, discord, uid, password FROM users WHERE uid = $1',
       [UID]
     );
 
@@ -31,19 +31,18 @@ exports.handler = async (event) => {
 
     const user = res.rows[0];
     
-    // Tu możesz użyć np. bcrypt do sprawdzenia hasła, ale dla uproszczenia:
-    if (password !== user.password_hash) {
+    // Proste porównanie hasła w plaintext (niezalecane w realnym systemie)
+    if (password !== user.password) {
       await client.end();
       return { statusCode: 401, body: JSON.stringify({ message: 'Invalid UID or password' }) };
     }
 
     await client.end();
 
-    // Po poprawnym logowaniu zwróć dane użytkownika (bez hasła) i np. token sesji (tu uproszczony)
+    // Zwracamy dane użytkownika bez hasła
     const responseUser = {
       id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
+      name: user.name,
       gang: user.gang,
       discord: user.discord,
       uid: user.uid,
@@ -55,7 +54,7 @@ exports.handler = async (event) => {
         status: 'success',
         message: 'Zalogowano pomyślnie',
         user: responseUser,
-        // redirect: '/panel.html' // lub inny adres panelu po stronie frontend
+        // redirect: '/panel.html' // Możesz dodać redirect po stronie frontu
       }),
     };
   } catch (error) {
