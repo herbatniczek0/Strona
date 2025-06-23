@@ -541,7 +541,7 @@ footer button:hover {
         }); return res.json();
       }
 
-      document.getElementById('wniosekForm').addEventListener('submit', async e => {
+document.getElementById('wniosekForm').addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target;
   const entry = {
@@ -557,13 +557,15 @@ footer button:hover {
   try {
     const response = await createSubmission(entry);
 
-
+    // Obsługa błędu (np. limit IP)
     if (!response || !response.id) {
-      const errorText = response?.error || 'Nie udało się utworzyć wniosku.';
+      const errorText = response?.error || 'Nie udało się zapisać wniosku.';
       throw new Error(errorText);
     }
 
     const id = response.id;
+
+    // Wyślij webhook (z Netlify Functions, np. sendWebhook.js)
     await fetch('/.netlify/functions/sendWebhook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -580,6 +582,7 @@ footer button:hover {
     msg.className = 'message error';
   }
 });
+
 
 
 document.getElementById('trackForm').addEventListener('submit', async e => {
