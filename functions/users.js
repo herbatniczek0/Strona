@@ -6,15 +6,15 @@ exports.handler = async (event) => {
   }
 
   const client = new Client({
-    connectionString: process.env.NETLIFY_DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
   });
 
   try {
     await client.connect();
 
     const res = await client.query(
-      'SELECT first_name, last_name, gang, discord, uid FROM users ORDER BY last_name, first_name'
+      'SELECT name, discord, gang, uid FROM users ORDER BY name'
     );
 
     await client.end();
@@ -22,13 +22,15 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       body: JSON.stringify({ users: res.rows }),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' }
     };
   } catch (error) {
-    if(client) await client.end();
+    if (client) {
+      await client.end().catch(() => {});
+    }
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Błąd serwera', error: error.message }),
+      body: JSON.stringify({ message: 'Błąd serwera', error: error.message })
     };
   }
 };
