@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Admina – Wnioski i Dostępy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary-red: #551212;
+      --dark-red: #360b0b;
+      --bg-dark: #000000;
+      --bg-card: rgba(25, 10, 10, 0.65);
+      --border-color: rgba(85, 18, 18, 0.4);
+      --hover-bg: rgba(85, 18, 18, 0.6);
+      --text-light: #f0f0f0;
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --glow-color: rgba(85, 18, 18, 0.3);
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    h1 {
+      color: var(--primary-red);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 8px var(--primary-red);
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow:
+        0 8px 32px 0 var(--shadow-color),
+        0 0 40px -10px var(--glow-color);
+      margin: 0 auto 2rem;
+    }
+    th, td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      user-select: none;
+    }
+    th {
+      background-color: var(--dark-red);
+      font-weight: 600;
+    }
+    tbody tr:hover {
+      background-color: var(--hover-bg);
+      cursor: default;
+      transition: background-color 0.3s ease;
+    }
+    button.action-btn {
+      background-color: var(--primary-red);
+      border: none;
+      padding: 0.4rem 0.75rem;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      transition: background-color 0.3s ease;
+    }
+    button.action-btn:hover {
+      background-color: #a31b1b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Panel Administracyjny – Wnioski o dostęp</h1>
+
+  <table aria-label="Lista wniosków">
+    <thead>
+      <tr>
+        <th>UID</th>
+        <th>Info</th>
+        <th>Status</th>
+        <th>Data złożenia</th>
+        <th>Akcje</th>
+      </tr>
+    </thead>
+    <tbody id="requests-table-body">
+      <!-- Wnioski pojawią się tutaj -->
+    </tbody>
+  </table>
+
+  <script>
+    async function loadRequests() {
+      try {
+        const response = await fetch('/.netlify/functions/getRequests');
+        if (!response.ok) throw new Error('Błąd ładowania wniosków');
+        const data = await response.json();
+
+        const tbody = document.getElementById('requests-table-body');
+        tbody.innerHTML = '';
+
+        data.requests.forEach(req => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${req.uid}</td>
+            <td>${req.info || '-'}</td>
+            <td>${req.status}</td>
+            <td>${new Date(req.created_at).toLocaleString('pl-PL')}</td>
+            <td>
+              <button class="action-btn" onclick="changeStatus('${req.id}', 'accepted')">Akceptuj</button>
+              <button class="action-btn" onclick="changeStatus('${req.id}', 'rejected')">Odrzuć</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error(e);
+        alert('Błąd podczas ładowania wniosków.');
+      }
+    }
+
+    async function changeStatus(id, newStatus) {
+      try {
+        const response = await fetch('/.netlify/functions/changeRequestStatus', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, status: newStatus }),
+        });
+        if (!response.ok) throw new Error('Błąd podczas zmiany statusu');
+
+        const data = await response.json();
+        console.log(`Status zmieniony: ${JSON.stringify(data)}`);
+
+        await loadRequests();
+      } catch (e) {
+        console.error(e);
+        alert('Nie udało się zmienić statusu.');
+      }
+    }
+
+    // Załaduj dane od razu
+    loadRequests();
+  </script>
+</body>
+</html>
