@@ -1,351 +1,219 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Panel Administratora – Wnioski i Dostępy</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- FontAwesome + SweetAlert2 -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <style>
-    :root {
-      --primary-green: #551212;
-      --dark-green: #360b0b;
-      --bg-dark: #000000;
-      --bg-card: rgba(25, 10, 10, 0.65);
-      --border-color: rgba(85, 18, 18, 0.4);
-      --text-light: #f0f0f0;
-      --text-muted: #9e9e9e;
-      --btn-accept: #28a745;
-      --btn-reject: #dc3545;
-      --btn-remove: #ff6f61;
-      --glow-color: rgba(85, 18, 18, 0.3);
-      --shadow-color: rgba(0, 0, 0, 0.4);
-      --btn-shadow: rgba(85, 18, 18, 0.6);
-    }
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-    body, html {
-      margin: 0; padding: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-light);
-      min-height: 100vh;
-      background-image:
-        radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
-        radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
-    }
-    h1, h2 {
-      text-align: center;
-      color: var(--primary-green);
-      text-shadow: 0 0 8px var(--primary-green);
-    }
-    section {
-      max-width: 1100px;
-      margin: 1rem auto 3rem;
-      background: var(--bg-card);
-      border-radius: 1rem;
-      padding: 1.5rem 2rem;
-      box-shadow:
-        0 8px 32px 0 var(--shadow-color),
-        0 0 50px -10px var(--glow-color);
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      color: var(--text-light);
-      font-size: 0.9rem;
-      user-select: none;
-    }
-    thead tr {
-      background-color: var(--primary-green);
-      text-align: left;
-    }
-    th, td {
-      padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid var(--border-color);
-      vertical-align: middle;
-    }
-    tbody tr:nth-child(even) {
-      background-color: rgba(85, 18, 18, 0.15);
-    }
-    button.action-btn {
-      border: none;
-      border-radius: 5px;
-      padding: 0.35rem 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      color: white;
-      transition: background 0.3s ease;
-      font-size: 0.85rem;
-      user-select: none;
-    }
-    button.accept {
-      background-color: var(--btn-accept);
-      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.6);
-    }
-    button.accept:hover {
-      background-color: #218838;
-    }
-    button.reject {
-      background-color: var(--btn-reject);
-      box-shadow: 0 4px 8px rgba(220, 53, 69, 0.6);
-    }
-    button.reject:hover {
-      background-color: #c82333;
-    }
-    button.remove-access {
-      background-color: var(--btn-remove);
-      box-shadow: 0 4px 8px rgba(255, 111, 97, 0.7);
-    }
-    button.remove-access:hover {
-      background-color: #e55b4e;
-    }
-    .status-tag {
-      text-transform: capitalize;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      user-select: none;
-      display: inline-block;
-    }
-    .status-oczekujacy {
-      background-color: #ffc107;
-      color: #333;
-    }
-    .status-zaakceptowany {
-      background-color: #28a745;
-      color: #fff;
-    }
-    .status-odrzucony {
-      background-color: #dc3545;
-      color: #fff;
-    }
-    .status-cofniety {
-      background-color: #6c757d;
-      color: #fff;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Panel Administratora - Wnioski o dostęp</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #eee;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    color: #f44336;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #222;
+  }
+  th, td {
+    padding: 10px;
+    border: 1px solid #444;
+    text-align: left;
+    font-size: 14px;
+  }
+  th {
+    background: #333;
+  }
+  tr:nth-child(even) {
+    background: #1c1c1c;
+  }
+  button {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    margin: 0 2px;
+  }
+  button.accept {
+    background: #4caf50;
+  }
+  button.revoke {
+    background: #ff9800;
+  }
+  button:disabled {
+    background: #666;
+    cursor: not-allowed;
+  }
+  .status-oczekujący {
+    color: #ffeb3b;
+    font-weight: bold;
+  }
+  .status-zaakceptowany {
+    color: #4caf50;
+    font-weight: bold;
+  }
+  .status-odrzucony {
+    color: #f44336;
+    font-weight: bold;
+  }
+  .status-cofnięty {
+    color: #ff9800;
+    font-weight: bold;
+  }
+  #loading {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #999;
+  }
+  #message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
 
-  <h1>Panel Administratora</h1>
-
-  <section aria-label="Wnioski o dostęp">
-    <h2>Wnioski o dostęp</h2>
-    <table id="applicationsTable" role="grid" aria-describedby="applicationsDesc">
-      <caption id="applicationsDesc" class="sr-only">Tabela wniosków oczekujących na rozpatrzenie</caption>
-      <thead>
-        <tr>
-          <th>Nick</th>
-          <th>UID</th>
-          <th>Discord</th>
-          <th>Frakcja</th>
-          <th>Uzasadnienie</th>
-          <th>Data</th>
-          <th>Status</th>
-          <th>Próby</th>
-          <th>Akcje</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- wnioski będą załadowane dynamicznie -->
-      </tbody>
-    </table>
-  </section>
-
-  <section aria-label="Użytkownicy z dostępem">
-    <h2>Uprawnieni użytkownicy</h2>
-    <table id="approvedUsersTable" role="grid" aria-describedby="approvedUsersDesc">
-      <caption id="approvedUsersDesc" class="sr-only">Tabela użytkowników z nadanym dostępem</caption>
-      <thead>
-        <tr>
-          <th>Nick</th>
-          <th>UID</th>
-          <th>Discord</th>
-          <th>Frakcja</th>
-          <th>Data przyznania</th>
-          <th>Akcja</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- zaakceptowani użytkownicy -->
-      </tbody>
-    </table>
-  </section>
+<h1>Panel Administratora - Wnioski o dostęp</h1>
+<div id="loading">Ładowanie wniosków...</div>
+<table id="applicationsTable" style="display:none;">
+  <thead>
+    <tr>
+      <th>Nick IC</th>
+      <th>UID</th>
+      <th>Discord</th>
+      <th>Frakcja/Gang</th>
+      <th>Uzasadnienie</th>
+      <th>Data złożenia</th>
+      <th>Status</th>
+      <th>Akcje</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<div id="message"></div>
 
 <script>
-  // Helper: Format daty do czytelnego formatu
-  function formatDate(dateStr) {
-    const d = new Date(dateStr);
-    return d.toLocaleString('pl-PL', { dateStyle: 'short', timeStyle: 'short' });
-  }
+  const loadingEl = document.getElementById('loading');
+  const tableEl = document.getElementById('applicationsTable');
+  const tbody = tableEl.querySelector('tbody');
+  const messageEl = document.getElementById('message');
 
   async function fetchApplications() {
+    loadingEl.style.display = 'block';
+    tableEl.style.display = 'none';
+    messageEl.textContent = '';
+
     try {
       const res = await fetch('/.netlify/functions/getApplications');
-      if (!res.ok) throw new Error('Błąd ładowania wniosków');
+      if (!res.ok) throw new Error('Błąd pobierania danych');
       const data = await res.json();
-      return data; // oczekujemy { wnioski: [], approved: [] }
-    } catch (err) {
-      console.error(err);
-      return { wnioski: [], approved: [] };
+
+      tbody.innerHTML = '';
+
+      if (!data.applications || data.applications.length === 0) {
+        messageEl.textContent = 'Brak wniosków do wyświetlenia.';
+        loadingEl.style.display = 'none';
+        return;
+      }
+
+      for (const app of data.applications) {
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td>${escapeHtml(app.nickname)}</td>
+          <td>${escapeHtml(app.uid)}</td>
+          <td>${escapeHtml(app.discord)}</td>
+          <td>${escapeHtml(app.faction || '')}</td>
+          <td>${escapeHtml(app.reason)}</td>
+          <td>${new Date(app.created_at).toLocaleString()}</td>
+          <td class="status-${app.status.replace('ę','e').replace('ó','o').replace('ń','n').replace('ą','a').replace('ś','s').replace('ż','z').replace('ź','z')}">${escapeHtml(app.status)}</td>
+          <td>
+            ${app.status === 'oczekujący' ? `
+              <button class="accept" data-id="${app.id}">Akceptuj</button>
+              <button class="reject" data-id="${app.id}">Odrzuć</button>
+            ` : ''}
+            ${app.status === 'zaakceptowany' ? `
+              <button class="revoke" data-id="${app.id}">Usuń dostęp</button>
+            ` : ''}
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      }
+
+      attachButtonsListeners();
+
+      loadingEl.style.display = 'none';
+      tableEl.style.display = 'table';
+
+    } catch (error) {
+      loadingEl.style.display = 'none';
+      messageEl.textContent = 'Błąd ładowania wniosków.';
+      console.error(error);
     }
   }
 
-  // Render tabelę wniosków
-  function renderApplicationsTable(applications) {
-    const tbody = document.querySelector('#applicationsTable tbody');
-    tbody.innerHTML = '';
-    if (applications.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#777;">Brak nowych wniosków.</td></tr>`;
-      return;
-    }
-    for (const w of applications) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${escapeHtml(w.nickname)}</td>
-        <td>${escapeHtml(w.uid)}</td>
-        <td>${escapeHtml(w.discord)}</td>
-        <td>${escapeHtml(w.faction || '')}</td>
-        <td title="${escapeHtml(w.reason)}" style="max-width:250px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">${escapeHtml(w.reason)}</td>
-        <td>${formatDate(w.created_at)}</td>
-        <td><span class="status-tag status-${w.status.replace('ć','c')}">${escapeHtml(w.status)}</span></td>
-        <td>${w.attempts}</td>
-        <td>
-          <button class="action-btn accept" data-id="${w.id}" title="Akceptuj wniosek"><i class="fa-solid fa-check"></i></button>
-          <button class="action-btn reject" data-id="${w.id}" title="Odrzuć wniosek"><i class="fa-solid fa-xmark"></i></button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    }
-  }
-
-  // Render tabelę zaakceptowanych użytkowników
-  function renderApprovedTable(users) {
-    const tbody = document.querySelector('#approvedUsersTable tbody');
-    tbody.innerHTML = '';
-    if (users.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#777;">Brak użytkowników z dostępem.</td></tr>`;
-      return;
-    }
-    for (const u of users) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${escapeHtml(u.nickname)}</td>
-        <td>${escapeHtml(u.uid)}</td>
-        <td>${escapeHtml(u.discord)}</td>
-        <td>${escapeHtml(u.faction || '')}</td>
-        <td>${formatDate(u.created_at)}</td>
-        <td>
-          <button class="action-btn remove-access" data-id="${u.id}" title="Cofnij dostęp użytkownikowi"><i class="fa-solid fa-ban"></i> Usuń</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    }
-  }
-
-  // Prosta funkcja escape HTML
   function escapeHtml(text) {
     if (!text) return '';
-    return text.replace(/[&<>"']/g, function (m) {
-      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
-    });
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
-  // Akcje przycisków Akceptuj / Odrzuć / Usuń dostęp
-  async function actionHandler(e) {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    if (!id) return;
-
-    if (btn.classList.contains('accept')) {
-      const result = await Swal.fire({
-        title: 'Akceptować wniosek?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Tak, zaakceptuj',
-        cancelButtonText: 'Anuluj',
-      });
-      if (!result.isConfirmed) return;
-
-      await updateApplicationStatus(id, 'zaakceptowany');
-
-    } else if (btn.classList.contains('reject')) {
-      const { value: reason } = await Swal.fire({
-        title: 'Podaj powód odrzucenia',
-        input: 'textarea',
-        inputLabel: 'Powód',
-        inputPlaceholder: 'Np. nie spełnia wymagań...',
-        showCancelButton: true,
-        confirmButtonText: 'Odrzuć',
-        cancelButtonText: 'Anuluj',
-        inputValidator: value => !value ? 'Powód jest wymagany' : null
-      });
-      if (!reason) return;
-
-      await updateApplicationStatus(id, 'odrzucony', reason);
-
-    } else if (btn.classList.contains('remove-access')) {
-      const result = await Swal.fire({
-        title: 'Czy na pewno chcesz cofnąć dostęp temu użytkownikowi?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Tak, cofnij',
-        cancelButtonText: 'Anuluj',
-      });
-      if (!result.isConfirmed) return;
-
-      await updateApplicationStatus(id, 'cofnięty');
-    }
-    // Po akcji odśwież dane
-    await loadData();
+  function attachButtonsListeners() {
+    document.querySelectorAll('button.accept').forEach(btn =>
+      btn.addEventListener('click', () => handleAction(btn.dataset.id, 'accept'))
+    );
+    document.querySelectorAll('button.reject').forEach(btn =>
+      btn.addEventListener('click', () => handleAction(btn.dataset.id, 'reject'))
+    );
+    document.querySelectorAll('button.revoke').forEach(btn =>
+      btn.addEventListener('click', () => handleAction(btn.dataset.id, 'revoke'))
+    );
   }
 
-  // Wywołanie backendu do aktualizacji statusu
-  async function updateApplicationStatus(id, status, rejectReason = '') {
+  async function handleAction(id, action) {
+    if (!confirm(`Na pewno chcesz wykonać akcję: ${action}?`)) return;
+
+    messageEl.textContent = '';
     try {
-      const res = await fetch('/.netlify/functions/updateApplicationStatus', {
+      const res = await fetch('/.netlify/functions/updateApplication', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status, rejectReason }),
+        body: JSON.stringify({ id: Number(id), action }),
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || 'Błąd aktualizacji statusu');
+      const data = await res.json();
+
+      if (res.ok) {
+        messageEl.style.color = '#4caf50';
+        messageEl.textContent = data.message;
+        fetchApplications();
+      } else {
+        messageEl.style.color = '#f44336';
+        messageEl.textContent = data.message || 'Błąd podczas aktualizacji.';
       }
-      Swal.fire({
-        icon: 'success',
-        title: `Status zmieniony na "${status}"`,
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    } catch (err) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Błąd',
-        text: err.message,
-      });
+    } catch (error) {
+      messageEl.style.color = '#f44336';
+      messageEl.textContent = 'Błąd połączenia z serwerem.';
+      console.error(error);
     }
   }
 
-  async function loadData() {
-    const { wnioski, approved } = await fetchApplications();
-    renderApplicationsTable(wnioski);
-    renderApprovedTable(approved);
-  }
-
-  // Delegacja zdarzeń na tabelach
-  document.body.addEventListener('click', actionHandler);
-
-  // Inicjalizacja
-  loadData();
+  fetchApplications();
 </script>
 
 </body>
