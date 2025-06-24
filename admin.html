@@ -2,150 +2,351 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Panel Admina – Wnioski i Dostępy</title>
+  <title>Panel Administratora – Wnioski i Dostępy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- FontAwesome + SweetAlert2 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     :root {
-      --primary-red: #551212;
-      --dark-red: #360b0b;
+      --primary-green: #551212;
+      --dark-green: #360b0b;
       --bg-dark: #000000;
       --bg-card: rgba(25, 10, 10, 0.65);
       --border-color: rgba(85, 18, 18, 0.4);
-      --hover-bg: rgba(85, 18, 18, 0.6);
       --text-light: #f0f0f0;
-      --shadow-color: rgba(0, 0, 0, 0.4);
+      --text-muted: #9e9e9e;
+      --btn-accept: #28a745;
+      --btn-reject: #dc3545;
+      --btn-remove: #ff6f61;
       --glow-color: rgba(85, 18, 18, 0.3);
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --btn-shadow: rgba(85, 18, 18, 0.6);
     }
     *, *::before, *::after {
       box-sizing: border-box;
     }
-    body {
-      margin: 0;
+    body, html {
+      margin: 0; padding: 20px;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-light);
       min-height: 100vh;
-      padding: 2rem;
+      background-image:
+        radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
+        radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
     }
-    h1 {
-      color: var(--primary-red);
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 8px var(--primary-red);
+    h1, h2 {
       text-align: center;
+      color: var(--primary-green);
+      text-shadow: 0 0 8px var(--primary-green);
+    }
+    section {
+      max-width: 1100px;
+      margin: 1rem auto 3rem;
+      background: var(--bg-card);
+      border-radius: 1rem;
+      padding: 1.5rem 2rem;
+      box-shadow:
+        0 8px 32px 0 var(--shadow-color),
+        0 0 50px -10px var(--glow-color);
+      overflow-x: auto;
     }
     table {
       width: 100%;
-      max-width: 900px;
       border-collapse: collapse;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 1rem;
-      overflow: hidden;
-      box-shadow:
-        0 8px 32px 0 var(--shadow-color),
-        0 0 40px -10px var(--glow-color);
-      margin: 0 auto 2rem;
-    }
-    th, td {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border-color);
-      text-align: left;
+      color: var(--text-light);
+      font-size: 0.9rem;
       user-select: none;
     }
-    th {
-      background-color: var(--dark-red);
-      font-weight: 600;
+    thead tr {
+      background-color: var(--primary-green);
+      text-align: left;
     }
-    tbody tr:hover {
-      background-color: var(--hover-bg);
-      cursor: default;
-      transition: background-color 0.3s ease;
+    th, td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+    tbody tr:nth-child(even) {
+      background-color: rgba(85, 18, 18, 0.15);
     }
     button.action-btn {
-      background-color: var(--primary-red);
       border: none;
-      padding: 0.4rem 0.75rem;
-      color: #fff;
+      border-radius: 5px;
+      padding: 0.35rem 0.75rem;
       font-weight: 600;
-      border-radius: 0.6rem;
       cursor: pointer;
-      margin-right: 0.5rem;
-      transition: background-color 0.3s ease;
+      color: white;
+      transition: background 0.3s ease;
+      font-size: 0.85rem;
+      user-select: none;
     }
-    button.action-btn:hover {
-      background-color: #a31b1b;
+    button.accept {
+      background-color: var(--btn-accept);
+      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.6);
+    }
+    button.accept:hover {
+      background-color: #218838;
+    }
+    button.reject {
+      background-color: var(--btn-reject);
+      box-shadow: 0 4px 8px rgba(220, 53, 69, 0.6);
+    }
+    button.reject:hover {
+      background-color: #c82333;
+    }
+    button.remove-access {
+      background-color: var(--btn-remove);
+      box-shadow: 0 4px 8px rgba(255, 111, 97, 0.7);
+    }
+    button.remove-access:hover {
+      background-color: #e55b4e;
+    }
+    .status-tag {
+      text-transform: capitalize;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      user-select: none;
+      display: inline-block;
+    }
+    .status-oczekujacy {
+      background-color: #ffc107;
+      color: #333;
+    }
+    .status-zaakceptowany {
+      background-color: #28a745;
+      color: #fff;
+    }
+    .status-odrzucony {
+      background-color: #dc3545;
+      color: #fff;
+    }
+    .status-cofniety {
+      background-color: #6c757d;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <h1>Panel Administracyjny – Wnioski o dostęp</h1>
 
-  <table aria-label="Lista wniosków">
-    <thead>
-      <tr>
-        <th>UID</th>
-        <th>Info</th>
-        <th>Status</th>
-        <th>Data złożenia</th>
-        <th>Akcje</th>
-      </tr>
-    </thead>
-    <tbody id="requests-table-body">
-      <!-- Wnioski pojawią się tutaj -->
-    </tbody>
-  </table>
+  <h1>Panel Administratora</h1>
 
-  <script>
-    async function loadRequests() {
-      try {
-        const response = await fetch('/.netlify/functions/getRequests');
-        if (!response.ok) throw new Error('Błąd ładowania wniosków');
-        const data = await response.json();
+  <section aria-label="Wnioski o dostęp">
+    <h2>Wnioski o dostęp</h2>
+    <table id="applicationsTable" role="grid" aria-describedby="applicationsDesc">
+      <caption id="applicationsDesc" class="sr-only">Tabela wniosków oczekujących na rozpatrzenie</caption>
+      <thead>
+        <tr>
+          <th>Nick</th>
+          <th>UID</th>
+          <th>Discord</th>
+          <th>Frakcja</th>
+          <th>Uzasadnienie</th>
+          <th>Data</th>
+          <th>Status</th>
+          <th>Próby</th>
+          <th>Akcje</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- wnioski będą załadowane dynamicznie -->
+      </tbody>
+    </table>
+  </section>
 
-        const tbody = document.getElementById('requests-table-body');
-        tbody.innerHTML = '';
+  <section aria-label="Użytkownicy z dostępem">
+    <h2>Uprawnieni użytkownicy</h2>
+    <table id="approvedUsersTable" role="grid" aria-describedby="approvedUsersDesc">
+      <caption id="approvedUsersDesc" class="sr-only">Tabela użytkowników z nadanym dostępem</caption>
+      <thead>
+        <tr>
+          <th>Nick</th>
+          <th>UID</th>
+          <th>Discord</th>
+          <th>Frakcja</th>
+          <th>Data przyznania</th>
+          <th>Akcja</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- zaakceptowani użytkownicy -->
+      </tbody>
+    </table>
+  </section>
 
-        data.requests.forEach(req => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${req.uid}</td>
-            <td>${req.info || '-'}</td>
-            <td>${req.status}</td>
-            <td>${new Date(req.created_at).toLocaleString('pl-PL')}</td>
-            <td>
-              <button class="action-btn" onclick="changeStatus('${req.id}', 'accepted')">Akceptuj</button>
-              <button class="action-btn" onclick="changeStatus('${req.id}', 'rejected')">Odrzuć</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (e) {
-        console.error(e);
-        alert('Błąd podczas ładowania wniosków.');
-      }
+<script>
+  // Helper: Format daty do czytelnego formatu
+  function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleString('pl-PL', { dateStyle: 'short', timeStyle: 'short' });
+  }
+
+  async function fetchApplications() {
+    try {
+      const res = await fetch('/.netlify/functions/getApplications');
+      if (!res.ok) throw new Error('Błąd ładowania wniosków');
+      const data = await res.json();
+      return data; // oczekujemy { wnioski: [], approved: [] }
+    } catch (err) {
+      console.error(err);
+      return { wnioski: [], approved: [] };
     }
+  }
 
-    async function changeStatus(id, newStatus) {
-      try {
-        const response = await fetch('/.netlify/functions/changeRequestStatus', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, status: newStatus }),
-        });
-        if (!response.ok) throw new Error('Błąd podczas zmiany statusu');
-
-        const data = await response.json();
-        console.log(`Status zmieniony: ${JSON.stringify(data)}`);
-
-        await loadRequests();
-      } catch (e) {
-        console.error(e);
-        alert('Nie udało się zmienić statusu.');
-      }
+  // Render tabelę wniosków
+  function renderApplicationsTable(applications) {
+    const tbody = document.querySelector('#applicationsTable tbody');
+    tbody.innerHTML = '';
+    if (applications.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#777;">Brak nowych wniosków.</td></tr>`;
+      return;
     }
+    for (const w of applications) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(w.nickname)}</td>
+        <td>${escapeHtml(w.uid)}</td>
+        <td>${escapeHtml(w.discord)}</td>
+        <td>${escapeHtml(w.faction || '')}</td>
+        <td title="${escapeHtml(w.reason)}" style="max-width:250px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">${escapeHtml(w.reason)}</td>
+        <td>${formatDate(w.created_at)}</td>
+        <td><span class="status-tag status-${w.status.replace('ć','c')}">${escapeHtml(w.status)}</span></td>
+        <td>${w.attempts}</td>
+        <td>
+          <button class="action-btn accept" data-id="${w.id}" title="Akceptuj wniosek"><i class="fa-solid fa-check"></i></button>
+          <button class="action-btn reject" data-id="${w.id}" title="Odrzuć wniosek"><i class="fa-solid fa-xmark"></i></button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
 
-    // Załaduj dane od razu
-    loadRequests();
-  </script>
+  // Render tabelę zaakceptowanych użytkowników
+  function renderApprovedTable(users) {
+    const tbody = document.querySelector('#approvedUsersTable tbody');
+    tbody.innerHTML = '';
+    if (users.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#777;">Brak użytkowników z dostępem.</td></tr>`;
+      return;
+    }
+    for (const u of users) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(u.nickname)}</td>
+        <td>${escapeHtml(u.uid)}</td>
+        <td>${escapeHtml(u.discord)}</td>
+        <td>${escapeHtml(u.faction || '')}</td>
+        <td>${formatDate(u.created_at)}</td>
+        <td>
+          <button class="action-btn remove-access" data-id="${u.id}" title="Cofnij dostęp użytkownikowi"><i class="fa-solid fa-ban"></i> Usuń</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Prosta funkcja escape HTML
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>"']/g, function (m) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+    });
+  }
+
+  // Akcje przycisków Akceptuj / Odrzuć / Usuń dostęp
+  async function actionHandler(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (!id) return;
+
+    if (btn.classList.contains('accept')) {
+      const result = await Swal.fire({
+        title: 'Akceptować wniosek?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Tak, zaakceptuj',
+        cancelButtonText: 'Anuluj',
+      });
+      if (!result.isConfirmed) return;
+
+      await updateApplicationStatus(id, 'zaakceptowany');
+
+    } else if (btn.classList.contains('reject')) {
+      const { value: reason } = await Swal.fire({
+        title: 'Podaj powód odrzucenia',
+        input: 'textarea',
+        inputLabel: 'Powód',
+        inputPlaceholder: 'Np. nie spełnia wymagań...',
+        showCancelButton: true,
+        confirmButtonText: 'Odrzuć',
+        cancelButtonText: 'Anuluj',
+        inputValidator: value => !value ? 'Powód jest wymagany' : null
+      });
+      if (!reason) return;
+
+      await updateApplicationStatus(id, 'odrzucony', reason);
+
+    } else if (btn.classList.contains('remove-access')) {
+      const result = await Swal.fire({
+        title: 'Czy na pewno chcesz cofnąć dostęp temu użytkownikowi?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Tak, cofnij',
+        cancelButtonText: 'Anuluj',
+      });
+      if (!result.isConfirmed) return;
+
+      await updateApplicationStatus(id, 'cofnięty');
+    }
+    // Po akcji odśwież dane
+    await loadData();
+  }
+
+  // Wywołanie backendu do aktualizacji statusu
+  async function updateApplicationStatus(id, status, rejectReason = '') {
+    try {
+      const res = await fetch('/.netlify/functions/updateApplicationStatus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status, rejectReason }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Błąd aktualizacji statusu');
+      }
+      Swal.fire({
+        icon: 'success',
+        title: `Status zmieniony na "${status}"`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Błąd',
+        text: err.message,
+      });
+    }
+  }
+
+  async function loadData() {
+    const { wnioski, approved } = await fetchApplications();
+    renderApplicationsTable(wnioski);
+    renderApprovedTable(approved);
+  }
+
+  // Delegacja zdarzeń na tabelach
+  document.body.addEventListener('click', actionHandler);
+
+  // Inicjalizacja
+  loadData();
+</script>
+
 </body>
 </html>
