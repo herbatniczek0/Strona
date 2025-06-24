@@ -2,14 +2,15 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Złóż Wniosek o Dostęp – Restauracja + Crime</title>
+  <title>Formularz Wniosku – Restauracja + Crime</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   <!-- FontAwesome + SweetAlert2 -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
   <style>
+    /* Ten sam styl co wcześniej (można wydzielić do osobnego pliku) */
     :root {
       --primary-green: #551212;
       --dark-green: #360b0b;
@@ -24,6 +25,7 @@
       --glow-color: rgba(85, 18, 18, 0.3);
       --shadow-color: rgba(0, 0, 0, 0.4);
       --btn-shadow: rgba(85, 18, 18, 0.6);
+      --preloader-color: #cc111115;
     }
     *, *::before, *::after {
       box-sizing: border-box;
@@ -36,183 +38,317 @@
         radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
         radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
       color: var(--text-light);
+      overflow: hidden;
+    }
+    main {
+      height: 100%;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 20px;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 1;
     }
     .form-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 1rem;
       padding: 2rem;
-      max-width: 450px;
       width: 100%;
+      max-width: 420px;
+      text-align: center;
       box-shadow:
         0 8px 32px 0 var(--shadow-color),
         0 0 50px -10px var(--glow-color),
         inset 0 0 10px rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      text-align: center;
+      position: relative;
+      transition: transform 0.3s ease;
     }
-    h2 {
-      margin-bottom: 1rem;
-      font-size: 1.7rem;
-      color: var(--primary-green);
-      text-shadow: 0 0 8px var(--primary-green);
+    .form-card:hover {
+      transform: translateY(-6px);
     }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    .form-card h2 {
+      font-weight: 600;
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
     }
-    label {
-      font-size: 0.9rem;
-      color: var(--text-muted);
+    .input-group-custom {
+      position: relative;
+      margin-bottom: 1.4rem;
       text-align: left;
     }
-    input[type="text"],
-    textarea {
+    .input-group-custom label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 0.95rem;
+      color: var(--primary-green);
+      user-select: none;
+    }
+    .input-group-custom .icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+      transition: color 0.3s ease;
+    }
+    .form-control-custom, select, textarea {
       width: 100%;
-      padding: 0.8rem 1rem;
-      border-radius: 0.5rem;
+      padding: 0.9rem 1rem 0.9rem 3rem;
       border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
       background-color: var(--bg-input);
       color: var(--text-light);
       font-size: 1rem;
+      transition: all 0.3s ease-in-out;
       resize: vertical;
-      transition: all 0.3s ease;
     }
-    input[type="text"]:focus,
-    textarea:focus {
+    .form-control-custom::placeholder {
+      color: var(--text-muted);
+    }
+    .form-control-custom:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--border-focus);
+      background-color: var(--bg-input);
       box-shadow: 0 0 12px var(--glow-color);
     }
-    textarea {
-      min-height: 80px;
+    .form-control-custom:focus + .icon {
+      color: var(--primary-green);
     }
     .btn-submit {
-      background: linear-gradient(90deg, #b11e1e, #7f0f0f);
-      color: white;
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      padding: 12px;
+      letter-spacing: 0.5px;
+      background: var(--bg-dark);
+      color: var(--primary-green);
       border: none;
-      border-radius: 30px;
+      border-radius: 0.7rem;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(177, 30, 30, 0.6);
-      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        inset 3px 3px 6px var(--btn-shadow),
+        inset -3px -3px 6px #771212,
+        5px 5px 10px rgba(0,0,0,0.4);
+      transition: color 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
       user-select: none;
     }
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: var(--primary-green);
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.7, 0, 0.25, 1);
+      z-index: 0;
+      border-radius: 0.7rem;
+    }
     .btn-submit:hover {
-      background: linear-gradient(90deg, #ff4c4c, #b72222);
-      box-shadow: 0 6px 20px rgba(255, 76, 76, 0.8);
-      transform: translateY(-3px);
+      color: #ffffff;
+      box-shadow:
+        inset 1px 1px 3px var(--btn-shadow),
+        inset -1px -1px 3px #771212,
+        7px 7px 14px rgba(85,18,18,0.9);
     }
-    .btn-submit:active {
-      transform: translateY(-1px);
-      box-shadow: 0 3px 10px rgba(255, 76, 76, 0.6);
+    .btn-submit:hover::before {
+      transform: translateX(0);
     }
-    .info-text {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: var(--text-muted);
+    .btn-submit .btn-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+    .btn-submit .btn-content .fas {
+      transition: transform 0.3s ease-out;
+    }
+    .btn-submit:hover .btn-content .fas {
+      transform: translateX(5px);
     }
     .error-message {
       color: var(--error-red);
-      margin-top: 0.5rem;
-      min-height: 1.2em;
+      margin-top: 1rem;
+      min-height: 1.5em;
+      opacity: 0;
+      animation: fadeIn 0.5s ease forwards 0.3s;
       text-align: center;
     }
-    a.back-link {
-      display: inline-block;
-      margin-top: 1.5rem;
-      color: var(--primary-green);
-      text-decoration: underline;
-      cursor: pointer;
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #0e0e0e 0%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      overflow: hidden;
+      transition: opacity 0.5s ease;
     }
-    a.back-link:hover {
-      color: #ff4c4c;
+    .preloader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .pulse-bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: repeating-radial-gradient(circle, rgba(255,45,45,0.02) 2%, transparent 5%);
+      animation: bgPulse 4s infinite linear;
+      z-index: 0;
+      opacity: 0.4;
+    }
+    .pulse-loader {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #551212, #ff2d2d);
+      box-shadow:
+        0 0 20px #ff2d2d,
+        0 0 40px #ff2d2d99,
+        0 0 60px #ff2d2d55;
+      animation: pulseNeon 1.4s infinite ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    .pulse-loader .inner-glow {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff5f5 0%, transparent 70%);
+      opacity: 0.2;
+      animation: glow 2s infinite ease-in-out;
+    }
+    @keyframes pulseNeon {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.85;
+      }
+      50% {
+        transform: scale(1.15);
+        opacity: 1;
+      }
+    }
+    @keyframes bgPulse {
+      0% {
+        transform: rotate(0deg) scale(1);
+      }
+      100% {
+        transform: rotate(360deg) scale(1.1);
+      }
+    }
+    @keyframes glow {
+      0%, 100% {
+        opacity: 0.2;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.4;
+        transform: scale(1.3);
+      }
+    }
+    .pulse-loader .skull {
+      font-size: 2.5rem;
+      color: #fff;
+      z-index: 3;
+      animation: skullSpin 1.5s ease-out forwards;
+      text-shadow: 0 0 10px #ff2d2d, 0 0 20px #ff2d2d;
+    }
+    @keyframes skullSpin {
+      0% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: rotate(360deg) scale(1.2);
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
+  <main>
+    <div class="preloader" id="preloader">
+      <div class="pulse-bg"></div>
+      <div class="pulse-loader">
+        <div class="skull">💀</div>
+      </div>
+    </div>
+    <div class="form-card" aria-label="Formularz składania wniosku">
+      <h2>Złóż Wniosek</h2>
+      <form id="wniosekForm" autocomplete="off" novalidate>
+        <div class="input-group-custom">
+          <label for="uid">Identyfikator UID</label>
+          <input type="text" id="uid" name="uid" class="form-control-custom" placeholder="Twój UID" required />
+          <i class="fas fa-id-card icon"></i>
+        </div>
+        <div class="input-group-custom">
+          <label for="imie">Imię</label>
+          <input type="text" id="imie" name="imie" class="form-control-custom" placeholder="Imię" required />
+          <i class="fas fa-user icon"></i>
+        </div>
+        <div class="input-group-custom">
+          <label for="nazwisko">Nazwisko</label>
+          <input type="text" id="nazwisko" name="nazwisko" class="form-control-custom" placeholder="Nazwisko" required />
+          <i class="fas fa-user icon"></i>
+        </div>
+        <div class="input-group-custom">
+          <label for="opis">Opis wniosku</label>
+          <textarea id="opis" name="opis" class="form-control-custom" rows="4" placeholder="Opisz swój wniosek" required></textarea>
+          <i class="fas fa-file-alt icon"></i>
+        </div>
+        <button type="submit" class="btn-submit" aria-live="polite">
+          <span class="btn-content"><span>Wyślij Wniosek</span> <i class="fas fa-paper-plane"></i></span>
+        </button>
+      </form>
+      <div class="error-message" id="wniosekErrorMessage" role="alert" aria-live="assertive"></div>
+    </div>
+  </main>
+  
+  <script>
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("preloader");
+      setTimeout(() => {
+        loader.classList.add("hidden");
+        setTimeout(() => {
+          loader.style.display = "none";
+        }, 500);
+      }, 1500);
+    });
 
-  <section class="form-card" aria-label="Formularz wniosku o dostęp">
-    <h2>Złóż Wniosek o Dostęp</h2>
-    <form id="applicationForm" autocomplete="off" novalidate>
-      <label for="nickname">Nick IC <sup>*</sup></label>
-      <input type="text" id="nickname" name="nickname" placeholder="Twój nick IC" required autocomplete="off" />
+    const wniosekForm = document.getElementById('wniosekForm');
+    const errorMessage = document.getElementById('wniosekErrorMessage');
 
-      <label for="uid">UID (6 cyfr) <sup>*</sup></label>
-      <input type="text" id="uid" name="uid" placeholder="000000" maxlength="6" pattern="\d{6}" required autocomplete="off" inputmode="numeric" />
+    wniosekForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMessage.textContent = '';
 
-      <label for="discord">Discord <sup>*</sup></label>
-      <input type="text" id="discord" name="discord" placeholder="TwojDiscord#1234" required autocomplete="off" />
+      const uid = wniosekForm.uid.value.trim();
+      const imie = wniosekForm.imie.value.trim();
+      const nazwisko = wniosekForm.nazwisko.value.trim();
+      const opis = wniosekForm.opis.value.trim();
 
-      <label for="faction">Frakcja/Gang (opcjonalne)</label>
-      <input type="text" id="faction" name="faction" placeholder="Np. Mafia, Policja, etc." autocomplete="off" />
-
-      <label for="reason">Uzasadnienie <sup>*</sup></label>
-      <textarea id="reason" name="reason" placeholder="Dlaczego chcesz uzyskać dostęp?" required></textarea>
-
-      <button type="submit" class="btn-submit">Wyślij wniosek</button>
-      <div class="error-message" id="formError" role="alert" aria-live="assertive"></div>
-    </form>
-    <a href="index.html" class="back-link" aria-label="Powrót do strony logowania">← Powrót do logowania</a>
-    <p class="info-text"><sup>*</sup> pola wymagane</p>
-  </section>
-
-<script>
-  document.getElementById('applicationForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const errorEl = document.getElementById('formError');
-    errorEl.textContent = '';
-
-    const nickname = e.target.nickname.value.trim();
-    const uid = e.target.uid.value.trim();
-    const discord = e.target.discord.value.trim();
-    const faction = e.target.faction.value.trim();
-    const reason = e.target.reason.value.trim();
-
-    // Walidacja UID - 6 cyfr
-    if (!/^\d{6}$/.test(uid)) {
-      errorEl.textContent = 'UID musi składać się z dokładnie 6 cyfr.';
-      return;
-    }
-    if (!nickname || !discord || !reason) {
-      errorEl.textContent = 'Proszę wypełnić wszystkie wymagane pola.';
-      return;
-    }
-
-    // Wyślij wniosek do backendu
-    try {
-      const res = await fetch('/.netlify/functions/submitApplication', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname, uid, discord, faction, reason }),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        await Swal.fire({
-          icon: 'success',
-          title: 'Wniosek wysłany!',
-          text: 'Twój wniosek został zapisany i czeka na rozpatrzenie.',
-          confirmButtonText: 'OK'
-        });
-        window.location.href = 'index.html';
-      } else {
-        errorEl.textContent = data.message || 'Błąd podczas wysyłania wniosku.';
+      if (!uid || !imie || !nazwisko || !opis) {
+        errorMessage.textContent = 'Proszę wypełnić wszystkie pola.';
+        return;
       }
-    } catch (err) {
-      errorEl.textContent = 'Błąd połączenia z serwerem.';
-      console.error(err);
-    }
-  });
-</script>
 
-</body>
-</html>
+      try {
+        const response = await fetch('/.netlify/functions/submitWniosek', {
+          method: 'POST',
+          headers: { '
