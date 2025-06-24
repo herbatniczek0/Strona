@@ -462,7 +462,7 @@ main {
       }
 
       try {
-        const response = await fetch('/.netlify/functions/adminLogin', {
+        const response = await fetch('/.netlify/functions/admin-login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ UID: uid, password }),
@@ -486,5 +486,4 @@ main {
 
 </body>
 </html>
-
 
