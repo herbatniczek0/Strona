@@ -6,81 +6,130 @@
 <title>Panel Administratora - Wnioski o dostęp</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #121212;
     color: #eee;
     margin: 0;
     padding: 20px;
   }
+
   h1 {
     color: #f44336;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #222;
-  }
-  th, td {
-    padding: 10px;
-    border: 1px solid #444;
-    text-align: left;
-    font-size: 14px;
-  }
-  th {
-    background: #333;
-  }
-  tr:nth-child(even) {
-    background: #1c1c1c;
-  }
-  button {
+
+  #logoutBtn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
     background: #f44336;
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 13px;
-    margin: 0 2px;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.7);
+    transition: background 0.3s ease;
+    z-index: 100;
   }
-  button.accept {
-    background: #4caf50;
+  #logoutBtn:hover {
+    background: #d32f2f;
   }
-  button.revoke {
-    background: #ff9800;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e1e1e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
   }
-  button:disabled {
-    background: #666;
-    cursor: not-allowed;
+
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #2f2f2f;
   }
-  .status-oczekujący {
-    color: #ffeb3b;
-    font-weight: bold;
+
+  th {
+    background-color: #2a0d0d;
+    color: #ff6b6b;
+    font-weight: 700;
   }
-  .status-zaakceptowany {
-    color: #4caf50;
-    font-weight: bold;
+
+  tr:hover {
+    background-color: #3a1212;
   }
-  .status-odrzucony {
-    color: #f44336;
-    font-weight: bold;
+
+  tr:last-child td {
+    border-bottom: none;
   }
-  .status-cofnięty {
-    color: #ff9800;
-    font-weight: bold;
+
+  button.action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    transition: background 0.3s ease;
   }
-  #loading {
-    text-align: center;
-    margin-bottom: 15px;
-    color: #999;
+  button.accept-btn {
+    background-color: #4caf50;
+    box-shadow: 0 0 8px #4caf50aa;
   }
-  #message {
-    text-align: center;
-    margin-top: 15px;
-    font-weight: bold;
+  button.accept-btn:hover {
+    background-color: #388e3c;
+  }
+  button.reject-btn {
+    background-color: #f44336;
+    box-shadow: 0 0 8px #f44336aa;
+  }
+  button.reject-btn:hover {
+    background-color: #d32f2f;
+  }
+
+  @media (max-width: 700px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      display: none;
+    }
+    tr {
+      margin-bottom: 20px;
+      background: #1f1f1f;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    td {
+      border: none;
+      padding: 8px 12px;
+      position: relative;
+      padding-left: 50%;
+      text-align: right;
+    }
+    td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 15px;
+      width: 45%;
+      padding-left: 10px;
+      font-weight: 700;
+      color: #ff6b6b;
+      text-align: left;
+    }
+    button.action-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      text-align: center;
+    }
   }
 </style>
+
 </head>
 <body>
 
