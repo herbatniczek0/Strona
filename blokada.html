@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Blokada strony – Redline Garage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary-red: #551212;
+      --dark-red: #360b0b;
+      --bg-dark: #000000;
+      --bg-card: rgba(25, 10, 10, 0.65);
+      --border-color: rgba(85, 18, 18, 0.4);
+      --text-light: #f0f0f0;
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --glow-color: rgba(85, 18, 18, 0.3);
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      background-image:
+        radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
+        radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
+    }
+    h1 {
+      color: var(--primary-red);
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 8px var(--primary-red);
+    }
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      color: var(--text-light);
+      text-shadow: 0 0 6px rgba(0,0,0,0.6);
+    }
+    .countdown {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ff4444;
+      text-shadow: 0 0 10px #ff4444;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Strona jest zablokowana</h1>
+  <p>Ta strona jest niedostępne w godzinach od 1:00 do 7:30.</p>
+  <div class="countdown" id="countdown">Ładowanie...</div>
+
+  <script>
+    function updateCountdown() {
+      const now = new Date();
+      const unlockTime = new Date(now);
+      unlockTime.setHours(7, 30, 0, 0); // dzisiaj 7:30
+
+      // Jeśli jest po 7:30, licznik pokazuje zero (lub czas do jutra 7:30)
+      if (now >= unlockTime) {
+        document.getElementById('countdown').textContent = "Strona jest już odblokowana!";
+        clearInterval(interval);
+        return;
+      }
+
+      let diff = unlockTime - now;
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      diff -= hours * (1000 * 60 * 60);
+      const minutes = Math.floor(diff / (1000 * 60));
+      diff -= minutes * (1000 * 60);
+      const seconds = Math.floor(diff / 1000);
+
+      document.getElementById('countdown').textContent =
+        `Zostało ${hours} godzin ${minutes} minut ${seconds} sekund`;
+    }
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
