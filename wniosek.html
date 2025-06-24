@@ -2,123 +2,217 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Wniosek o dostęp – Restauracja + Crime</title>
+  <title>Złóż Wniosek o Dostęp – Restauracja + Crime</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- FontAwesome + SweetAlert2 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
-    body {
-      background-color: #000;
-      color: #f0f0f0;
+    :root {
+      --primary-green: #551212;
+      --dark-green: #360b0b;
+      --bg-dark: #000000;
+      --bg-card: rgba(25, 10, 10, 0.65);
+      --bg-input: rgba(15, 5, 5, 0.8);
+      --border-color: rgba(85, 18, 18, 0.4);
+      --border-focus: var(--primary-green);
+      --text-light: #f0f0f0;
+      --text-muted: #9e9e9e;
+      --error-red: #d92525;
+      --glow-color: rgba(85, 18, 18, 0.3);
+      --shadow-color: rgba(0, 0, 0, 0.4);
+      --btn-shadow: rgba(85, 18, 18, 0.6);
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0; padding: 0; height: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
+        radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
+      color: var(--text-light);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
       padding: 20px;
     }
-    form {
-      background: rgba(85, 18, 18, 0.85);
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(184, 31, 31, 0.6);
+      max-width: 450px;
       width: 100%;
-      max-width: 400px;
+      box-shadow:
+        0 8px 32px 0 var(--shadow-color),
+        0 0 50px -10px var(--glow-color),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.7rem;
+      color: var(--primary-green);
+      text-shadow: 0 0 8px var(--primary-green);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
     label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #ff4c4c;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: left;
     }
-    input[type="text"], input[type="number"] {
+    input[type="text"],
+    textarea {
       width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 1.25rem;
-      border-radius: 6px;
-      border: none;
+      padding: 0.8rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-input);
+      color: var(--text-light);
       font-size: 1rem;
-      box-sizing: border-box;
+      resize: vertical;
+      transition: all 0.3s ease;
     }
-    button {
-      background-color: #a31b1b;
-      border: none;
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 12px var(--glow-color);
+    }
+    textarea {
+      min-height: 80px;
+    }
+    .btn-submit {
+      background: linear-gradient(90deg, #b11e1e, #7f0f0f);
       color: white;
-      font-weight: 700;
-      padding: 0.75rem 2rem;
-      border-radius: 8px;
+      font-weight: 600;
+      padding: 12px;
+      border: none;
+      border-radius: 30px;
       cursor: pointer;
-      width: 100%;
+      box-shadow: 0 4px 12px rgba(177, 30, 30, 0.6);
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
       font-size: 1.1rem;
-      transition: background-color 0.3s ease;
+      user-select: none;
     }
-    button:hover {
-      background-color: #ff0000;
+    .btn-submit:hover {
+      background: linear-gradient(90deg, #ff4c4c, #b72222);
+      box-shadow: 0 6px 20px rgba(255, 76, 76, 0.8);
+      transform: translateY(-3px);
     }
-    .error {
-      color: #ff6666;
-      margin-bottom: 1rem;
-      font-weight: 700;
+    .btn-submit:active {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(255, 76, 76, 0.6);
     }
-    .success {
-      color: #aaffaa;
-      margin-bottom: 1rem;
-      font-weight: 700;
+    .info-text {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .error-message {
+      color: var(--error-red);
+      margin-top: 0.5rem;
+      min-height: 1.2em;
+      text-align: center;
+    }
+    a.back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: var(--primary-green);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    a.back-link:hover {
+      color: #ff4c4c;
     }
   </style>
 </head>
 <body>
-  <form id="wniosekForm" novalidate>
-    <h2>Złóż wniosek o dostęp</h2>
-    <div id="message"></div>
-    <label for="uid">UID (6 cyfr):</label>
-    <input type="text" id="uid" name="uid" maxlength="6" pattern="\\d{6}" inputmode="numeric" autocomplete="off" required />
-    <label for="info">Informacje dodatkowe (opcjonalne):</label>
-    <input type="text" id="info" name="info" maxlength="200" />
-    <button type="submit">Wyślij wniosek</button>
-  </form>
 
-  <script>
-    const form = document.getElementById('wniosekForm');
-    const messageDiv = document.getElementById('message');
+  <section class="form-card" aria-label="Formularz wniosku o dostęp">
+    <h2>Złóż Wniosek o Dostęp</h2>
+    <form id="applicationForm" autocomplete="off" novalidate>
+      <label for="nickname">Nick IC <sup>*</sup></label>
+      <input type="text" id="nickname" name="nickname" placeholder="Twój nick IC" required autocomplete="off" />
 
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      messageDiv.textContent = '';
-      messageDiv.className = '';
+      <label for="uid">UID (6 cyfr) <sup>*</sup></label>
+      <input type="text" id="uid" name="uid" placeholder="000000" maxlength="6" pattern="\d{6}" required autocomplete="off" inputmode="numeric" />
 
-      const uid = form.uid.value.trim();
-      const info = form.info.value.trim();
+      <label for="discord">Discord <sup>*</sup></label>
+      <input type="text" id="discord" name="discord" placeholder="TwojDiscord#1234" required autocomplete="off" />
 
-      if (!/^\d{6}$/.test(uid)) {
-        messageDiv.textContent = 'UID musi mieć dokładnie 6 cyfr.';
-        messageDiv.className = 'error';
-        return;
-      }
+      <label for="faction">Frakcja/Gang (opcjonalne)</label>
+      <input type="text" id="faction" name="faction" placeholder="Np. Mafia, Policja, etc." autocomplete="off" />
 
-      // TODO: Tu wywołać fetch do funkcji backendowej do składania wniosku
-      try {
-        const response = await fetch('/.netlify/functions/submitRequest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uid, info }),
+      <label for="reason">Uzasadnienie <sup>*</sup></label>
+      <textarea id="reason" name="reason" placeholder="Dlaczego chcesz uzyskać dostęp?" required></textarea>
+
+      <button type="submit" class="btn-submit">Wyślij wniosek</button>
+      <div class="error-message" id="formError" role="alert" aria-live="assertive"></div>
+    </form>
+    <a href="index.html" class="back-link" aria-label="Powrót do strony logowania">← Powrót do logowania</a>
+    <p class="info-text"><sup>*</sup> pola wymagane</p>
+  </section>
+
+<script>
+  document.getElementById('applicationForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const errorEl = document.getElementById('formError');
+    errorEl.textContent = '';
+
+    const nickname = e.target.nickname.value.trim();
+    const uid = e.target.uid.value.trim();
+    const discord = e.target.discord.value.trim();
+    const faction = e.target.faction.value.trim();
+    const reason = e.target.reason.value.trim();
+
+    // Walidacja UID - 6 cyfr
+    if (!/^\d{6}$/.test(uid)) {
+      errorEl.textContent = 'UID musi składać się z dokładnie 6 cyfr.';
+      return;
+    }
+    if (!nickname || !discord || !reason) {
+      errorEl.textContent = 'Proszę wypełnić wszystkie wymagane pola.';
+      return;
+    }
+
+    // Wyślij wniosek do backendu
+    try {
+      const res = await fetch('/.netlify/functions/submitApplication', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname, uid, discord, faction, reason }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Wniosek wysłany!',
+          text: 'Twój wniosek został zapisany i czeka na rozpatrzenie.',
+          confirmButtonText: 'OK'
         });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Błąd podczas składania wniosku.');
-        }
-
-        messageDiv.textContent = 'Wniosek został wysłany. Proszę czekać na decyzję administratora.';
-        messageDiv.className = 'success';
-
-        form.reset();
-
-      } catch (error) {
-        messageDiv.textContent = error.message;
-        messageDiv.className = 'error';
-        console.error(error);
+        window.location.href = 'index.html';
+      } else {
+        errorEl.textContent = data.message || 'Błąd podczas wysyłania wniosku.';
       }
-    });
-  </script>
+    } catch (err) {
+      errorEl.textContent = 'Błąd połączenia z serwerem.';
+      console.error(err);
+    }
+  });
+</script>
+
 </body>
 </html>
