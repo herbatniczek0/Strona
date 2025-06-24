@@ -33,6 +33,7 @@
       background-image:
         radial-gradient(farthest-corner at 10% 20%, var(--glow-color) 0%, transparent 70%),
         radial-gradient(farthest-corner at 90% 80%, var(--glow-color) 0%, transparent 70%);
+      position: relative;
     }
     h1 {
       color: var(--primary-red);
@@ -53,6 +54,57 @@
       text-shadow: 0 0 10px #ff4444;
       letter-spacing: 1px;
     }
+
+    .credit-btn {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #b11e1ed8;
+      background: #111;
+      border: 2px solid #b11e1ed8;
+      border-radius: 50px;
+      text-decoration: none;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.4s ease;
+      box-shadow:
+        0 5px 15px rgba(255, 45, 45, 0.3),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      perspective: 1000px;
+      z-index: 100;
+    }
+
+    .credit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, #6d1313, transparent);
+      transition: all 0.4s ease-in-out;
+      z-index: 0;
+    }
+
+    .credit-btn:hover::before {
+      left: 100%;
+    }
+
+    .credit-btn:hover {
+      color: #ff0000;
+      transform: translateX(-50%) translateY(-4px) scale(1.05);
+      box-shadow:
+        0 8px 20px rgba(184, 31, 31, 0.5),
+        inset 0 2px 1px rgba(255,255,255,0.1);
+    }
+
+    .credit-btn span {
+      position: relative;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
@@ -60,13 +112,16 @@
   <p>Ta strona jest niedostępne w godzinach od 1:00 do 7:30.</p>
   <div class="countdown" id="countdown">Ładowanie...</div>
 
+  <a href="https://herbatniczek.online" class="credit-btn" target="_blank" rel="noopener noreferrer">
+    <span>Strona by Herbatniczek</span>
+  </a>
+
   <script>
     function updateCountdown() {
       const now = new Date();
       const unlockTime = new Date(now);
       unlockTime.setHours(7, 30, 0, 0); // dzisiaj 7:30
 
-      // Jeśli jest po 7:30, licznik pokazuje zero (lub czas do jutra 7:30)
       if (now >= unlockTime) {
         document.getElementById('countdown').textContent = "Strona jest już odblokowana!";
         clearInterval(interval);
