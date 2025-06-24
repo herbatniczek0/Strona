@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wniosek o dostęp – Restauracja + Crime</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background-color: #000;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    form {
+      background: rgba(85, 18, 18, 0.85);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(184, 31, 31, 0.6);
+      width: 100%;
+      max-width: 400px;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ff4c4c;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1.25rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #a31b1b;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #ff0000;
+    }
+    .error {
+      color: #ff6666;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .success {
+      color: #aaffaa;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <form id="wniosekForm" novalidate>
+    <h2>Złóż wniosek o dostęp</h2>
+    <div id="message"></div>
+    <label for="uid">UID (6 cyfr):</label>
+    <input type="text" id="uid" name="uid" maxlength="6" pattern="\\d{6}" inputmode="numeric" autocomplete="off" required />
+    <label for="info">Informacje dodatkowe (opcjonalne):</label>
+    <input type="text" id="info" name="info" maxlength="200" />
+    <button type="submit">Wyślij wniosek</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('wniosekForm');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      messageDiv.textContent = '';
+      messageDiv.className = '';
+
+      const uid = form.uid.value.trim();
+      const info = form.info.value.trim();
+
+      if (!/^\d{6}$/.test(uid)) {
+        messageDiv.textContent = 'UID musi mieć dokładnie 6 cyfr.';
+        messageDiv.className = 'error';
+        return;
+      }
+
+      // TODO: Tu wywołać fetch do funkcji backendowej do składania wniosku
+      try {
+        const response = await fetch('/.netlify/functions/submitRequest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid, info }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Błąd podczas składania wniosku.');
+        }
+
+        messageDiv.textContent = 'Wniosek został wysłany. Proszę czekać na decyzję administratora.';
+        messageDiv.className = 'success';
+
+        form.reset();
+
+      } catch (error) {
+        messageDiv.textContent = error.message;
+        messageDiv.className = 'error';
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
