@@ -289,7 +289,7 @@
 
   async function fetchWnioski() {
     try {
-      const response = await fetch('/.netlify/functions/getWnioski');
+const response = await fetch('/.netlify/functions/getApplications');
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Błąd ładowania wniosków.');
 
@@ -329,11 +329,12 @@
           const newStatus = select.value;
 
           try {
-            const resp = await fetch('/.netlify/functions/updateWniosekStatus', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id, status: newStatus }),
-            });
+const resp = await fetch('/.netlify/functions/updateApplication', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ id, status: newStatus }),
+});
+
             const result = await resp.json();
             if (!resp.ok) throw new Error(result.message || 'Błąd zapisu statusu.');
             Swal.fire({
