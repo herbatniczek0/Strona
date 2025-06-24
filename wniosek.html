@@ -351,4 +351,29 @@
       try {
         const response = await fetch('/.netlify/functions/submitWniosek', {
           method: 'POST',
-          headers: { '
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid, imie, nazwisko, opis }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Wniosek wysłany',
+            text: 'Dziękujemy! Twój wniosek został zarejestrowany.',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            wniosekForm.reset();
+          });
+        } else {
+          errorMessage.textContent = data.message || 'Wystąpił błąd przy wysyłaniu wniosku.';
+        }
+      } catch (err) {
+        errorMessage.textContent = 'Błąd połączenia z serwerem.';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
