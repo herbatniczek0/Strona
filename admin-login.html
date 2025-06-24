@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      margin: 0; padding: 0; height: 100vh;
+      background: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #eee;
+    }
+    .login-card {
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 0 15px #f44336;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #f44336;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 10px 0 20px 0;
+      border: none;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #eee;
+      font-size: 1rem;
+      transition: box-shadow 0.3s ease;
+    }
+    input[type="text"]:focus, input[type="password"]:focus {
+      outline: none;
+      box-shadow: 0 0 10px #f44336;
+      background: #3a3a3a;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #f44336;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px #f44336aa;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card" role="main" aria-label="Logowanie administratora">
+    <h2>Panel Administratora</h2>
+    <form id="adminLoginForm" autocomplete="off" novalidate>
+      <input type="text" id="uid" name="uid" placeholder="UID" required autocomplete="username" />
+      <input type="password" id="password" name="password" placeholder="Hasło" required autocomplete="current-password" />
+      <button type="submit">Zaloguj się</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const uid = e.target.uid.value.trim();
+      const password = e.target.password.value;
+
+      if (!uid || !password) {
+        Swal.fire('Błąd', 'Proszę wypełnić wszystkie pola.', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch('/.netlify/functions/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ UID: uid, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Zalogowano pomyślnie',
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            window.location.href = data.redirect || '/admin.html';
+          });
+        } else {
+          Swal.fire('Błąd', data.message || 'Nieprawidłowy UID lub hasło.', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Błąd', 'Błąd połączenia z serwerem.', 'error');
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
