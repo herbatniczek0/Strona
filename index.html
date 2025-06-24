@@ -380,45 +380,48 @@ main {
   z-index: 1;
 }
 
+.btn-wniosek {
+  display: inline-block;
+  padding: 12px 28px;
+  background: linear-gradient(90deg, #b11e1e, #7f0f0f);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 30px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(177, 30, 30, 0.6);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+}
+
+.btn-wniosek:hover {
+  background: linear-gradient(90deg, #ff4c4c, #b72222);
+  box-shadow: 0 6px 20px rgba(255, 76, 76, 0.8);
+  transform: translateY(-3px);
+}
+
+.btn-wniosek:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(255, 76, 76, 0.6);
+}
+
+
   </style>
 </head>
 <body>
   <main>
-<div class="preloader" id="preloader">
-  <div class="pulse-bg"></div>
-  <div class="pulse-loader">
-    <div class="skull">💀</div>
-  </div>
-</div>
+
 <a href="https://herbatniczek.online" class="credit-btn" target="_blank">
   <span>Strona by Herbatniczek</span>
 </a>
-<div style="margin-top: 1.5rem; text-align: center;">
-  <a href="wniosek.html" style="
-    background-color: #551212;
-    color: white;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 0 10px #551212;
-    transition: background-color 0.3s ease;
-    display: inline-block;
-  "
-  onmouseover="this.style.backgroundColor='#a31b1b';"
-  onmouseout="this.style.backgroundColor='#551212';"
-  >Nie masz dostępu? Złóż wniosek</a>
 
-  <p style="color: #ff4c4c; margin-top: 8px; font-weight: 500; font-size: 1rem;">
-    Jeśli nie masz jeszcze dostępu, kliknij i złóż wniosek o przyznanie dostępu.
-  </p>
-</div>
 
 
     <div class="login-card" aria-label="Panel logowania">
       <h2>Panel Logowania</h2>
       <p class="subtitle">Zaloguj się, aby kontynuować</p>
       <form id="loginForm" autocomplete="off" novalidate>
+        
         <div class="input-group-custom">
           <input type="text" id="uid" name="uid" class="form-control-custom" placeholder="Identyfikator UID" required autocomplete="username" />
           <i class="fas fa-id-card icon"></i>
@@ -431,9 +434,13 @@ main {
         <button type="submit" class="btn-login" aria-live="polite">
           <span class="btn-content"><span>Zaloguj się</span> <i class="fas fa-arrow-right"></i></span>
         </button>
+        <div style="text-align: center; margin-top: 1.5rem;">
+  <a href="wniosek.html" class="btn-wniosek">Nie masz dostępu? Złóż wniosek</a>
+</div>
       </form>
       <div class="error-message" id="errorMessage" role="alert" aria-live="assertive"></div>
     </div>
+    
   </main>
 
 <script>
