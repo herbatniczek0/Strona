@@ -417,6 +417,24 @@ main {
   </main>
 
 <script>
+  window.addEventListener('load', () => {
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+
+    // Funkcja zwraca true jeśli aktualny czas jest między 1:00 a 7:30
+    function isBlockedTime(h, m) {
+      if (h < 1) return false; // przed 1:00 rano - nie blokujemy
+      if (h > 7) return false; // po 7:30 rano - nie blokujemy
+      if (h === 7 && m > 30) return false; // po 7:30 - nie blokujemy
+      return true; // w pozostałych przypadkach blokada obowiązuje
+    }
+
+    if (isBlockedTime(hour, minute)) {
+      window.location.href = 'blokada.html';
+    }
+  });
+
   window.addEventListener("load", () => {
     const loader = document.getElementById("preloader");
     setTimeout(() => {
