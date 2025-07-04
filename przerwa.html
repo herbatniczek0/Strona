@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Strona tymczasowo niedostępna</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+
+  :root {
+    --primary-red: #551212;
+    --dark-red: #360b0b;
+    --bg-dark: #000000;
+    --bg-card: rgba(25, 10, 10, 0.85);
+    --border-color: rgba(85, 18, 18, 0.4);
+    --text-light: #f0f0f0;
+    --shadow-color: rgba(85, 18, 18, 0.7);
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background-color: var(--bg-dark);
+    background-image:
+      radial-gradient(farthest-corner at 10% 20%, var(--shadow-color) 0%, transparent 70%),
+      radial-gradient(farthest-corner at 90% 80%, var(--shadow-color) 0%, transparent 70%);
+    font-family: 'Rubik', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-light);
+    position: relative;
+  }
+
+  .container {
+    max-width: 450px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 40px 30px;
+    box-shadow:
+      0 0 30px var(--shadow-color),
+      inset 0 0 15px var(--shadow-color);
+    text-align: center;
+  }
+
+  h1 {
+    color: var(--primary-red);
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px var(--primary-red);
+  }
+
+  p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: var(--text-light);
+    margin-bottom: 30px;
+  }
+
+  /* Twój styl przycisku credit-btn */
+  .credit-btn {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 32px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #b11e1ed8;
+    background: #111;
+    border: 2px solid #b11e1ed8;
+    border-radius: 50px;
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.4s ease;
+    box-shadow:
+      0 5px 15px rgba(255, 45, 45, 0.3),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+    perspective: 1000px;
+    z-index: 100;
+  }
+
+  .credit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, #6d1313, transparent);
+    transition: all 0.4s ease-in-out;
+    z-index: 0;
+  }
+
+  .credit-btn:hover::before {
+    left: 100%;
+  }
+
+  .credit-btn:hover {
+    color: #ff0000;
+    transform: translateX(-50%) translateY(-4px) scale(1.05);
+    box-shadow:
+      0 8px 20px rgba(184, 31, 31, 0.5),
+      inset 0 2px 1px rgba(255,255,255,0.1);
+  }
+
+  .credit-btn span {
+    position: relative;
+    z-index: 1;
+  }
+
+</style>
+</head>
+<body>
+  <div class="container" role="main" aria-label="Informacja o przerwie technicznej">
+    <h1>Przerwa techniczna</h1>
+    <p>Strona jest tymczasowo niedostępna z powodu prac serwisowych.<br />
+    Przepraszamy za utrudnienia i zapraszamy wkrótce ponownie.</p>
+  </div>
+
+  <a href="https://herbatniczek.online" class="credit-btn" target="_blank" rel="noopener noreferrer">
+    <span>Strona by Herbatniczek</span>
+  </a>
+</body>
+</html>
